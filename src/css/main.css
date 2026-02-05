@@ -1,0 +1,437 @@
+/* ================================
+   Main Styles for Muslim Salat App
+   ================================ */
+
+:root {
+  --primary-color: #1a1a1a;
+  --secondary-color: #ffd700;
+  --accent-color: #27ae60;
+  --text-light: #ffffff;
+  --text-dark: #333333;
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+/* ================================
+   Header & Navigation
+   ================================ */
+
+header {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  padding: 1rem 0;
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  color: var(--secondary-color) !important;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.input-group {
+  max-width: 300px;
+}
+
+.input-group .form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--secondary-color);
+  color: var(--text-light);
+}
+
+.input-group .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.input-group .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+  color: var(--text-light);
+}
+
+/* ================================
+   Prayer Cards
+   ================================ */
+
+.prayer-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(39, 174, 96, 0.1) 100%
+  );
+  border: 2px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  transition: var(--transition);
+  cursor: pointer;
+  text-align: center;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.prayer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+}
+
+.prayer-card.next-prayer {
+  border: 3px solid var(--accent-color);
+  background: linear-gradient(
+    135deg,
+    rgba(39, 174, 96, 0.2) 0%,
+    rgba(255, 215, 0, 0.2) 100%
+  );
+  box-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+}
+
+.prayer-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+.prayer-time {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--text-light);
+}
+
+/* ================================
+   Countdown Section
+   ================================ */
+
+#countdownContainer {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.15) 0%,
+    rgba(39, 174, 96, 0.15) 100%
+  );
+  border: 2px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+}
+
+#nextPrayerName {
+  color: var(--secondary-color);
+  font-weight: bold;
+  size: 1.5rem;
+}
+
+#countdownTimer {
+  color: var(--accent-color);
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+  letter-spacing: 5px;
+}
+
+/* ================================
+   Qibla Compass
+   ================================ */
+
+#qiblaContainer {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(39, 174, 96, 0.1) 100%
+  );
+  border: 2px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+}
+
+#qiblaCompass {
+  border: 3px solid var(--secondary-color);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  max-width: 350px;
+  margin: 0 auto;
+  display: block;
+}
+
+#qiblaAngle {
+  color: var(--secondary-color);
+  font-size: 1.8rem;
+}
+
+/* ================================
+   Tabs
+   ================================ */
+
+.nav-tabs {
+  border-bottom: 2px solid var(--secondary-color);
+  margin-top: 2rem;
+}
+
+.nav-tabs .nav-link {
+  color: var(--text-light);
+  border: none;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--secondary-color);
+  border-bottom: 3px solid var(--secondary-color);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--secondary-color);
+  background-color: transparent;
+  border-bottom: 3px solid var(--secondary-color);
+}
+
+.tab-content {
+  margin-top: 1.5rem;
+}
+
+/* ================================
+   Calendar Table
+   ================================ */
+
+.table {
+  color: var(--text-light);
+}
+
+.table-bordered {
+  border-color: var(--secondary-color);
+}
+
+.table-bordered th,
+.table-bordered td {
+  border-color: var(--secondary-color);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.table th {
+  background-color: rgba(255, 215, 0, 0.2);
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+/* ================================
+   Asma Al-Husna Cards
+   ================================ */
+
+.asma-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(39, 174, 96, 0.1) 100%
+  );
+  border: 1px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  text-align: center;
+  transition: var(--transition);
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.asma-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+}
+
+.asma-number {
+  color: var(--secondary-color);
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.asma-name {
+  color: var(--text-light);
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-family: Arial, sans-serif;
+  letter-spacing: 1px;
+}
+
+.asma-meaning {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+/* ================================
+   Form Elements
+   ================================ */
+
+.form-control,
+.form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--secondary-color);
+  color: var(--text-light);
+  border-radius: var(--border-radius);
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+  color: var(--text-light);
+}
+
+.form-select option {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.form-label {
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+/* ================================
+   Alerts & Messages
+   ================================ */
+
+.alert-info {
+  background-color: rgba(255, 215, 0, 0.1);
+  border: 1px solid var(--secondary-color);
+  color: var(--text-light);
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  border: 1px solid #dc3545;
+  color: #ff6b6b;
+}
+
+/* ================================
+   Footer
+   ================================ */
+
+footer {
+  margin-top: 3rem;
+  border-top: 2px solid var(--secondary-color);
+}
+
+footer p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* ================================
+   Buttons
+   ================================ */
+
+.btn-primary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #ffed4e;
+  border-color: #ffed4e;
+  color: var(--primary-color);
+}
+
+.btn-outline-light {
+  color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  transition: var(--transition);
+}
+
+.btn-outline-light:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+/* ================================
+   Loading Spinner
+   ================================ */
+
+.spinner-border {
+  color: var(--secondary-color);
+}
+
+/* ================================
+   Responsive Design
+   ================================ */
+
+@media (max-width: 768px) {
+  .input-group {
+    max-width: 100%;
+    margin: 1rem 0;
+  }
+
+  .prayer-card {
+    min-height: 120px;
+  }
+
+  .prayer-name {
+    font-size: 1rem;
+  }
+
+  .prayer-time {
+    font-size: 1.5rem;
+  }
+
+  #countdownTimer {
+    font-size: 2.5rem;
+  }
+
+  #qiblaCompass {
+    max-width: 250px;
+  }
+
+  .asma-card {
+    min-height: 120px;
+  }
+}
+
+@media (max-width: 576px) {
+  .prayer-card {
+    padding: 1rem;
+  }
+
+  #countdownTimer {
+    font-size: 2rem;
+  }
+
+  .asma-name {
+    font-size: 1rem;
+  }
+
+  .navbar {
+    flex-direction: column;
+  }
+
+  .navbar-collapse {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .input-group {
+    margin: 0;
+  }
+}

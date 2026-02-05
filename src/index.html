@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muslim Salat - Prayer Times</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <!-- Theme Styles -->
+    <link rel="stylesheet" href="assets/css/themes.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><strong>Muslim Salat</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="ms-auto d-flex gap-3 align-items-center">
+                    <!-- Location Search -->
+                    <div class="input-group" style="width: 250px;">
+                        <input type="text" class="form-control" id="locationInput" placeholder="City or address...">
+                        <button class="btn btn-primary" id="searchBtn" type="button">Search</button>
+                    </div>
+                    <!-- Theme Toggle -->
+                    <button id="themeToggle" class="btn btn-outline-light">🌙 Dark</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container-fluid py-4">
+        <!-- Location Info -->
+        <div class="alert alert-info" id="locationInfo" role="alert">
+            <strong>Location:</strong> <span id="locationName">Loading...</span>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="alert alert-danger" role="alert" style="display: none;"></div>
+
+        <!-- Prayer Times Section -->
+        <section class="mb-5">
+            <h2 class="mb-4">Today's Prayer Times</h2>
+            <div id="prayerTimesContainer" class="row g-3">
+                <!-- Prayer cards will be rendered here -->
+            </div>
+        </section>
+
+        <!-- Countdown Section -->
+        <section class="mb-5">
+            <h2 class="mb-4">Next Prayer Countdown</h2>
+            <div id="countdownContainer" class="card">
+                <div class="card-body text-center">
+                    <h3 id="nextPrayerName">Loading...</h3>
+                    <div id="countdownTimer" class="display-4 my-3">00:00:00</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Qibla Section -->
+        <section class="mb-5">
+            <h2 class="mb-4">Qibla Direction</h2>
+            <div id="qiblaContainer" class="card">
+                <div class="card-body text-center">
+                    <canvas id="qiblaCompass" width="300" height="300" style="max-width: 100%;"></canvas>
+                    <p class="mt-3"><strong id="qiblaAngle">0°</strong> from North</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs for Calendar, Asma, Date Converter -->
+        <section class="mb-5">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="calendarTab" data-bs-toggle="tab" data-bs-target="#calendarPane"
+                        role="tab">Calendar</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="asmaTab" data-bs-toggle="tab" data-bs-target="#asmaPane"
+                        role="tab">Asma Al-Husna</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="converterTab" data-bs-toggle="tab" data-bs-target="#converterPane"
+                        role="tab">Date Converter</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Calendar Tab -->
+                <div id="calendarPane" class="tab-pane fade show active" role="tabpanel">
+                    <div class="mt-4">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="monthSelect" class="form-label">Select Month:</label>
+                                <select class="form-select" id="monthSelect"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="yearSelect" class="form-label">Select Year:</label>
+                                <select class="form-select" id="yearSelect"></select>
+                            </div>
+                        </div>
+                        <div id="calendarContainer" class="table-responsive">
+                            <!-- Calendar table will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Asma Al-Husna Tab -->
+                <div id="asmaPane" class="tab-pane fade" role="tabpanel">
+                    <div class="mt-4">
+                        <div id="asmaContainer" class="row g-3">
+                            <!-- Asma cards will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Converter Tab -->
+                <div id="converterPane" class="tab-pane fade" role="tabpanel">
+                    <div class="mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Gregorian to Hijri</h5>
+                                <div class="mb-3">
+                                    <label for="gregorianDate" class="form-label">Date:</label>
+                                    <input type="date" class="form-control" id="gregorianDate">
+                                </div>
+                                <div id="hijriResult" class="alert alert-info" style="display: none;"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Hijri to Gregorian</h5>
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label for="hijriDay" class="form-label">Day:</label>
+                                        <input type="number" class="form-control" id="hijriDay" min="1" max="30">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="hijriMonth" class="form-label">Month:</label>
+                                        <input type="number" class="form-control" id="hijriMonth" min="1" max="12">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hijriYear" class="form-label">Year:</label>
+                                    <input type="number" class="form-control" id="hijriYear">
+                                </div>
+                                <div id="gregorianResult" class="alert alert-info" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <p>&copy; 2026 Muslim Salat. Prayer times powered by Al-Adhan API.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api/location.api.js"></script>
+    <script src="assets/js/api/aladhan.api.js"></script>
+    <script src="assets/js/utils/date.util.js"></script>
+    <script src="assets/js/utils/time.util.js"></script>
+    <script src="assets/js/utils/dom.util.js"></script>
+    <script src="assets/js/state/app.state.js"></script>
+    <script src="assets/js/services/prayer.service.js"></script>
+    <script src="assets/js/services/qibla.service.js"></script>
+    <script src="assets/js/services/ramadan.service.js"></script>
+    <script src="assets/js/ui/render-prayers.js"></script>
+    <script src="assets/js/ui/render-countdown.js"></script>
+    <script src="assets/js/ui/render-week.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+
+</html>

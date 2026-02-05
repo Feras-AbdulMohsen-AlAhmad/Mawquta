@@ -1,0 +1,341 @@
+/* ================================
+   Theme Styles (Dark / Light)
+   ================================ */
+
+/* Dark Theme (Default) */
+body.dark-theme {
+  --primary-color: #1a1a1a;
+  --secondary-color: #ffd700;
+  --accent-color: #27ae60;
+  --text-light: #ffffff;
+  --text-dark: #333333;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+body.dark-theme header {
+  background-color: #0d0d0d !important;
+}
+
+body.dark-theme .navbar-brand {
+  color: #ffd700 !important;
+}
+
+body.dark-theme .prayer-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(39, 174, 96, 0.1) 100%
+  );
+  border: 2px solid #ffd700;
+}
+
+body.dark-theme .prayer-name {
+  color: #ffd700;
+}
+
+body.dark-theme .form-control,
+body.dark-theme .form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #ffd700;
+  color: #ffffff;
+}
+
+body.dark-theme .form-control:focus,
+body.dark-theme .form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffd700;
+  color: #ffffff;
+}
+
+body.dark-theme .form-select option {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+body.dark-theme .alert-info {
+  background-color: rgba(255, 215, 0, 0.1);
+  border-color: #ffd700;
+  color: #ffffff;
+}
+
+/* Light Theme */
+body.light-theme {
+  --primary-color: #f8f9fa;
+  --secondary-color: #0066cc;
+  --accent-color: #27ae60;
+  --text-light: #ffffff;
+  --text-dark: #333333;
+  background-color: #f8f9fa;
+  color: #333333;
+}
+
+body.light-theme header {
+  background-color: #ffffff !important;
+  border-bottom: 2px solid #0066cc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .navbar-brand {
+  color: #0066cc !important;
+}
+
+body.light-theme .navbar-collapse {
+  background-color: #f8f9fa;
+}
+
+body.light-theme .nav-link {
+  color: #333333 !important;
+}
+
+body.light-theme .nav-link:hover {
+  color: #0066cc;
+}
+
+body.light-theme .prayer-card {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 204, 0.05) 0%,
+    rgba(39, 174, 96, 0.05) 100%
+  );
+  border: 2px solid #0066cc;
+  color: #333333;
+}
+
+body.light-theme .prayer-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 102, 204, 0.2);
+}
+
+body.light-theme .prayer-card.next-prayer {
+  border: 3px solid #27ae60;
+  background: linear-gradient(
+    135deg,
+    rgba(39, 174, 96, 0.1) 0%,
+    rgba(0, 102, 204, 0.1) 100%
+  );
+  box-shadow: 0 0 20px rgba(39, 174, 96, 0.3);
+}
+
+body.light-theme .prayer-name {
+  color: #0066cc;
+}
+
+body.light-theme .prayer-time {
+  color: #333333;
+}
+
+body.light-theme #countdownContainer {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 204, 0.08) 0%,
+    rgba(39, 174, 96, 0.08) 100%
+  );
+  border: 2px solid #0066cc;
+}
+
+body.light-theme #nextPrayerName {
+  color: #0066cc;
+}
+
+body.light-theme #countdownTimer {
+  color: #27ae60;
+}
+
+body.light-theme #qiblaContainer {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 204, 0.08) 0%,
+    rgba(39, 174, 96, 0.08) 100%
+  );
+  border: 2px solid #0066cc;
+}
+
+body.light-theme #qiblaCompass {
+  border: 3px solid #0066cc;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+body.light-theme #qiblaAngle {
+  color: #0066cc;
+}
+
+body.light-theme .nav-tabs {
+  border-bottom-color: #0066cc;
+}
+
+body.light-theme .nav-tabs .nav-link {
+  color: #333333;
+}
+
+body.light-theme .nav-tabs .nav-link:hover {
+  color: #0066cc;
+  border-bottom-color: #0066cc;
+}
+
+body.light-theme .nav-tabs .nav-link.active {
+  color: #0066cc;
+  border-bottom-color: #0066cc;
+}
+
+body.light-theme .tab-content {
+  background-color: #ffffff;
+  border: 1px solid #0066cc;
+  border-top: none;
+  padding: 1.5rem;
+  border-radius: 0 0 8px 8px;
+}
+
+body.light-theme .table {
+  color: #333333;
+}
+
+body.light-theme .table-bordered {
+  border-color: #0066cc;
+}
+
+body.light-theme .table-bordered th,
+body.light-theme .table-bordered td {
+  border-color: #0066cc;
+}
+
+body.light-theme .table th {
+  background-color: rgba(0, 102, 204, 0.15);
+  color: #0066cc;
+}
+
+body.light-theme .table-hover tbody tr:hover {
+  background-color: rgba(0, 102, 204, 0.1);
+}
+
+body.light-theme .asma-card {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 204, 0.05) 0%,
+    rgba(39, 174, 96, 0.05) 100%
+  );
+  border: 1px solid #0066cc;
+  color: #333333;
+}
+
+body.light-theme .asma-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 102, 204, 0.2);
+}
+
+body.light-theme .asma-number {
+  color: #0066cc;
+}
+
+body.light-theme .asma-name {
+  color: #333333;
+}
+
+body.light-theme .asma-meaning {
+  color: #555555;
+}
+
+body.light-theme .form-control,
+body.light-theme .form-select {
+  background-color: #ffffff;
+  border: 1px solid #0066cc;
+  color: #333333;
+}
+
+body.light-theme .form-control::placeholder {
+  color: #999999;
+}
+
+body.light-theme .form-control:focus,
+body.light-theme .form-select:focus {
+  background-color: #ffffff;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+  color: #333333;
+}
+
+body.light-theme .form-select option {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+body.light-theme .form-label {
+  color: #0066cc;
+}
+
+body.light-theme .alert-info {
+  background-color: rgba(0, 102, 204, 0.1);
+  border-color: #0066cc;
+  color: #0066cc;
+}
+
+body.light-theme .alert-danger {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+body.light-theme footer {
+  background-color: #ffffff;
+  border-top: 2px solid #0066cc;
+  color: #333333;
+}
+
+body.light-theme footer p {
+  color: #555555;
+}
+
+body.light-theme .btn-primary {
+  background-color: #0066cc;
+  border-color: #0066cc;
+  color: #ffffff;
+}
+
+body.light-theme .btn-primary:hover {
+  background-color: #0052a3;
+  border-color: #0052a3;
+  color: #ffffff;
+}
+
+body.light-theme .btn-outline-light {
+  color: #0066cc;
+  border-color: #0066cc;
+}
+
+body.light-theme .btn-outline-light:hover {
+  background-color: #0066cc;
+  border-color: #0066cc;
+  color: #ffffff;
+}
+
+body.light-theme .input-group .form-control {
+  background-color: #ffffff;
+  border-color: #0066cc;
+  color: #333333;
+}
+
+body.light-theme .input-group .form-control:focus {
+  background-color: #ffffff;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+  color: #333333;
+}
+
+body.light-theme .spinner-border {
+  color: #0066cc;
+}
+
+/* ================================
+   Theme Toggle Animation
+   ================================ */
+
+body {
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+body * {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
