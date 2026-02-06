@@ -1,5 +1,4 @@
 import { CONFIG } from "../config.js";
-// import {} from "../utils/validation.util.js";
 import {
   requireValue,
   requireLatitude,
@@ -10,14 +9,11 @@ import {
   requireDateDDMMYYYY,
 } from "../utils/validation.util.js";
 
-import axios from "axios";
-
 // Axios instance creation
-const axiosInstance = axios.create({
+const axiosInstance = window.axios.create({
   baseURL: CONFIG.BASE_URL,
   timeout: 10000,
   params: { method: CONFIG.METHOD },
-  // headers: { "X-Custom-Header": "foobar" },
 });
 
 //========== Prayer Times API Calls Functions =========
