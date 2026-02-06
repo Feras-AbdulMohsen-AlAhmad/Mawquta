@@ -15,7 +15,7 @@ function getTimingsByCity(city, country) {
       //   console.log(response.data.data.timings);
       return response.data.data.timings;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
@@ -31,7 +31,7 @@ function getTimingsByCoords(latitude, longitude) {
       //   console.log(response.data.data.timings);
       return response.data.data.timings;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
@@ -47,7 +47,7 @@ function getTimingsByAddress(address) {
       //   console.log(response.data.data.timings);
       return response.data.data.timings;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
@@ -63,7 +63,7 @@ function getTimingsByTimestamp(timestamp, latitude, longitude) {
       console.log(response.data.data.timings);
       //   return response.data.data.timings;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
@@ -81,43 +81,153 @@ function getMonthlyCalendarByCoords(latitude, longitude, month) {
       //   console.log(response.data.data);
       return response.data.data;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
 
-// Get monthly calendar by city and country current month and year
-function getMonthlyCalendarByCity(city, country) {
+// Get monthly calendar by city and country
+function getMonthlyCalendarByCity(city, country, month, year) {
   axios
     .get(
       CONFIG.BASE_URL +
-        `/calendarByCity?city=${city}&country=${country}&method=${CONFIG.METHOD}&month=${getCurrentMonth()}&year=${getCurrentYear()}`,
+        `/calendarByCity?city=${city}&country=${country}&method=${CONFIG.METHOD}&month=${month}&year=${year}`,
     )
     .then((response) => {
       console.log(response.data.data);
       //   return response.data.data.timings;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
 
-// Get monthly calendar by address current month and year
-function getMonthlyCalendarByAddress(address) {
+// Get monthly calendar by address
+function getMonthlyCalendarByAddress(address, month, year) {
   axios
     .get(
       CONFIG.BASE_URL +
-        `/calendarByAddress?address=${address}&method=${CONFIG.METHOD}&method=${CONFIG.METHOD}&month=${getCurrentMonth()}&year=${getCurrentYear()}`,
+        `/calendarByAddress?address=${address}&method=${CONFIG.METHOD}&method=${CONFIG.METHOD}&month=${month}&year=${year}`,
     )
     .then((response) => {
       console.log(response.data.data);
       //   return response.data.data;
     })
-    .catch(function (error) {
+    .catch((error) => {
       console.log(error);
     });
 }
 
 // Qibla API Calls Functions
 
+// Get qibla direction by latitude and longitude (Coords)
+function getQiblaDirectionByCoords(latitude, longitude) {
+  axios
+    .get(CONFIG.BASE_URL + `/qibla/${latitude}/${longitude}`)
+    .then((response) => {
+      console.log(response.data.data);
+      //   return response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
+// Get qibla direction by latitude and longitude (Coords) in compass format
+function getQiblaDirectionByCoordsCompass(latitude, longitude) {
+  {
+    axios
+      .get(CONFIG.BASE_URL + `/qibla/${latitude}/${longitude}/compass`)
+      .then((response) => {
+        console.log(response.data);
+        //   return response.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+}
+
+// AsmaAlHusna API Calls Functions
+
+// Get all Asma Al-Husna
+function getAllAsmaAlHusna() {
+  axios
+    .get(CONFIG.BASE_URL + `/asmaAlHusna`)
+    .then((response) => {
+      console.log(response.data.data);
+      //   return response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// Get Asma Al-Husna by index-
+function getAsmaAlHusnaByIndex(index) {
+  {
+    axios
+      .get(CONFIG.BASE_URL + `/asmaAlHusna/${index}`)
+      .then((response) => {
+        console.log(response.data.data);
+        //   return response.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+}
+
+// Hijri Calendar API Calls Functions
+
+// Get Hijri calendar for a given Gregorian month and year
+function getHijriCalendarForGregorianMonth(month, year) {
+  axios
+    .get(CONFIG.BASE_URL + `/gToHCalendar/${month}/${year}`)
+    .then((response) => {
+      console.log(response.data.data);
+      //   return response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// Get Gregorian calendar for a given Hijri month and year
+function getGregorianCalendarForHijriMonth(month, year) {
+  axios
+    .get(CONFIG.BASE_URL + `/hToGCalendar/${month}/${year}`)
+    .then((response) => {
+      console.log(response.data.data);
+      //   return response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// Get Hijri date for a given Gregorian date (Format: DD-MM-YYYY) as String
+function convertGregorianDateToHijriDate(fullDate) {
+  axios
+    .get(CONFIG.BASE_URL + `/gToH/${fullDate}`)
+    .then((response) => {
+      console.log(response.data.data);
+      //   return response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// Get Gregorian date for a given Hijri date (Format: DD-MM-YYYY) as String
+function convertHijriDateToGregorianDate(fullDate) {
+  axios
+    .get(CONFIG.BASE_URL + `/gToH/${fullDate}`)
+    .then((response) => {
+      console.log(response.data.data);
+      //   return response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
