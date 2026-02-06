@@ -231,3 +231,21 @@ function convertHijriDateToGregorianDate(fullDate) {
       console.log(error);
     });
 }
+
+export {
+  getTimingsByCity,
+  getTimingsByCoords,
+  getTimingsByAddress,
+  getTimingsByTimestamp,
+  getMonthlyCalendarByCoords,
+  getMonthlyCalendarByCity,
+  getMonthlyCalendarByAddress,
+  getQiblaDirectionByCoords,
+  getQiblaDirectionByCoordsCompass,
+  getAllAsmaAlHusna,
+  getAsmaAlHusnaByIndex,
+  getHijriCalendarForGregorianMonth,
+  getGregorianCalendarForHijriMonth,
+  convertGregorianDateToHijriDate,
+  convertHijriDateToGregorianDate,
+};
