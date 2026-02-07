@@ -96,3 +96,16 @@ export async function getTodayPrayerOverviewByCoords(latitude, longitude) {
     nextPrayer,
   };
 }
+
+// Get today's prayer overview (prayers + next) by city and country
+export async function getTodayPrayerOverviewByCity(city, country) {
+  const timings = await getTimingsByCityAndCountry(city, country);
+
+  const prayers = buildPrayersFromTimings(timings);
+  const nextPrayer = getNextPrayer(prayers);
+
+  return {
+    prayers,
+    nextPrayer,
+  };
+}
