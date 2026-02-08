@@ -1,4 +1,5 @@
-import getMonthlyCalendarByCoords, {
+import {
+  getMonthlyCalendarByCoords,
   getMonthlyCalendarByCity,
 } from "../api/aladhan.api.js";
 
