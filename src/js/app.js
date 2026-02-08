@@ -1,13 +1,20 @@
 import {
   getTodayPrayerOverviewByCoords,
   getTodayPrayerOverviewByCity,
+  buildPrayerViewModelFromTimings,
 } from "./services/prayer.service.js";
 import { renderTodayPrayers } from "./ui/render-prayers.js";
 import { renderNextPrayerCountdown } from "./ui/render-countdown.js";
+import { renderWeekPreview } from "./ui/render-week.js";
 import {
   getCurrentCoords,
   reverseGeocodeToCityCountry,
 } from "./api/location.api.js";
+
+import {
+  getCurrentWeekByCity,
+  getCurrentWeekByCoords,
+} from "./services/week.service.js";
 
 // ===== Location persistence (Step 1) =====
 const STORAGE_KEY = "ms_location";
@@ -107,6 +114,34 @@ async function init(location) {
   renderNextPrayerCountdown(nextPrayerCard, vm.nextPrayer, () =>
     init(location),
   );
+
+  let week;
+
+  // Get current week data
+  if (location.type === "coords") {
+    week = await getCurrentWeekByCoords(location.latitude, location.longitude);
+  } else {
+    week = await getCurrentWeekByCity(location.city, location.country);
+  }
+
+  // Render week preview
+  const weekContainer = document.getElementById("weekPreview");
+
+  renderWeekPreview(weekContainer, week, (selectedDay) => {
+    const todayContainer = document.getElementById("todayTimings");
+    const nextPrayerCard = document.getElementById("nextPrayerCard");
+    const metaDate = document.getElementById("metaDate");
+
+    const vm2 = buildPrayerViewModelFromTimings(selectedDay.timings);
+
+    // update date label
+    metaDate.textContent = selectedDay?.date?.gregorian?.date || "—";
+
+    renderTodayPrayers(todayContainer, vm2.prayers, vm2.nextPrayer.key);
+    renderNextPrayerCountdown(nextPrayerCard, vm2.nextPrayer, () =>
+      init(location),
+    );
+  });
 }
 
 async function bootstrap() {
