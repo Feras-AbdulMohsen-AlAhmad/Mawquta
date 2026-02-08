@@ -32,3 +32,9 @@ body {
     0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent),
     var(--shadow);
 }
+
+/* Highlight style for "today" in week preview */
+.week-today {
+  border-width: 2px;
+  border-color: var(--accent);
+}

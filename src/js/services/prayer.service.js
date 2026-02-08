@@ -109,3 +109,10 @@ export async function getTodayPrayerOverviewByCity(city, country) {
     nextPrayer,
   };
 }
+
+// Build prayer view model from timings object
+export function buildPrayerViewModelFromTimings(timings) {
+  const prayers = buildPrayersFromTimings(timings);
+  const nextPrayer = getNextPrayer(prayers);
+  return { prayers, nextPrayer };
+}
