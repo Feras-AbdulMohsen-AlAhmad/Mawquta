@@ -31,6 +31,7 @@ export function renderWeekPreview(containerEl, weekDays, onDaySelect) {
   if (!containerEl) return;
 
   containerEl.innerHTML = "";
+  let selectedEl = null;
 
   // Handle empty week case
   if (!Array.isArray(weekDays) || weekDays.length === 0) {
@@ -59,6 +60,7 @@ export function renderWeekPreview(containerEl, weekDays, onDaySelect) {
     card.className = "card p-2 flex-shrink-0";
     if (isToday) {
       card.classList.add("week-today");
+      selectedEl = card;
     }
 
     card.style.minWidth = "140px";
@@ -82,6 +84,17 @@ export function renderWeekPreview(containerEl, weekDays, onDaySelect) {
     card.style.cursor = "pointer";
 
     card.addEventListener("click", () => {
+      // Call the onDaySelect callback with the selected day data
+      if (typeof onDaySelect === "function") {
+        onDaySelect(day);
+      }
+
+      // Update selected state
+      if (selectedEl) selectedEl.classList.remove("week-today");
+      card.classList.add("week-today");
+      selectedEl = card;
+
+      // Also trigger a click on the "Today" tab to show the selected day's timings
       if (typeof onDaySelect === "function") {
         onDaySelect(day);
       }
