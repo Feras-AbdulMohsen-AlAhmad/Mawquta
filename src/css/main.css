@@ -38,3 +38,9 @@ body {
   border-width: 2px;
   border-color: var(--accent);
 }
+
+/* Highlight style for selected day in week preview */
+.week-selected {
+  border-width: 2px;
+  border-color: var(--primary);
+}

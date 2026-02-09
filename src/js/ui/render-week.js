@@ -63,6 +63,11 @@ export function renderWeekPreview(containerEl, weekDays, onDaySelect) {
       selectedEl = card;
     }
 
+    // Auto-select today
+    if (isToday) {
+      card.classList.add("week-selected");
+      selectedEl = card;
+    }
     card.style.minWidth = "140px";
 
     card.innerHTML = `
@@ -84,17 +89,10 @@ export function renderWeekPreview(containerEl, weekDays, onDaySelect) {
     card.style.cursor = "pointer";
 
     card.addEventListener("click", () => {
-      // Call the onDaySelect callback with the selected day data
-      if (typeof onDaySelect === "function") {
-        onDaySelect(day);
-      }
-
-      // Update selected state
-      if (selectedEl) selectedEl.classList.remove("week-today");
-      card.classList.add("week-today");
+      if (selectedEl) selectedEl.classList.remove("week-selected");
+      card.classList.add("week-selected");
       selectedEl = card;
 
-      // Also trigger a click on the "Today" tab to show the selected day's timings
       if (typeof onDaySelect === "function") {
         onDaySelect(day);
       }
