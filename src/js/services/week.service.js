@@ -12,6 +12,27 @@ import {
   requireYear,
 } from "../utils/validation.util.js";
 
+import { getCache, setCache } from "../cache.util.js";
+import { CONFIG } from "../config.js";
+
+// Helper to build a cache key for monthly calendar data
+function buildCalendarCacheKey({
+  type,
+  city,
+  country,
+  latitude,
+  longitude,
+  year,
+  month,
+}) {
+  if (type === "coords") {
+    const lat = Number(latitude).toFixed(4);
+    const lon = Number(longitude).toFixed(4);
+    return `cal:coords:${lat},${lon}:${year}-${month}`;
+  }
+  return `cal:city:${city}|${country}:${year}-${month}`;
+}
+
 // Helper to extract year, month, day from Date object
 function getDateParts(dateObj) {
   return {
@@ -50,12 +71,22 @@ export async function getCurrentWeekByCity(
   const { year, month } = getDateParts(dateObj);
 
   // Get monthly calendar for the city and country
-  const calendarDays = await getMonthlyCalendarByCity(
+  const cacheKey = buildCalendarCacheKey({
+    type: "city",
     city,
     country,
-    month,
     year,
-  );
+    month,
+  });
+  let calendarDays = getCache(cacheKey);
+
+  if (!calendarDays) {
+    console.log("Calendar fetched from API");
+    calendarDays = await getMonthlyCalendarByCity(city, country, month, year);
+    setCache(cacheKey, calendarDays, CONFIG.CALENDAR_CACHE_TTL_MS);
+  } else {
+    console.log("Calendar fetched from cache");
+  }
 
   return sliceWeekFromCalendar(calendarDays, dateObj);
 }
@@ -69,12 +100,29 @@ export async function getCurrentWeekByCoords(
   requireLongitude(longitude);
 
   const { year, month } = getDateParts(dateObj);
-  const calendarDays = await getMonthlyCalendarByCoords(
+
+  // Get monthly calendar for the coordinates
+  const cacheKey = buildCalendarCacheKey({
+    type: "coords",
     latitude,
     longitude,
-    month,
     year,
-  );
+    month,
+  });
+  let calendarDays = getCache(cacheKey);
+
+  if (!calendarDays) {
+    console.log("Calendar fetched from API");
+    calendarDays = await getMonthlyCalendarByCoords(
+      latitude,
+      longitude,
+      month,
+      year,
+    );
+    setCache(cacheKey, calendarDays, CONFIG.CALENDAR_CACHE_TTL_MS);
+  } else {
+    console.log("Calendar fetched from cache");
+  }
 
   return sliceWeekFromCalendar(calendarDays, dateObj);
 }
