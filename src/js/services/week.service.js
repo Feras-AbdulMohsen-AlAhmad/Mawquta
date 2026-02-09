@@ -81,11 +81,8 @@ export async function getCurrentWeekByCity(
   let calendarDays = getCache(cacheKey);
 
   if (!calendarDays) {
-    console.log("Calendar fetched from API");
     calendarDays = await getMonthlyCalendarByCity(city, country, month, year);
     setCache(cacheKey, calendarDays, CONFIG.CALENDAR_CACHE_TTL_MS);
-  } else {
-    console.log("Calendar fetched from cache");
   }
 
   return sliceWeekFromCalendar(calendarDays, dateObj);
@@ -112,7 +109,6 @@ export async function getCurrentWeekByCoords(
   let calendarDays = getCache(cacheKey);
 
   if (!calendarDays) {
-    console.log("Calendar fetched from API");
     calendarDays = await getMonthlyCalendarByCoords(
       latitude,
       longitude,
@@ -120,8 +116,6 @@ export async function getCurrentWeekByCoords(
       year,
     );
     setCache(cacheKey, calendarDays, CONFIG.CALENDAR_CACHE_TTL_MS);
-  } else {
-    console.log("Calendar fetched from cache");
   }
 
   return sliceWeekFromCalendar(calendarDays, dateObj);
