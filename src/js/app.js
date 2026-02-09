@@ -16,15 +16,6 @@ import {
   getCurrentWeekByCoords,
 } from "./services/week.service.js";
 
-import { setCache, getCache } from "./cache.util.js";
-
-setCache("test_key", { hello: "world" }, 5000);
-console.log("cache read:", getCache("test_key"));
-
-setTimeout(() => {
-  console.log("cache read after 6s (should be null):", getCache("test_key"));
-}, 6000);
-
 // ===== Location persistence (Step 1) =====
 const STORAGE_KEY = "ms_location";
 
