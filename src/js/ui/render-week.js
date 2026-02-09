@@ -50,8 +50,12 @@ export function renderWeekPreview(containerEl, weekDays, onDaySelect) {
     const dayLabel = getDayLabelAR(day.date);
     const dayNum = getDayNumber(day.date);
 
+    // Normalize prayer times
     const fajr = normalizeTime(day.timings?.Fajr);
+    const dhuhr = normalizeTime(day.timings?.Dhuhr);
+    const asr = normalizeTime(day.timings?.Asr);
     const maghrib = normalizeTime(day.timings?.Maghrib);
+    const isha = normalizeTime(day.timings?.Isha);
 
     const apiDateStr = day?.date?.gregorian?.date; // "DD-MM-YYYY"
     const isToday = apiDateStr === todayStr;
@@ -68,22 +72,35 @@ export function renderWeekPreview(containerEl, weekDays, onDaySelect) {
       card.classList.add("week-selected");
       selectedEl = card;
     }
-    card.style.minWidth = "140px";
+    card.style.minWidth = "170px";
 
     card.innerHTML = `
-      <div class="d-flex align-items-center justify-content-between mb-1">
-        <div class="fw-semibold">${dayLabel}</div>
-        <div class="text-muted small">${dayNum}</div>
-      </div>
-      <div class="d-flex justify-content-between small">
-        <span class="text-muted">الفجر</span>
-        <span class="fw-semibold">${fajr || "—"}</span>
-      </div>
-      <div class="d-flex justify-content-between small">
-        <span class="text-muted">المغرب</span>
-        <span class="fw-semibold">${maghrib || "—"}</span>
-      </div>
-    `;
+  <div class="d-flex align-items-center justify-content-between mb-1">
+    <div class="fw-semibold">${dayLabel}</div>
+    <div class="text-muted small">${dayNum}</div>
+  </div>
+
+  <div class="d-flex justify-content-between small">
+    <span class="text-muted">الفجر</span>
+    <span class="fw-semibold">${fajr || "—"}</span>
+  </div>
+  <div class="d-flex justify-content-between small">
+    <span class="text-muted">الظهر</span>
+    <span class="fw-semibold">${dhuhr || "—"}</span>
+  </div>
+  <div class="d-flex justify-content-between small">
+    <span class="text-muted">العصر</span>
+    <span class="fw-semibold">${asr || "—"}</span>
+  </div>
+  <div class="d-flex justify-content-between small">
+    <span class="text-muted">المغرب</span>
+    <span class="fw-semibold">${maghrib || "—"}</span>
+  </div>
+  <div class="d-flex justify-content-between small">
+    <span class="text-muted">العشاء</span>
+    <span class="fw-semibold">${isha || "—"}</span>
+  </div>
+`;
 
     // Make card clickable
     card.style.cursor = "pointer";
