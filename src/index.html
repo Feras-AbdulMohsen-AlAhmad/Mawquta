@@ -49,8 +49,15 @@
                 <div class="card p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h2 class="h6 mb-0">مواقيت اليوم</h2>
-                        <span id="metaDate" class="text-muted small">—</span>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <button id="btnBackToToday" class="btn btn-sm btn-outline-secondary d-none">
+                                رجوع لليوم
+                            </button>
+                            <span id="metaDate" class="text-muted small">—</span>
+                        </div>
                     </div>
+
 
                     <div id="todayTimings" class="list-group">
                         <!-- render-prayers.js -->

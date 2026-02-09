@@ -79,6 +79,7 @@ async function init(location) {
   const todayContainer = document.getElementById("todayTimings");
   const nextPrayerCard = document.getElementById("nextPrayerCard");
   const metaLocation = document.getElementById("metaLocation");
+  const btnBackToToday = document.getElementById("btnBackToToday");
 
   let vm;
 
@@ -114,6 +115,7 @@ async function init(location) {
   renderNextPrayerCountdown(nextPrayerCard, vm.nextPrayer, () =>
     init(location),
   );
+  btnBackToToday.classList.add("d-none");
 
   let week;
 
@@ -128,6 +130,22 @@ async function init(location) {
   const weekContainer = document.getElementById("weekPreview");
 
   renderWeekPreview(weekContainer, week, (selectedDay) => {
+    const apiDateStr = selectedDay?.date?.gregorian?.date; // "DD-MM-YYYY"
+
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, "0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const yyyy = String(now.getFullYear());
+    const todayStr = `${dd}-${mm}-${yyyy}`;
+
+    const isTodaySelected = apiDateStr === todayStr;
+
+    if (isTodaySelected) {
+      btnBackToToday.classList.add("d-none");
+    } else {
+      btnBackToToday.classList.remove("d-none");
+    }
+
     const todayContainer = document.getElementById("todayTimings");
     const nextPrayerCard = document.getElementById("nextPrayerCard");
     const metaDate = document.getElementById("metaDate");
@@ -142,6 +160,9 @@ async function init(location) {
       init(location),
     );
   });
+
+  // Set initial date label to the first day in the week (which should be today)
+  metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
 }
 
 async function bootstrap() {
@@ -149,6 +170,10 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+document.getElementById("btnBackToToday").addEventListener("click", () => {
+  init(activeLocation);
+});
 
 // Get user's current location on button click, save it in localStorage, and re-render timings
 document.getElementById("btnLocate").addEventListener("click", async () => {
