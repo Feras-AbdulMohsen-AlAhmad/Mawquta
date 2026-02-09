@@ -12,7 +12,7 @@ import {
   requireYear,
 } from "../utils/validation.util.js";
 
-import { getCache, setCache } from "../cache.util.js";
+import { getCache, setCache } from "../utils/cache.util.js";
 import { CONFIG } from "../config.js";
 
 // Helper to build a cache key for monthly calendar data
