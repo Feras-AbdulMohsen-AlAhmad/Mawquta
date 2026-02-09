@@ -5,4 +5,5 @@ export const CONFIG = {
   DEFAULT_CITY: "Damascus",
   DEFAULT_COUNTRY: "Syria",
   TZ_FALLBACK: "Asia/Damascus",
+  CALENDAR_CACHE_TTL_MS: 6 * 60 * 60 * 1000, // 6 hours
 };
