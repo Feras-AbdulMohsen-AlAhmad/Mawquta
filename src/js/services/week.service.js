@@ -64,6 +64,7 @@ export async function getCurrentWeekByCity(
   city,
   country,
   dateObj = new Date(),
+  bypassCache = true,
 ) {
   requireValue(city, "city");
   requireValue(country, "country");
@@ -81,8 +82,12 @@ export async function getCurrentWeekByCity(
   let calendarDays = getCache(cacheKey);
 
   if (!calendarDays) {
+    console.log("Calendar fetched from API (bypassCache:", bypassCache, ")");
+
     calendarDays = await getMonthlyCalendarByCity(city, country, month, year);
     setCache(cacheKey, calendarDays, CONFIG.CALENDAR_CACHE_TTL_MS);
+  } else {
+    console.log("Calendar fetched from cache (bypassCache:", bypassCache, ")");
   }
 
   return sliceWeekFromCalendar(calendarDays, dateObj);
@@ -92,6 +97,7 @@ export async function getCurrentWeekByCoords(
   latitude,
   longitude,
   dateObj = new Date(),
+  bypassCache = true,
 ) {
   requireLatitude(latitude);
   requireLongitude(longitude);
@@ -106,9 +112,14 @@ export async function getCurrentWeekByCoords(
     year,
     month,
   });
-  let calendarDays = getCache(cacheKey);
+
+  // let calendarDays = getCache(cacheKey);
+
+  let calendarDays = bypassCache ? null : getCache(cacheKey);
 
   if (!calendarDays) {
+    console.log("Calendar fetched from API (bypassCache:", bypassCache, ")");
+
     calendarDays = await getMonthlyCalendarByCoords(
       latitude,
       longitude,
@@ -116,6 +127,8 @@ export async function getCurrentWeekByCoords(
       year,
     );
     setCache(cacheKey, calendarDays, CONFIG.CALENDAR_CACHE_TTL_MS);
+  } else {
+    console.log("Calendar fetched from cache (bypassCache:", bypassCache, ")");
   }
 
   return sliceWeekFromCalendar(calendarDays, dateObj);

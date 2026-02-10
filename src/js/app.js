@@ -75,11 +75,13 @@ function resolveInitialLocation() {
 let activeLocation = resolveInitialLocation();
 
 // ===== Main Initialization (Step 3) =====
-async function init(location) {
+async function init(location, options = {}) {
   const todayContainer = document.getElementById("todayTimings");
   const nextPrayerCard = document.getElementById("nextPrayerCard");
   const metaLocation = document.getElementById("metaLocation");
   const btnBackToToday = document.getElementById("btnBackToToday");
+
+  const { bypassCacheWeekRefresh = false } = options;
 
   let vm;
 
@@ -120,10 +122,23 @@ async function init(location) {
   let week;
 
   // Get current week data
+
+  // We bypass the cache when refreshing the week data after selecting a different day, to ensure we get any updates.
+  // (e.g. daylight saving changes) without waiting for the cache to expire.
   if (location.type === "coords") {
-    week = await getCurrentWeekByCoords(location.latitude, location.longitude);
+    week = await getCurrentWeekByCoords(
+      location.latitude,
+      location.longitude,
+      new Date(),
+      bypassCacheWeekRefresh,
+    );
   } else {
-    week = await getCurrentWeekByCity(location.city, location.country);
+    week = await getCurrentWeekByCity(
+      location.city,
+      location.country,
+      new Date(),
+      bypassCacheWeekRefresh,
+    );
   }
 
   // Render week preview
@@ -160,6 +175,10 @@ async function init(location) {
       init(location),
     );
   });
+  // Update the "last updated at" time in the metadata section to show when the data was last refreshed
+  const metaUpdatedAt = document.getElementById("metaUpdatedAt");
+  const now = new Date();
+  metaUpdatedAt.textContent = `آخر تحديث: ${now.toLocaleTimeString("ar", { hour: "2-digit", minute: "2-digit" })}`;
 
   // Set initial date label to the first day in the week (which should be today)
   metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
@@ -171,8 +190,24 @@ async function bootstrap() {
 
 bootstrap();
 
+// Back to today button click handler to re-render today's timings when viewing a different day in the week preview
 document.getElementById("btnBackToToday").addEventListener("click", () => {
   init(activeLocation);
+});
+
+// Refresh week data on button click, bypassing the cache to get the latest data from the API, and re-render the week preview and today's timings
+document.getElementById("btnRefresh").addEventListener("click", async () => {
+  const btn = document.getElementById("btnRefresh");
+  const oldText = btn.textContent;
+
+  try {
+    btn.disabled = true;
+    btn.textContent = "جاري التحديث…";
+    await init(activeLocation, { bypassCacheWeekRefresh: true });
+  } finally {
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
 });
 
 // Get user's current location on button click, save it in localStorage, and re-render timings
