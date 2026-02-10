@@ -9,8 +9,10 @@ import {
   requireDateDDMMYYYY,
 } from "../utils/validation.util.js";
 
+import axios from "axios";
+
 // Axios instance creation
-const axiosInstance = window.axios.create({
+const axiosInstance = axios.create({
   baseURL: CONFIG.BASE_URL,
   timeout: 10000,
   params: { method: CONFIG.METHOD },
@@ -195,25 +197,26 @@ async function getGregorianCalendarForHijriMonth(month, year) {
 }
 
 // Get Hijri date for a given Gregorian date (Format: DD-MM-YYYY) as String
-async function convertGregorianDateToHijriDate(fullDate) {
-  requireDateDDMMYYYY(fullDate, "Gregorian date");
+async function convertGregorianDateToHijriDate(gregorianDate) {
+  requireDateDDMMYYYY(gregorianDate, "Gregorian date");
   const res = await axiosInstance.get(`/gToH`, {
     params: {
-      date: fullDate,
+      date: gregorianDate,
     },
   });
-  return res.data.data;
+
+  return res.data.data.hijri;
 }
 
 // Get Gregorian date for a given Hijri date (Format: DD-MM-YYYY) as String
-async function convertHijriDateToGregorianDate(fullDate) {
-  requireDateDDMMYYYY(fullDate, "Hijri date");
+async function convertHijriDateToGregorianDate(hijriDate) {
+  // requireDateDDMMYYYY(hijriDate, "Hijri date");
   const res = await axiosInstance.get(`/hToG`, {
     params: {
-      date: fullDate,
+      date: hijriDate,
     },
   });
-  return res.data.data;
+  return res.data.data.gregorian;
 }
 
 export {
