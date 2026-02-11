@@ -26,6 +26,11 @@ const DEFAULT_LOCATION = {
   country: "Syria",
 };
 
+import { getRamadanCountdown } from "./services/ramadan.service.js";
+
+const ram = await getRamadanCountdown(new Date());
+console.log("Ramadan:", ram);
+
 // Get the saved location from localStorage, if any, and validate its shape.
 // We expect either a "coords" object with latitude and longitude, or a "city" object with city and country.
 // If the data is invalid or not present, return null.
