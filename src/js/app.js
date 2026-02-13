@@ -1,20 +1,22 @@
 import {
+  getCurrentCoords,
+  reverseGeocodeToCityCountry,
+} from "./api/location.api.js";
+import {
   getTodayPrayerOverviewByCoords,
   getTodayPrayerOverviewByCity,
   buildPrayerViewModelFromTimings,
 } from "./services/prayer.service.js";
-import { renderTodayPrayers } from "./ui/render-prayers.js";
-import { renderNextPrayerCountdown } from "./ui/render-countdown.js";
-import { renderWeekPreview } from "./ui/render-week.js";
-import {
-  getCurrentCoords,
-  reverseGeocodeToCityCountry,
-} from "./api/location.api.js";
+import { getRamadanCountdown } from "./services/ramadan.service.js";
 
 import {
   getCurrentWeekByCity,
   getCurrentWeekByCoords,
 } from "./services/week.service.js";
+import { renderTodayPrayers } from "./ui/render-prayers.js";
+import { renderNextPrayerCountdown } from "./ui/render-countdown.js";
+import { renderWeekPreview } from "./ui/render-week.js";
+import { renderRamadanCountdown } from "./ui/render-ramadan.js";
 
 // ===== Location persistence (Step 1) =====
 const STORAGE_KEY = "ms_location";
@@ -25,8 +27,6 @@ const DEFAULT_LOCATION = {
   city: "Homs",
   country: "Syria",
 };
-
-import { getRamadanCountdown } from "./services/ramadan.service.js";
 
 const ram = await getRamadanCountdown(new Date());
 console.log("Ramadan:", ram);
@@ -85,13 +85,14 @@ async function init(location, options = {}) {
   const nextPrayerCard = document.getElementById("nextPrayerCard");
   const metaLocation = document.getElementById("metaLocation");
   const btnBackToToday = document.getElementById("btnBackToToday");
+  const ramadanCard = document.getElementById("ramadanCard");
 
   const { bypassCacheWeekRefresh = false } = options;
 
-  let vm;
+  let viewModel;
 
   if (location.type === "coords") {
-    vm = await getTodayPrayerOverviewByCoords(
+    viewModel = await getTodayPrayerOverviewByCoords(
       location.latitude,
       location.longitude,
     );
@@ -114,14 +115,22 @@ async function init(location, options = {}) {
       // metaLocation.textContent = `موقعك الحالي`;
     }
   } else {
-    vm = await getTodayPrayerOverviewByCity(location.city, location.country);
+    viewModel = await getTodayPrayerOverviewByCity(
+      location.city,
+      location.country,
+    );
     metaLocation.textContent = `${location.city}، ${location.country}`;
   }
 
-  renderTodayPrayers(todayContainer, vm.prayers, vm.nextPrayer.key);
-  renderNextPrayerCountdown(nextPrayerCard, vm.nextPrayer, () =>
+  renderTodayPrayers(
+    todayContainer,
+    viewModel.prayers,
+    viewModel.nextPrayer.key,
+  );
+  renderNextPrayerCountdown(nextPrayerCard, viewModel.nextPrayer, () =>
     init(location),
   );
+
   btnBackToToday.classList.add("d-none");
 
   let week;
@@ -170,13 +179,17 @@ async function init(location, options = {}) {
     const nextPrayerCard = document.getElementById("nextPrayerCard");
     const metaDate = document.getElementById("metaDate");
 
-    const vm2 = buildPrayerViewModelFromTimings(selectedDay.timings);
+    const viewModel2 = buildPrayerViewModelFromTimings(selectedDay.timings);
 
     // update date label
     metaDate.textContent = selectedDay?.date?.gregorian?.date || "—";
 
-    renderTodayPrayers(todayContainer, vm2.prayers, vm2.nextPrayer.key);
-    renderNextPrayerCountdown(nextPrayerCard, vm2.nextPrayer, () =>
+    renderTodayPrayers(
+      todayContainer,
+      viewModel2.prayers,
+      viewModel2.nextPrayer.key,
+    );
+    renderNextPrayerCountdown(nextPrayerCard, viewModel2.nextPrayer, () =>
       init(location),
     );
   });
@@ -187,6 +200,9 @@ async function init(location, options = {}) {
 
   // Set initial date label to the first day in the week (which should be today)
   metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
+
+  const ramadanviewModel = await getRamadanCountdown();
+  renderRamadanCountdown(ramadanCard, ramadanviewModel);
 }
 
 async function bootstrap() {

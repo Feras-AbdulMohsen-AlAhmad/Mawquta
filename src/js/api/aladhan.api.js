@@ -9,10 +9,10 @@ import {
   requireDateDDMMYYYY,
 } from "../utils/validation.util.js";
 
-import axios from "axios";
+// import axios from "axios";
 
 // Axios instance creation
-const axiosInstance = axios.create({
+const axiosInstance = window.axios.create({
   baseURL: CONFIG.BASE_URL,
   timeout: 10000,
   params: { method: CONFIG.METHOD },

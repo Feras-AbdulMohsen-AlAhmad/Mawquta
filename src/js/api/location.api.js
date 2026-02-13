@@ -5,10 +5,11 @@ import {
   requireLongitude,
 } from "../utils/validation.util.js";
 import { CONFIG } from "../config.js";
-import axios from "axios";
+
+// import axios from "axios";
 
 // Axios instance creation for BigDataCloud API
-const geoAxios = axios.create({
+const geoAxios = window.axios.create({
   baseURL: CONFIG.BIG_DATA_CLOUD_API,
   timeout: 10000,
 });
