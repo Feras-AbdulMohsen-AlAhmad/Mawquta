@@ -13,26 +13,28 @@ import {
   getCurrentWeekByCity,
   getCurrentWeekByCoords,
 } from "./services/week.service.js";
+import { getQiblaByCoords } from "./services/qibla.service.js";
+
 import { renderTodayPrayers } from "./ui/render-prayers.js";
 import { renderNextPrayerCountdown } from "./ui/render-countdown.js";
 import { renderWeekPreview } from "./ui/render-week.js";
 import { renderRamadanCountdown } from "./ui/render-ramadan.js";
+import { renderQibla } from "./ui/render-qibla.js";
 
-import { getQiblaByCoords } from "./services/qibla.service.js";
 // ===== Location persistence (Step 1) =====
 const STORAGE_KEY = "ms_location";
 
 // Default location (you can change later anytime)
 const DEFAULT_LOCATION = {
   // ==== City Type ====
-  // type: "city",
-  // city: "Homs",
-  // country: "Syria",
+  type: "city",
+  city: "Homs",
+  country: "Syria",
 
   // ==== Coords Type (uncomment to use) ====
-  type: "coords",
-  latitude: 34.72682,
-  longitude: 36.72339,
+  // type: "coords",
+  // latitude: 34.72682,
+  // longitude: 36.72339,
 };
 
 // Get the saved location from localStorage, if any, and validate its shape.
@@ -85,20 +87,18 @@ let activeLocation = resolveInitialLocation();
 
 // ===== Main Initialization (Step 3) =====
 async function init(location, options = {}) {
+  // Get references to key DOM elements
   const todayContainer = document.getElementById("todayTimings");
   const nextPrayerCard = document.getElementById("nextPrayerCard");
   const metaLocation = document.getElementById("metaLocation");
   const btnBackToToday = document.getElementById("btnBackToToday");
   const ramadanCard = document.getElementById("ramadanCard");
+  const qiblaCard = document.getElementById("qiblaCard");
+  const qiblaDegrees = document.getElementById("qiblaDegrees");
 
   const { bypassCacheWeekRefresh = false } = options;
 
   let viewModel;
-
-  if (location.type === "coords") {
-    const q = await getQiblaByCoords(location.latitude, location.longitude);
-    console.log("Qibla:", q);
-  }
 
   if (location.type === "coords") {
     viewModel = await getTodayPrayerOverviewByCoords(
@@ -142,8 +142,22 @@ async function init(location, options = {}) {
 
   btnBackToToday.classList.add("d-none");
 
-  let week;
+  // Get and render qibla direction
+  if (location.type === "coords") {
+    const q = await getQiblaByCoords(location.latitude, location.longitude);
 
+    qiblaDegrees.textContent = `${Math.round(q.direction)}°`;
+    renderQibla(qiblaCard, q, () => {
+      document.getElementById("btnLocate")?.click();
+    });
+  } else {
+    qiblaDegrees.textContent = "—";
+    renderQibla(qiblaCard, null, () => {
+      document.getElementById("btnLocate")?.click();
+    });
+  }
+
+  let week;
   // Get current week data
 
   // We bypass the cache when refreshing the week data after selecting a different day, to ensure we get any updates.

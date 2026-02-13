@@ -1,13 +1,13 @@
 // Renders the Ramadan countdown and related information in the specified container element
-export function renderRamadanCountdown(containerEl, vm) {
+export function renderRamadanCountdown(containerEl, viewModel) {
   if (!containerEl) return;
 
-  if (!vm) {
+  if (!viewModel) {
     containerEl.innerHTML = `<div class="text-muted small">—</div>`;
     return;
   }
 
-  const days = vm.remainingDays;
+  const days = viewModel.remainingDays;
 
   const headerHtml =
     days === 0
@@ -23,11 +23,11 @@ export function renderRamadanCountdown(containerEl, vm) {
     ${headerHtml}
 
     <div class="text-muted small mt-2">
-      يبدأ رمضان (ميلادي): <span class="fw-semibold">${vm.ramadanStartGregorian}</span>
+      يبدأ رمضان (ميلادي): <span class="fw-semibold">${viewModel.ramadanStartGregorian}</span>
     </div>
 
     <div class="text-muted small">
-      يبدأ رمضان (هجري): <span class="fw-semibold">${vm.ramadanStartHijri}</span>
+      يبدأ رمضان (هجري): <span class="fw-semibold">${viewModel.ramadanStartHijri}</span>
     </div>
   `;
 }
