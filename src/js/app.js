@@ -18,18 +18,22 @@ import { renderNextPrayerCountdown } from "./ui/render-countdown.js";
 import { renderWeekPreview } from "./ui/render-week.js";
 import { renderRamadanCountdown } from "./ui/render-ramadan.js";
 
+import { getQiblaByCoords } from "./services/qibla.service.js";
 // ===== Location persistence (Step 1) =====
 const STORAGE_KEY = "ms_location";
 
 // Default location (you can change later anytime)
 const DEFAULT_LOCATION = {
-  type: "city",
-  city: "Homs",
-  country: "Syria",
-};
+  // ==== City Type ====
+  // type: "city",
+  // city: "Homs",
+  // country: "Syria",
 
-const ram = await getRamadanCountdown(new Date());
-console.log("Ramadan:", ram);
+  // ==== Coords Type (uncomment to use) ====
+  type: "coords",
+  latitude: 34.72682,
+  longitude: 36.72339,
+};
 
 // Get the saved location from localStorage, if any, and validate its shape.
 // We expect either a "coords" object with latitude and longitude, or a "city" object with city and country.
@@ -90,6 +94,11 @@ async function init(location, options = {}) {
   const { bypassCacheWeekRefresh = false } = options;
 
   let viewModel;
+
+  if (location.type === "coords") {
+    const q = await getQiblaByCoords(location.latitude, location.longitude);
+    console.log("Qibla:", q);
+  }
 
   if (location.type === "coords") {
     viewModel = await getTodayPrayerOverviewByCoords(
