@@ -1,10 +1,10 @@
 // src/js/ui/render-qibla.js
 
-export function renderQibla(containerEl, vm, onUseMyLocation) {
+export function renderQibla(containerEl, viewModel, onUseMyLocation) {
   if (!containerEl) return;
 
   // Case: we don't have coords yet (type=city)
-  if (!vm) {
+  if (!viewModel) {
     containerEl.innerHTML = `
       <div class="d-flex align-items-center justify-content-between gap-2">
         <div class="text-muted small">فعّل الموقع لعرض اتجاه القبلة.</div>
@@ -24,8 +24,7 @@ export function renderQibla(containerEl, vm, onUseMyLocation) {
   }
 
   // Case: coords available
-  //   const deg = Math.round(vm.direction);
-  const deg = 100; // مؤقت للتجربة
+  const deg = Math.round(viewModel.direction);
 
   containerEl.innerHTML = `
     <div class="d-flex align-items-center gap-3">
