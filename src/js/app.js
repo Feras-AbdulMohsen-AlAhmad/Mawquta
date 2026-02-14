@@ -21,6 +21,9 @@ import { renderWeekPreview } from "./ui/render-week.js";
 import { renderRamadanCountdown } from "./ui/render-ramadan.js";
 import { renderQibla } from "./ui/render-qibla.js";
 
+// import { Modal } from "bootstrap";
+console.log("bootstrap:", window.bootstrap);
+
 // ===== Location persistence (Step 1) =====
 const STORAGE_KEY = "ms_location";
 
@@ -28,7 +31,7 @@ const STORAGE_KEY = "ms_location";
 const DEFAULT_LOCATION = {
   // ==== City Type ====
   type: "city",
-  city: "Homs",
+  city: "Damascus",
   country: "Syria",
 
   // ==== Coords Type (uncomment to use) ====
@@ -281,4 +284,76 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
     console.error(e);
     alert("تعذر الحصول على موقعك. تأكد من السماح بالموقع في المتصفح.");
   }
+});
+
+//const inputCity = document.getElementById("inputCity");
+const inputCountry = document.getElementById("inputCountry");
+const cityFormError = document.getElementById("cityFormError");
+const btnSaveCity = document.getElementById("btnSaveCity");
+const cityModalEl = document.getElementById("cityModal");
+
+function normalizeText(value) {
+  return String(value || "").trim();
+}
+
+// Update the "Pick City" button label to show the currently active city if the location type is "city", otherwise show a generic label
+function updateCityButtonLabel() {
+  const btn = document.getElementById("btnPickCity");
+  if (!btn) return;
+
+  // Update the button label to show the currently active city if the location type is "city", otherwise show a generic label
+  if (activeLocation?.type === "city") {
+    btn.textContent = activeLocation.city || "مدينتي";
+  } else {
+    btn.textContent = "مدينتي";
+  }
+}
+
+// Open the city selection modal when the "Pick City" button is clicked, pre-filling the inputs with the current active location if it's of type "city", and clearing any previous error messages
+document.getElementById("btnPickCity").addEventListener("click", () => {
+  // Clear previous error messages when opening the modal
+  cityFormError.classList.add("d-none");
+  cityFormError.textContent = "";
+
+  // Pre-fill the city and country inputs with the current active location if it's of type "city", otherwise use default values
+  if (activeLocation?.type === "city") {
+    inputCity.value = activeLocation.city || "";
+    inputCountry.value = activeLocation.country || "";
+  } else {
+    inputCity.value = "Damascus";
+    inputCountry.value = "Syria";
+  }
+
+  // Show the modal to allow the user to input a city and country
+  const modalEl = document.getElementById("cityModal");
+  const modal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+});
+
+// Handle city form submission to update location based on city and country input, with validation and error handling
+btnSaveCity.addEventListener("click", async () => {
+  cityFormError.classList.add("d-none");
+  cityFormError.textContent = "";
+
+  const city = normalizeText(inputCity.value);
+  const country = normalizeText(inputCountry.value);
+
+  if (!city || !country) {
+    cityFormError.textContent = "الرجاء إدخال المدينة والدولة.";
+    cityFormError.classList.remove("d-none");
+    return;
+  }
+
+  // Create a new location object based on the city and country input
+  activeLocation = { type: "city", city, country };
+
+  // 2) Save the new location in localStorage for persistence across sessions
+  localStorage.setItem("activeLocation", JSON.stringify(activeLocation));
+
+  // 3) Close the modal after saving the new location
+  const modal = window.bootstrap.Modal.getOrCreateInstance(cityModalEl);
+  modal.hide();
+
+  // 4) Re-initialize the app with the new location, forcing a refresh of the week data to ensure we get the correct timings for the newly selected city
+  await init(activeLocation, { forceWeekRefresh: true });
 });

@@ -34,6 +34,10 @@
             </div>
 
             <div class="d-flex gap-2">
+                <button id="btnPickCity" class="btn btn-outline-secondary">
+                    مدينتي
+                </button>
+
                 <button id="btnLocate" class="btn btn-outline-primary">
                     موقعي
                 </button>
@@ -112,8 +116,40 @@
         </section>
     </main>
 
+    <!-- City Picker Modal -->
+    <div class="modal fade" id="cityModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">اختيار المدينة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">المدينة</label>
+                        <input id="inputCity" type="text" class="form-control" placeholder="مثال: Damascus">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">الدولة</label>
+                        <input id="inputCountry" type="text" class="form-control" placeholder="مثال: Syria">
+                    </div>
+
+                    <div id="cityFormError" class="text-danger small d-none"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button id="btnSaveCity" type="button" class="btn btn-primary">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <!-- Axios JS (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- Your JS -->
