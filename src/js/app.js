@@ -1,48 +1,50 @@
+/* =========================================================
+   Imports
+========================================================= */
 import {
   getCurrentCoords,
   reverseGeocodeToCityCountry,
 } from "./api/location.api.js";
+
 import {
   getTodayPrayerOverviewByCoords,
   getTodayPrayerOverviewByCity,
   buildPrayerViewModelFromTimings,
 } from "./services/prayer.service.js";
-import { getRamadanCountdown } from "./services/ramadan.service.js";
 
+import { getRamadanCountdown } from "./services/ramadan.service.js";
 import {
   getCurrentWeekByCity,
   getCurrentWeekByCoords,
 } from "./services/week.service.js";
 import { getQiblaByCoords } from "./services/qibla.service.js";
+import { searchCitySuggestions } from "./services/location-search.service.js";
 
 import { renderTodayPrayers } from "./ui/render-prayers.js";
 import { renderNextPrayerCountdown } from "./ui/render-countdown.js";
 import { renderWeekPreview } from "./ui/render-week.js";
 import { renderRamadanCountdown } from "./ui/render-ramadan.js";
 import { renderQibla } from "./ui/render-qibla.js";
+import { renderCitySuggestions } from "./ui/render-city-suggestions.js";
 
-// import { Modal } from "bootstrap";
-console.log("bootstrap:", window.bootstrap);
-
-// ===== Location persistence (Step 1) =====
+/* =========================================================
+   Constants & Defaults
+========================================================= */
 const STORAGE_KEY = "ms_location";
 
-// Default location (you can change later anytime)
 const DEFAULT_LOCATION = {
-  // ==== City Type ====
   type: "city",
   city: "Damascus",
   country: "Syria",
 
-  // ==== Coords Type (uncomment to use) ====
   // type: "coords",
   // latitude: 34.72682,
   // longitude: 36.72339,
 };
 
-// Get the saved location from localStorage, if any, and validate its shape.
-// We expect either a "coords" object with latitude and longitude, or a "city" object with city and country.
-// If the data is invalid or not present, return null.
+/* =========================================================
+   Storage Helpers
+========================================================= */
 function loadSavedLocation() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -50,7 +52,6 @@ function loadSavedLocation() {
 
     const parsed = JSON.parse(raw);
 
-    // minimal shape check
     if (
       parsed?.type === "coords" &&
       typeof parsed.latitude === "number" &&
@@ -73,34 +74,141 @@ function loadSavedLocation() {
   }
 }
 
-// Save a location object to localStorage.
-// The locationObj should have a "type" property that is either "coords" or "city", along with the corresponding properties for each type.
 function saveLocation(locationObj) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(locationObj));
 }
 
-// ===== Bootstrap (Step 2) =====
 function resolveInitialLocation() {
   const saved = loadSavedLocation();
   return saved ?? DEFAULT_LOCATION;
 }
 
-// Get Current User Location (coords or city)
+/* =========================================================
+   Global State
+========================================================= */
 let activeLocation = resolveInitialLocation();
+let pickedCitySuggestion = null;
 
-// ===== Main Initialization (Step 3) =====
+/* =========================================================
+   Small Utilities
+========================================================= */
+function normalizeText(value) {
+  return String(value || "").trim();
+}
+
+function debounce(fn, delay = 350) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), delay);
+  };
+}
+
+function updateCityButtonLabel() {
+  const btn = document.getElementById("btnPickCity");
+  if (!btn) return;
+
+  if (activeLocation?.type === "city") {
+    btn.textContent = activeLocation.city || "مدينتي";
+  } else {
+    btn.textContent = "مدينتي";
+  }
+}
+
+/* =========================================================
+   DOM References (Common UI)
+========================================================= */
+const btnBackToToday = document.getElementById("btnBackToToday");
+
+/* =========================================================
+   DOM References (City Modal) - bound lazily for stability
+========================================================= */
+let inputCity;
+let inputCountry;
+let cityFormError;
+let btnSaveCity;
+let cityModalEl;
+
+let citySuggestionsEl;
+let citySuggestHint;
+
+function bindCityModalDom() {
+  inputCity = document.getElementById("inputCity");
+  inputCountry = document.getElementById("inputCountry");
+  cityFormError = document.getElementById("cityFormError");
+  btnSaveCity = document.getElementById("btnSaveCity");
+  cityModalEl = document.getElementById("cityModal");
+
+  citySuggestionsEl = document.getElementById("citySuggestions");
+  citySuggestHint = document.getElementById("citySuggestHint");
+}
+
+/* =========================================================
+   City Suggestions (Autocomplete)
+========================================================= */
+const runCitySearch = debounce(async () => {
+  // Safety: ensure DOM is bound
+  if (!inputCity || !citySuggestionsEl || !citySuggestHint) return;
+
+  const q = String(inputCity.value || "").trim();
+  pickedCitySuggestion = null;
+
+  if (q.length < 3) {
+    renderCitySuggestions(citySuggestionsEl, [], null);
+    citySuggestHint.textContent = "ابدأ بكتابة 3 أحرف لعرض الاقتراحات.";
+    return;
+  }
+
+  citySuggestHint.textContent = "جاري البحث...";
+
+  try {
+    const suggestions = await searchCitySuggestions(q);
+
+    if (suggestions.length === 0) {
+      renderCitySuggestions(citySuggestionsEl, [], null);
+      citySuggestHint.textContent = "لا توجد نتائج. جرّب كتابة اسم مختلف.";
+      return;
+    }
+
+    renderCitySuggestions(citySuggestionsEl, suggestions, (picked) => {
+      pickedCitySuggestion = picked;
+
+      inputCity.value = picked.city;
+      inputCountry.value = picked.country;
+
+      renderCitySuggestions(citySuggestionsEl, [], null);
+      citySuggestHint.textContent = `تم اختيار: ${picked.label}`;
+    });
+
+    citySuggestHint.textContent = "اختر نتيجة من القائمة.";
+  } catch (err) {
+    renderCitySuggestions(citySuggestionsEl, [], null);
+    citySuggestHint.textContent = "حدث خطأ أثناء البحث. حاول مرة أخرى.";
+    console.error(err);
+  }
+}, 350);
+
+/* =========================================================
+   Main Init (Render Everything)
+========================================================= */
 async function init(location, options = {}) {
-  // Get references to key DOM elements
+  // ===== DOM refs used during rendering =====
   const todayContainer = document.getElementById("todayTimings");
   const nextPrayerCard = document.getElementById("nextPrayerCard");
   const metaLocation = document.getElementById("metaLocation");
-  const btnBackToToday = document.getElementById("btnBackToToday");
+
   const ramadanCard = document.getElementById("ramadanCard");
+
   const qiblaCard = document.getElementById("qiblaCard");
   const qiblaDegrees = document.getElementById("qiblaDegrees");
 
+  const weekContainer = document.getElementById("weekPreview");
+  const metaDate = document.getElementById("metaDate");
+  const metaUpdatedAt = document.getElementById("metaUpdatedAt");
+
   const { bypassCacheWeekRefresh = false } = options;
 
+  // ===== 1) Today timings (coords or city) =====
   let viewModel;
 
   if (location.type === "coords") {
@@ -123,8 +231,6 @@ async function init(location, options = {}) {
       );
 
       metaLocation.textContent = `${city}، ${country}`;
-
-      // metaLocation.textContent = `موقعك الحالي`;
     }
   } else {
     viewModel = await getTodayPrayerOverviewByCity(
@@ -139,17 +245,19 @@ async function init(location, options = {}) {
     viewModel.prayers,
     viewModel.nextPrayer.key,
   );
+
   renderNextPrayerCountdown(nextPrayerCard, viewModel.nextPrayer, () =>
     init(location),
   );
 
+  // Hide "Back to Today" initially
   btnBackToToday.classList.add("d-none");
 
-  // Get and render qibla direction
+  // ===== 2) Qibla =====
   if (location.type === "coords") {
     const q = await getQiblaByCoords(location.latitude, location.longitude);
-
     qiblaDegrees.textContent = `${Math.round(q.direction)}°`;
+
     renderQibla(qiblaCard, q, () => {
       document.getElementById("btnLocate")?.click();
     });
@@ -160,11 +268,9 @@ async function init(location, options = {}) {
     });
   }
 
+  // ===== 3) Week =====
   let week;
-  // Get current week data
 
-  // We bypass the cache when refreshing the week data after selecting a different day, to ensure we get any updates.
-  // (e.g. daylight saving changes) without waiting for the cache to expire.
   if (location.type === "coords") {
     week = await getCurrentWeekByCoords(
       location.latitude,
@@ -180,9 +286,6 @@ async function init(location, options = {}) {
       bypassCacheWeekRefresh,
     );
   }
-
-  // Render week preview
-  const weekContainer = document.getElementById("weekPreview");
 
   renderWeekPreview(weekContainer, week, (selectedDay) => {
     const apiDateStr = selectedDay?.date?.gregorian?.date; // "DD-MM-YYYY"
@@ -201,48 +304,64 @@ async function init(location, options = {}) {
       btnBackToToday.classList.remove("d-none");
     }
 
-    const todayContainer = document.getElementById("todayTimings");
-    const nextPrayerCard = document.getElementById("nextPrayerCard");
-    const metaDate = document.getElementById("metaDate");
+    const todayContainer2 = document.getElementById("todayTimings");
+    const nextPrayerCard2 = document.getElementById("nextPrayerCard");
+    const metaDate2 = document.getElementById("metaDate");
 
     const viewModel2 = buildPrayerViewModelFromTimings(selectedDay.timings);
 
-    // update date label
-    metaDate.textContent = selectedDay?.date?.gregorian?.date || "—";
+    metaDate2.textContent = selectedDay?.date?.gregorian?.date || "—";
 
     renderTodayPrayers(
-      todayContainer,
+      todayContainer2,
       viewModel2.prayers,
       viewModel2.nextPrayer.key,
     );
-    renderNextPrayerCountdown(nextPrayerCard, viewModel2.nextPrayer, () =>
+    renderNextPrayerCountdown(nextPrayerCard2, viewModel2.nextPrayer, () =>
       init(location),
     );
   });
-  // Update the "last updated at" time in the metadata section to show when the data was last refreshed
-  const metaUpdatedAt = document.getElementById("metaUpdatedAt");
-  const now = new Date();
-  metaUpdatedAt.textContent = `آخر تحديث: ${now.toLocaleTimeString("ar", { hour: "2-digit", minute: "2-digit" })}`;
 
-  // Set initial date label to the first day in the week (which should be today)
+  // Update "Last updated at"
+  const now2 = new Date();
+  metaUpdatedAt.textContent = `آخر تحديث: ${now2.toLocaleTimeString("ar", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
+
+  // Set initial date label (first day should be today)
   metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
 
+  // ===== 4) Ramadan =====
   const ramadanviewModel = await getRamadanCountdown();
   renderRamadanCountdown(ramadanCard, ramadanviewModel);
 }
 
+/* =========================================================
+   Bootstrap (initial run)
+========================================================= */
 async function bootstrap() {
+  updateCityButtonLabel();
+
+  // Bind modal dom early (safe) and attach input listener if present
+  bindCityModalDom();
+  if (inputCity) inputCity.addEventListener("input", runCitySearch);
+
   await init(activeLocation);
 }
 
 bootstrap();
 
-// Back to today button click handler to re-render today's timings when viewing a different day in the week preview
+/* =========================================================
+   Header Buttons & General Actions
+========================================================= */
+
+// Back to today
 document.getElementById("btnBackToToday").addEventListener("click", () => {
   init(activeLocation);
 });
 
-// Refresh week data on button click, bypassing the cache to get the latest data from the API, and re-render the week preview and today's timings
+// Refresh (bypass week cache)
 document.getElementById("btnRefresh").addEventListener("click", async () => {
   const btn = document.getElementById("btnRefresh");
   const oldText = btn.textContent;
@@ -257,7 +376,7 @@ document.getElementById("btnRefresh").addEventListener("click", async () => {
   }
 });
 
-// Get user's current location on button click, save it in localStorage, and re-render timings
+// Locate (coords)
 document.getElementById("btnLocate").addEventListener("click", async () => {
   try {
     const { latitude, longitude } = await getCurrentCoords();
@@ -279,6 +398,7 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
     saveLocation(newLocation);
     activeLocation = newLocation;
 
+    updateCityButtonLabel();
     await init(activeLocation);
   } catch (e) {
     console.error(e);
@@ -286,36 +406,24 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
   }
 });
 
-//const inputCity = document.getElementById("inputCity");
-const inputCountry = document.getElementById("inputCountry");
-const cityFormError = document.getElementById("cityFormError");
-const btnSaveCity = document.getElementById("btnSaveCity");
-const cityModalEl = document.getElementById("cityModal");
+/* =========================================================
+   City Modal (Open / Save)
+========================================================= */
 
-function normalizeText(value) {
-  return String(value || "").trim();
-}
-
-// Update the "Pick City" button label to show the currently active city if the location type is "city", otherwise show a generic label
-function updateCityButtonLabel() {
-  const btn = document.getElementById("btnPickCity");
-  if (!btn) return;
-
-  // Update the button label to show the currently active city if the location type is "city", otherwise show a generic label
-  if (activeLocation?.type === "city") {
-    btn.textContent = activeLocation.city || "مدينتي";
-  } else {
-    btn.textContent = "مدينتي";
-  }
-}
-
-// Open the city selection modal when the "Pick City" button is clicked, pre-filling the inputs with the current active location if it's of type "city", and clearing any previous error messages
+// Open modal + prefill
 document.getElementById("btnPickCity").addEventListener("click", () => {
-  // Clear previous error messages when opening the modal
+  bindCityModalDom();
+
   cityFormError.classList.add("d-none");
   cityFormError.textContent = "";
 
-  // Pre-fill the city and country inputs with the current active location if it's of type "city", otherwise use default values
+  pickedCitySuggestion = null;
+
+  // Clear suggestions UI on open
+  if (citySuggestionsEl) renderCitySuggestions(citySuggestionsEl, [], null);
+  if (citySuggestHint)
+    citySuggestHint.textContent = "ابدأ بكتابة 3 أحرف لعرض الاقتراحات.";
+
   if (activeLocation?.type === "city") {
     inputCity.value = activeLocation.city || "";
     inputCountry.value = activeLocation.country || "";
@@ -324,14 +432,14 @@ document.getElementById("btnPickCity").addEventListener("click", () => {
     inputCountry.value = "Syria";
   }
 
-  // Show the modal to allow the user to input a city and country
-  const modalEl = document.getElementById("cityModal");
-  const modal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+  const modal = window.bootstrap.Modal.getOrCreateInstance(cityModalEl);
   modal.show();
 });
 
-// Handle city form submission to update location based on city and country input, with validation and error handling
+// Save city
 btnSaveCity.addEventListener("click", async () => {
+  bindCityModalDom();
+
   cityFormError.classList.add("d-none");
   cityFormError.textContent = "";
 
@@ -344,16 +452,17 @@ btnSaveCity.addEventListener("click", async () => {
     return;
   }
 
-  // Create a new location object based on the city and country input
+  // Keep the same behavior: set active location to city
   activeLocation = { type: "city", city, country };
 
-  // 2) Save the new location in localStorage for persistence across sessions
-  localStorage.setItem("activeLocation", JSON.stringify(activeLocation));
+  // IMPORTANT: unify storage with the same key used everywhere
+  saveLocation(activeLocation);
 
-  // 3) Close the modal after saving the new location
+  updateCityButtonLabel();
+
   const modal = window.bootstrap.Modal.getOrCreateInstance(cityModalEl);
   modal.hide();
 
-  // 4) Re-initialize the app with the new location, forcing a refresh of the week data to ensure we get the correct timings for the newly selected city
+  // keep your same option name (even if it's not used elsewhere yet)
   await init(activeLocation, { forceWeekRefresh: true });
 });
