@@ -1,0 +1,691 @@
+{
+  "info": {
+    "_postman_id": "6f11ec2d-f91b-4410-a8c0-c055bee9314a",
+    "name": "AlAdhan API-Mawquta Collection",
+    "description": "Postman collection with main AlAdhan API endpoints (Prayer Times, Calendar, Qibla, Asma Al-Husna, Geo, OpenAPI docs). Base URL variable: {{base_url}} (default https://api.aladhan.com/v1).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26460941"
+  },
+  "item": [
+    {
+      "name": "Prayer Times",
+      "item": [
+        {
+          "name": "Get Timings By Coords",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/timings?latitude={{latitude}}&longitude={{longitude}}&method={{method}}",
+              "host": ["{{base_url}}"],
+              "path": ["timings"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "{{latitude}}"
+                },
+                {
+                  "key": "longitude",
+                  "value": "{{longitude}}"
+                },
+                {
+                  "key": "method",
+                  "value": "{{method}}"
+                }
+              ]
+            },
+            "description": "Get prayer times for today for specific coordinates. See docs for optional parameters (date, school, tune, midnightMode, etc.)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Timings By City & Country",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/timingsByCity?city={{city}}&country={{country}}&method={{method}}",
+              "host": ["{{base_url}}"],
+              "path": ["timingsByCity"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "{{city}}"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                },
+                {
+                  "key": "method",
+                  "value": "{{method}}"
+                }
+              ]
+            },
+            "description": "Get prayer times using city & country (API will geocode)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Timings By Address",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/timingsByAddress?address=1600 Amphitheatre Parkway Mountain View&method={{method}}",
+              "host": ["{{base_url}}"],
+              "path": ["timingsByAddress"],
+              "query": [
+                {
+                  "key": "address",
+                  "value": "1600 Amphitheatre Parkway Mountain View"
+                },
+                {
+                  "key": "method",
+                  "value": "{{method}}"
+                }
+              ]
+            },
+            "description": "Get prayer times by passing full address string. Useful when city/country are not sufficient."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Timings By Timestamp",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/timings/{{timestamp}}?latitude={{latitude}}&longitude={{longitude}}&method={{method}}",
+              "host": ["{{base_url}}"],
+              "path": ["timings", "{{timestamp}}"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "{{latitude}}"
+                },
+                {
+                  "key": "longitude",
+                  "value": "{{longitude}}"
+                },
+                {
+                  "key": "method",
+                  "value": "{{method}}"
+                }
+              ]
+            },
+            "description": "Get timings for a specific unix timestamp (seconds). Replace {{timestamp}} with unix epoch seconds."
+          },
+          "response": []
+        }
+      ],
+      "description": "Prayer Times endpoints: coordinates, city, address, timestamp. Supports many optional query params (method, school/asr, tune, midnightMode, adjustments)."
+    },
+    {
+      "name": "Calendar (monthly / year)",
+      "item": [
+        {
+          "name": "Get Monthly By Coords",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/calendar?latitude={{latitude}}&longitude={{longitude}}&method={{method}}&month={{month}}&year={{year}}",
+              "host": ["{{base_url}}"],
+              "path": ["calendar"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "{{latitude}}"
+                },
+                {
+                  "key": "longitude",
+                  "value": "{{longitude}}"
+                },
+                {
+                  "key": "method",
+                  "value": "{{method}}"
+                },
+                {
+                  "key": "month",
+                  "value": "{{month}}"
+                },
+                {
+                  "key": "year",
+                  "value": "{{year}}"
+                }
+              ]
+            },
+            "description": "Get prayer times calendar for a specific month by coordinates. Useful to build printable calendars."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Monthly By City",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/calendarByCity?city={{city}}&country={{country}}&method={{method}}&month=1&year=2026",
+              "host": ["{{base_url}}"],
+              "path": ["calendarByCity"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "{{city}}"
+                },
+                {
+                  "key": "country",
+                  "value": "{{country}}"
+                },
+                {
+                  "key": "method",
+                  "value": "{{method}}"
+                },
+                {
+                  "key": "month",
+                  "value": "1"
+                },
+                {
+                  "key": "year",
+                  "value": "2026"
+                }
+              ]
+            },
+            "description": "Get monthly calendar by city & country."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Monthly By Address",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/calendarByAddress?address=1600 Amphitheatre Parkway Mountain View&method={{method}}&month=1&year=2026",
+              "host": ["{{base_url}}"],
+              "path": ["calendarByAddress"],
+              "query": [
+                {
+                  "key": "address",
+                  "value": "1600 Amphitheatre Parkway Mountain View"
+                },
+                {
+                  "key": "method",
+                  "value": "{{method}}"
+                },
+                {
+                  "key": "month",
+                  "value": "1"
+                },
+                {
+                  "key": "year",
+                  "value": "2026"
+                }
+              ]
+            },
+            "description": "Get calendar by address string."
+          },
+          "response": []
+        }
+      ],
+      "description": "Calendar endpoints provide monthly calendars (Gregorian with Hijri or vice versa)."
+    },
+    {
+      "name": "Qibla",
+      "item": [
+        {
+          "name": "Get Qibla Direction By Coords",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/qibla/{{latitude}}/{{longitude}}",
+              "host": ["{{base_url}}"],
+              "path": ["qibla", "{{latitude}}", "{{longitude}}"]
+            },
+            "description": "Calculate Qibla direction and angle for given coordinates. Alternative: /qibla?latitude=&longitude="
+          },
+          "response": []
+        },
+        {
+          "name": "Get Qibla Direction By Coords Compass",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/qibla/{{latitude}}/{{longitude}}/compass",
+              "host": ["{{base_url}}"],
+              "path": ["qibla", "{{latitude}}", "{{longitude}}", "compass"]
+            },
+            "description": "Alternative Qibla endpoint with query params."
+          },
+          "response": []
+        }
+      ],
+      "description": "Qibla direction endpoints return angle & compass information."
+    },
+    {
+      "name": "Asma Al-Husna",
+      "item": [
+        {
+          "name": "Get all Asma Al Husna",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/asmaAlHusna",
+              "host": ["{{base_url}}"],
+              "path": ["asmaAlHusna"]
+            },
+            "description": "Return the 99 names (Asma Al-Husna) in Arabic/English/transliteration. See docs for language & filters."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Asma Single By Index",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/asmaAlHusna/{{nameIndex}}",
+              "host": ["{{base_url}}"],
+              "path": ["asmaAlHusna", "{{nameIndex}}"]
+            },
+            "description": "Get a single name by index (1..99)."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints serving the 99 beautiful names of Allah (translations, transliterations, metadata)."
+    },
+    {
+      "name": "Hijri Calendar",
+      "item": [
+        {
+          "name": "Get a Hijri Calendar for a Gregorian month",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gToHCalendar/{{month}}/{{year}}",
+              "host": ["{{base_url}}"],
+              "path": ["gToHCalendar", "{{month}}", "{{year}}"]
+            },
+            "description": "Geocode city & country → returns coordinates and timezone info used by other endpoints."
+          },
+          "response": []
+        },
+        {
+          "name": "Get a Gregorian a Calendar for a Hijri month",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/hToGCalendar/{{month}}/{{year}}",
+              "host": ["{{base_url}}"],
+              "path": ["hToGCalendar", "{{month}}", "{{year}}"]
+            },
+            "description": "Convert Gregorian date to Hijri (examples — see docs for full options)."
+          },
+          "response": []
+        },
+        {
+          "name": "Convert a Gregorian date to a Hijri date",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gToH/{{gregorianDate}}",
+              "host": ["{{base_url}}"],
+              "path": ["gToH", "{{gregorianDate}}"]
+            },
+            "description": "Convert Hijri date to Gregorian. (Endpoint naming & params may vary — check docs)."
+          },
+          "response": []
+        },
+        {
+          "name": "Convert a Hijri date to a Gregorian date",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/hToG/{{hijriDate}}",
+              "host": ["{{base_url}}"],
+              "path": ["hToG", "{{hijriDate}}"]
+            },
+            "description": "Convert Hijri date to Gregorian. (Endpoint naming & params may vary — check docs)."
+          },
+          "response": []
+        }
+      ],
+      "description": "Utility endpoints: geocoding/timezone and date conversions. (Some geocoding may rely on third-party services.)"
+    },
+    {
+      "name": "BigDataCloud API",
+      "item": [
+        {
+          "name": "Reverse Geocode To City & Country",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{bigDataCloud_API}}?latitude=33.513807&longitude=36.276528&localityLanguage=ar",
+              "host": ["{{bigDataCloud_API}}"],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "33.513807"
+                },
+                {
+                  "key": "longitude",
+                  "value": "36.276528"
+                },
+                {
+                  "key": "localityLanguage",
+                  "value": "ar"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Documentation / OpenAPI & misc",
+      "item": [
+        {
+          "name": "OpenAPI - Prayer Times (yaml)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.aladhan.com/v1/documentation/openapi/prayer-times/yaml",
+              "protocol": "https",
+              "host": ["api", "aladhan", "com"],
+              "path": ["v1", "documentation", "openapi", "prayer-times", "yaml"]
+            },
+            "description": "Official OpenAPI (yaml) for Prayer Times (useful for auto-import)."
+          },
+          "response": []
+        },
+        {
+          "name": "OpenAPI - Islamic Calendar (yaml)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.aladhan.com/v1/documentation/openapi/islamic-calendar/yaml",
+              "protocol": "https",
+              "host": ["api", "aladhan", "com"],
+              "path": [
+                "v1",
+                "documentation",
+                "openapi",
+                "islamic-calendar",
+                "yaml"
+              ]
+            },
+            "description": "OpenAPI for the Islamic Calendar endpoints."
+          },
+          "response": []
+        },
+        {
+          "name": "OpenAPI - Qibla (yaml)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://api.aladhan.com/v1/documentation/openapi/qibla/yaml",
+              "protocol": "https",
+              "host": ["api", "aladhan", "com"],
+              "path": ["v1", "documentation", "openapi", "qibla", "yaml"]
+            },
+            "description": "OpenAPI for Qibla endpoints (useful for exact param names & examples)."
+          },
+          "response": []
+        }
+      ],
+      "description": "Direct links to the API OpenAPI/YAML specs (good for automated import or verification)."
+    },
+    {
+      "name": "Geonames API",
+      "item": [
+        {
+          "name": "Search Cities (Fulltext) - searchJSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{geonames_base_url}}/searchJSON?q={{geonames_query}}&maxRows={{geonames_maxRows}}&featureClass=P&username={{geonames_username}}&style=SHORT",
+              "host": ["{{geonames_base_url}}"],
+              "path": ["searchJSON"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{geonames_query}}"
+                },
+                {
+                  "key": "maxRows",
+                  "value": "{{geonames_maxRows}}"
+                },
+                {
+                  "key": "featureClass",
+                  "value": "P"
+                },
+                {
+                  "key": "username",
+                  "value": "{{geonames_username}}"
+                },
+                {
+                  "key": "style",
+                  "value": "SHORT"
+                }
+              ]
+            },
+            "description": "Autocomplete (fulltext) for populated places. Use featureClass=P to focus on cities/towns. Username is required."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Cities (Prefix) - name_startsWith",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{geonames_base_url}}/searchJSON?name_startsWith={{geonames_query}}&maxRows={{geonames_maxRows}}&featureClass=P&username={{geonames_username}}&style=SHORT",
+              "host": ["{{geonames_base_url}}"],
+              "path": ["searchJSON"],
+              "query": [
+                {
+                  "key": "name_startsWith",
+                  "value": "{{geonames_query}}"
+                },
+                {
+                  "key": "maxRows",
+                  "value": "{{geonames_maxRows}}"
+                },
+                {
+                  "key": "featureClass",
+                  "value": "P"
+                },
+                {
+                  "key": "username",
+                  "value": "{{geonames_username}}"
+                },
+                {
+                  "key": "style",
+                  "value": "SHORT"
+                }
+              ]
+            },
+            "description": "Autocomplete optimized for prefix typing. Returns populated places (featureClass=P). Username required."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Cities (Fulltext + Country Bias)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{geonames_base_url}}/searchJSON?q={{geonames_query}}&maxRows={{geonames_maxRows}}&featureClass=P&countryBias={{geonames_countryBias}}&username={{geonames_username}}&style=SHORT",
+              "host": ["{{geonames_base_url}}"],
+              "path": ["searchJSON"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{geonames_query}}"
+                },
+                {
+                  "key": "maxRows",
+                  "value": "{{geonames_maxRows}}"
+                },
+                {
+                  "key": "featureClass",
+                  "value": "P"
+                },
+                {
+                  "key": "countryBias",
+                  "value": "{{geonames_countryBias}}"
+                },
+                {
+                  "key": "username",
+                  "value": "{{geonames_username}}"
+                },
+                {
+                  "key": "style",
+                  "value": "SHORT"
+                }
+              ]
+            },
+            "description": "Same searchJSON but biases results toward a specific country (ISO-3166-1 alpha-2), useful for Arabic users (e.g., SY, SA, EG)."
+          },
+          "response": []
+        },
+        {
+          "name": "Reverse Geocode (Nearest City) - findNearbyPlaceNameJSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{geonames_base_url}}/findNearbyPlaceNameJSON?lat={{geonames_latitude}}&lng={{geonames_longitude}}&username={{geonames_username}}&style=SHORT",
+              "host": ["{{geonames_base_url}}"],
+              "path": ["findNearbyPlaceNameJSON"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "{{geonames_latitude}}"
+                },
+                {
+                  "key": "lng",
+                  "value": "{{geonames_longitude}}"
+                },
+                {
+                  "key": "username",
+                  "value": "{{geonames_username}}"
+                },
+                {
+                  "key": "style",
+                  "value": "SHORT"
+                }
+              ]
+            },
+            "description": "Reverse geocoding: returns the closest populated place (feature class=P) for given lat/lng. Username required."
+          },
+          "response": []
+        }
+      ],
+      "description": "GeoNames endpoints used for city autocomplete and reverse geocoding. Use https://secure.geonames.org and provide your GeoNames username."
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.aladhan.com/v1"
+    },
+    {
+      "key": "latitude",
+      "value": "30.0444"
+    },
+    {
+      "key": "longitude",
+      "value": "31.2357"
+    },
+    {
+      "key": "city",
+      "value": "Homs"
+    },
+    {
+      "key": "country",
+      "value": "syria"
+    },
+    {
+      "key": "method",
+      "value": "2"
+    },
+    {
+      "key": "month",
+      "value": ""
+    },
+    {
+      "key": "nameIndex",
+      "value": ""
+    },
+    {
+      "key": "year",
+      "value": ""
+    },
+    {
+      "key": "fullDate",
+      "value": ""
+    },
+    {
+      "key": "timestamp",
+      "value": ""
+    },
+    {
+      "key": "bigDataCloud_API",
+      "value": ""
+    },
+    {
+      "key": "gregorianDate",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "hijriDate",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "geonames_base_url",
+      "value": "https://secure.geonames.org"
+    },
+    {
+      "key": "geonames_username",
+      "value": "YOUR_GEONAMES_USERNAME"
+    },
+    {
+      "key": "geonames_query",
+      "value": "Dam"
+    },
+    {
+      "key": "geonames_maxRows",
+      "value": "8"
+    },
+    {
+      "key": "geonames_countryBias",
+      "value": "SY"
+    },
+    {
+      "key": "geonames_latitude",
+      "value": "33.5138"
+    },
+    {
+      "key": "geonames_longitude",
+      "value": "36.2765"
+    }
+  ]
+}
