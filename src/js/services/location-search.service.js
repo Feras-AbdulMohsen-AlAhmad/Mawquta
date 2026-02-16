@@ -1,37 +1,34 @@
-import { searchCitiesGeoNames } from "../api/geonames.api.js";
-import { requireValue } from "../utils/validation.util.js";
+import { CONFIG } from "../config.js";
 
-function normalizeQuery(value) {
-  return String(value || "").trim();
-}
+const geoAxios = window.axios.create({
+  baseURL: "https://secure.geonames.org",
+  timeout: 10000,
+});
 
-// Main function to search for city suggestions based on user input
-function toSuggestion(item) {
-  const city = item?.name || "";
-  const country = item?.countryName || "";
-  const lat = Number(item?.lat);
-  const lon = Number(item?.lng);
+export async function searchCitySuggestions(query, options = {}) {
+  const q = String(query || "").trim();
+  if (q.length < 3) return [];
 
-  return {
-    label: country ? `${city}, ${country}` : city,
-    city,
-    country,
-    lat,
-    lon,
-  };
-}
+  const { maxRows = 8, lang = "en" } = options;
 
-export async function searchCitySuggestions(query) {
-  const q = normalizeQuery(query);
-  requireValue(q, "query");
+  const res = await geoAxios.get("/searchJSON", {
+    params: {
+      name_startsWith: q, // أهم شيء: البحث حسب ما كتبت
+      featureClass: "P", // أماكن سكن/مدن
+      maxRows,
+      username: CONFIG.GEONAMES_USERNAME,
+      style: "FULL",
+      lang,
+    },
+  });
 
-  const results = await searchCitiesGeoNames(q, 8);
+  const items = Array.isArray(res?.data?.geonames) ? res.data.geonames : [];
 
-  // فلترة بسيطة + تحويل للشكل الموحد
-  return results
-    .map(toSuggestion)
-    .filter(
-      (s) =>
-        s.city && s.country && Number.isFinite(s.lat) && Number.isFinite(s.lon),
-    );
+  return items.map((x) => ({
+    label: `${x.name}, ${x.countryName}`,
+    city: x.name,
+    country: x.countryName,
+    lat: Number(x.lat),
+    lon: Number(x.lng),
+  }));
 }

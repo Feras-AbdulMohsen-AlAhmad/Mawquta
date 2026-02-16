@@ -14,7 +14,7 @@ async function searchCitiesGeoNames({ geonamesQuery, maxRows = 8 }) {
       q: geonamesQuery,
       maxRows,
       featureClass: "P", // Populated places (مدن/قرى)
-      // optional: lang: "ar",
+      // optional: { lang: "ar" },
     },
   });
 

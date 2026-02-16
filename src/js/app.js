@@ -1,6 +1,8 @@
 /* =========================================================
    Imports
 ========================================================= */
+import { CONFIG } from "./config.js";
+
 import {
   getCurrentCoords,
   reverseGeocodeToCityCountry,
@@ -28,26 +30,11 @@ import { renderQibla } from "./ui/render-qibla.js";
 import { renderCitySuggestions } from "./ui/render-city-suggestions.js";
 
 /* =========================================================
-   Constants & Defaults
-========================================================= */
-const STORAGE_KEY = "ms_location";
-
-const DEFAULT_LOCATION = {
-  type: "city",
-  city: "Damascus",
-  country: "Syria",
-
-  // type: "coords",
-  // latitude: 34.72682,
-  // longitude: 36.72339,
-};
-
-/* =========================================================
    Storage Helpers
 ========================================================= */
 function loadSavedLocation() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
     if (!raw) return null;
 
     const parsed = JSON.parse(raw);
@@ -75,12 +62,12 @@ function loadSavedLocation() {
 }
 
 function saveLocation(locationObj) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(locationObj));
+  localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(locationObj));
 }
 
 function resolveInitialLocation() {
-  const saved = loadSavedLocation();
-  return saved ?? DEFAULT_LOCATION;
+  const savedLocation = loadSavedLocation();
+  return savedLocation ?? CONFIG.DEFAULT_LOCATION;
 }
 
 /* =========================================================
@@ -121,7 +108,7 @@ function updateCityButtonLabel() {
 const btnBackToToday = document.getElementById("btnBackToToday");
 
 /* =========================================================
-   DOM References (City Modal) - bound lazily for stability
+   City Modal DOM Binding
 ========================================================= */
 let inputCity;
 let inputCountry;
@@ -161,9 +148,13 @@ const runCitySearch = debounce(async () => {
 
   citySuggestHint.textContent = "جاري البحث...";
 
-  try {
-    const suggestions = await searchCitySuggestions(q);
+  console.log("City query:", q);
 
+  try {
+    const suggestions = await searchCitySuggestions(q, {
+      maxRows: 8,
+      lang: "en",
+    });
     if (suggestions.length === 0) {
       renderCitySuggestions(citySuggestionsEl, [], null);
       citySuggestHint.textContent = "لا توجد نتائج. جرّب كتابة اسم مختلف.";
@@ -208,7 +199,9 @@ async function init(location, options = {}) {
 
   const { bypassCacheWeekRefresh = false } = options;
 
-  // ===== 1) Today timings (coords or city) =====
+  /* -----------------------------
+     1) Today timings (coords/city)
+  ------------------------------ */
   let viewModel;
 
   if (location.type === "coords") {
@@ -221,12 +214,8 @@ async function init(location, options = {}) {
       metaLocation.textContent = `${location.city}، ${location.country}`;
     } else {
       const { city, country } = await reverseGeocodeToCityCountry(
-        // location.latitude,
-        // location.longitude,
-
-        // Homs latitude and longitude
-        34.72682,
-        36.72339,
+        location.latitude,
+        location.longitude,
         "ar",
       );
 
@@ -237,6 +226,7 @@ async function init(location, options = {}) {
       location.city,
       location.country,
     );
+
     metaLocation.textContent = `${location.city}، ${location.country}`;
   }
 
@@ -253,9 +243,12 @@ async function init(location, options = {}) {
   // Hide "Back to Today" initially
   btnBackToToday.classList.add("d-none");
 
-  // ===== 2) Qibla =====
+  /* -----------------------------
+     2) Qibla
+  ------------------------------ */
   if (location.type === "coords") {
     const q = await getQiblaByCoords(location.latitude, location.longitude);
+
     qiblaDegrees.textContent = `${Math.round(q.direction)}°`;
 
     renderQibla(qiblaCard, q, () => {
@@ -263,12 +256,15 @@ async function init(location, options = {}) {
     });
   } else {
     qiblaDegrees.textContent = "—";
+
     renderQibla(qiblaCard, null, () => {
       document.getElementById("btnLocate")?.click();
     });
   }
 
-  // ===== 3) Week =====
+  /* -----------------------------
+     3) Week
+  ------------------------------ */
   let week;
 
   if (location.type === "coords") {
@@ -317,6 +313,7 @@ async function init(location, options = {}) {
       viewModel2.prayers,
       viewModel2.nextPrayer.key,
     );
+
     renderNextPrayerCountdown(nextPrayerCard2, viewModel2.nextPrayer, () =>
       init(location),
     );
@@ -332,7 +329,9 @@ async function init(location, options = {}) {
   // Set initial date label (first day should be today)
   metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
 
-  // ===== 4) Ramadan =====
+  /* -----------------------------
+     4) Ramadan
+  ------------------------------ */
   const ramadanviewModel = await getRamadanCountdown();
   renderRamadanCountdown(ramadanCard, ramadanviewModel);
 }
@@ -421,8 +420,9 @@ document.getElementById("btnPickCity").addEventListener("click", () => {
 
   // Clear suggestions UI on open
   if (citySuggestionsEl) renderCitySuggestions(citySuggestionsEl, [], null);
-  if (citySuggestHint)
+  if (citySuggestHint) {
     citySuggestHint.textContent = "ابدأ بكتابة 3 أحرف لعرض الاقتراحات.";
+  }
 
   if (activeLocation?.type === "city") {
     inputCity.value = activeLocation.city || "";

@@ -127,25 +127,38 @@
 
                 <div class="modal-body">
                     <div class="mb-2">
-                        <label class="form-label">المدينة</label>
-                        <input id="inputCity" type="text" class="form-control" placeholder="مثال: Damascus">
+                        <label class="form-label" for="inputCity">المدينة</label>
+                        <input id="inputCity" type="text" class="form-control" placeholder="مثال: Damascus"
+                            autocomplete="off" />
+
+                        <!-- Suggestions (Autocomplete) -->
+                        <div id="citySuggestions" class="list-group mt-2"></div>
+                        <div id="citySuggestHint" class="text-muted small mt-2">
+                            ابدأ بكتابة 3 أحرف لعرض الاقتراحات.
+                        </div>
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label">الدولة</label>
-                        <input id="inputCountry" type="text" class="form-control" placeholder="مثال: Syria">
+                        <label class="form-label" for="inputCountry">الدولة</label>
+                        <input id="inputCountry" type="text" class="form-control" placeholder="مثال: Syria"
+                            autocomplete="off" />
                     </div>
 
                     <div id="cityFormError" class="text-danger small d-none"></div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button id="btnSaveCity" type="button" class="btn btn-primary">حفظ</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        إلغاء
+                    </button>
+                    <button id="btnSaveCity" type="button" class="btn btn-primary">
+                        حفظ
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Bootstrap JS (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
