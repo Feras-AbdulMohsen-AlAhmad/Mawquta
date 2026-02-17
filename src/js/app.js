@@ -138,7 +138,11 @@ const runCitySearch = debounce(async () => {
   if (!inputCity || !citySuggestionsEl || !citySuggestHint) return;
 
   const q = String(inputCity.value || "").trim();
-  pickedCitySuggestion = null;
+
+  btnSaveCity.disabled = true;
+  console.log("disabled now?", btnSaveCity.disabled);
+
+  btnSaveCity.title = "اختر مدينة من الاقتراحات أولاً";
 
   if (q.length < 3) {
     renderCitySuggestions(citySuggestionsEl, [], null);
@@ -162,7 +166,8 @@ const runCitySearch = debounce(async () => {
     }
 
     renderCitySuggestions(citySuggestionsEl, suggestions, (picked) => {
-      pickedCitySuggestion = picked;
+      btnSaveCity.disabled = false;
+      btnSaveCity.title = "";
 
       inputCity.value = picked.city;
       inputCountry.value = picked.country;
@@ -344,6 +349,8 @@ async function bootstrap() {
 
   // Bind modal dom early (safe) and attach input listener if present
   bindCityModalDom();
+  btnSaveCity.disabled = true;
+
   if (inputCity) inputCity.addEventListener("input", runCitySearch);
 
   await init(activeLocation);
@@ -385,6 +392,12 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
       longitude,
       "ar",
     );
+
+    if (!pickedCitySuggestion) {
+      cityFormError.textContent = "الرجاء اختيار مدينة من الاقتراحات.";
+      cityFormError.classList.remove("d-none");
+      return;
+    }
 
     const newLocation = {
       type: "coords",
