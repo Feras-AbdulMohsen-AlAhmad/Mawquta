@@ -134,14 +134,13 @@ function bindCityModalDom() {
    City Suggestions (Autocomplete)
 ========================================================= */
 const runCitySearch = debounce(async () => {
-  // Safety: ensure DOM is bound
-  if (!inputCity || !citySuggestionsEl || !citySuggestHint) return;
+  if (!inputCity || !citySuggestionsEl || !citySuggestHint || !btnSaveCity)
+    return;
 
   const q = String(inputCity.value || "").trim();
 
+  pickedCitySuggestion = null;
   btnSaveCity.disabled = true;
-  console.log("disabled now?", btnSaveCity.disabled);
-
   btnSaveCity.title = "اختر مدينة من الاقتراحات أولاً";
 
   if (q.length < 3) {
@@ -152,13 +151,12 @@ const runCitySearch = debounce(async () => {
 
   citySuggestHint.textContent = "جاري البحث...";
 
-  console.log("City query:", q);
-
   try {
     const suggestions = await searchCitySuggestions(q, {
       maxRows: 8,
       lang: "en",
     });
+
     if (suggestions.length === 0) {
       renderCitySuggestions(citySuggestionsEl, [], null);
       citySuggestHint.textContent = "لا توجد نتائج. جرّب كتابة اسم مختلف.";
@@ -166,6 +164,8 @@ const runCitySearch = debounce(async () => {
     }
 
     renderCitySuggestions(citySuggestionsEl, suggestions, (picked) => {
+      pickedCitySuggestion = picked;
+
       btnSaveCity.disabled = false;
       btnSaveCity.title = "";
 
@@ -188,7 +188,6 @@ const runCitySearch = debounce(async () => {
    Main Init (Render Everything)
 ========================================================= */
 async function init(location, options = {}) {
-  // ===== DOM refs used during rendering =====
   const todayContainer = document.getElementById("todayTimings");
   const nextPrayerCard = document.getElementById("nextPrayerCard");
   const metaLocation = document.getElementById("metaLocation");
@@ -204,9 +203,6 @@ async function init(location, options = {}) {
 
   const { bypassCacheWeekRefresh = false } = options;
 
-  /* -----------------------------
-     1) Today timings (coords/city)
-  ------------------------------ */
   let viewModel;
 
   if (location.type === "coords") {
@@ -223,7 +219,6 @@ async function init(location, options = {}) {
         location.longitude,
         "ar",
       );
-
       metaLocation.textContent = `${city}، ${country}`;
     }
   } else {
@@ -231,7 +226,6 @@ async function init(location, options = {}) {
       location.city,
       location.country,
     );
-
     metaLocation.textContent = `${location.city}، ${location.country}`;
   }
 
@@ -245,12 +239,8 @@ async function init(location, options = {}) {
     init(location),
   );
 
-  // Hide "Back to Today" initially
   btnBackToToday.classList.add("d-none");
 
-  /* -----------------------------
-     2) Qibla
-  ------------------------------ */
   if (location.type === "coords") {
     const q = await getQiblaByCoords(location.latitude, location.longitude);
 
@@ -267,9 +257,6 @@ async function init(location, options = {}) {
     });
   }
 
-  /* -----------------------------
-     3) Week
-  ------------------------------ */
   let week;
 
   if (location.type === "coords") {
@@ -289,7 +276,7 @@ async function init(location, options = {}) {
   }
 
   renderWeekPreview(weekContainer, week, (selectedDay) => {
-    const apiDateStr = selectedDay?.date?.gregorian?.date; // "DD-MM-YYYY"
+    const apiDateStr = selectedDay?.date?.gregorian?.date;
 
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, "0");
@@ -324,19 +311,14 @@ async function init(location, options = {}) {
     );
   });
 
-  // Update "Last updated at"
   const now2 = new Date();
   metaUpdatedAt.textContent = `آخر تحديث: ${now2.toLocaleTimeString("ar", {
     hour: "2-digit",
     minute: "2-digit",
   })}`;
 
-  // Set initial date label (first day should be today)
   metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
 
-  /* -----------------------------
-     4) Ramadan
-  ------------------------------ */
   const ramadanviewModel = await getRamadanCountdown();
   renderRamadanCountdown(ramadanCard, ramadanviewModel);
 }
@@ -347,9 +329,11 @@ async function init(location, options = {}) {
 async function bootstrap() {
   updateCityButtonLabel();
 
-  // Bind modal dom early (safe) and attach input listener if present
   bindCityModalDom();
-  btnSaveCity.disabled = true;
+  if (btnSaveCity) {
+    btnSaveCity.disabled = true;
+    btnSaveCity.title = "اختر مدينة من الاقتراحات أولاً";
+  }
 
   if (inputCity) inputCity.addEventListener("input", runCitySearch);
 
@@ -361,13 +345,10 @@ bootstrap();
 /* =========================================================
    Header Buttons & General Actions
 ========================================================= */
-
-// Back to today
 document.getElementById("btnBackToToday").addEventListener("click", () => {
   init(activeLocation);
 });
 
-// Refresh (bypass week cache)
 document.getElementById("btnRefresh").addEventListener("click", async () => {
   const btn = document.getElementById("btnRefresh");
   const oldText = btn.textContent;
@@ -382,7 +363,6 @@ document.getElementById("btnRefresh").addEventListener("click", async () => {
   }
 });
 
-// Locate (coords)
 document.getElementById("btnLocate").addEventListener("click", async () => {
   try {
     const { latitude, longitude } = await getCurrentCoords();
@@ -392,12 +372,6 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
       longitude,
       "ar",
     );
-
-    if (!pickedCitySuggestion) {
-      cityFormError.textContent = "الرجاء اختيار مدينة من الاقتراحات.";
-      cityFormError.classList.remove("d-none");
-      return;
-    }
 
     const newLocation = {
       type: "coords",
@@ -421,21 +395,21 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
 /* =========================================================
    City Modal (Open / Save)
 ========================================================= */
-
-// Open modal + prefill
 document.getElementById("btnPickCity").addEventListener("click", () => {
   bindCityModalDom();
+  if (!cityFormError || !btnSaveCity) return;
 
   cityFormError.classList.add("d-none");
   cityFormError.textContent = "";
 
   pickedCitySuggestion = null;
 
-  // Clear suggestions UI on open
+  btnSaveCity.disabled = true;
+  btnSaveCity.title = "اختر مدينة من الاقتراحات أولاً";
+
   if (citySuggestionsEl) renderCitySuggestions(citySuggestionsEl, [], null);
-  if (citySuggestHint) {
+  if (citySuggestHint)
     citySuggestHint.textContent = "ابدأ بكتابة 3 أحرف لعرض الاقتراحات.";
-  }
 
   if (activeLocation?.type === "city") {
     inputCity.value = activeLocation.city || "";
@@ -449,9 +423,9 @@ document.getElementById("btnPickCity").addEventListener("click", () => {
   modal.show();
 });
 
-// Save city
 btnSaveCity.addEventListener("click", async () => {
   bindCityModalDom();
+  if (!cityFormError || !btnSaveCity) return;
 
   cityFormError.classList.add("d-none");
   cityFormError.textContent = "";
@@ -465,10 +439,20 @@ btnSaveCity.addEventListener("click", async () => {
     return;
   }
 
-  // Keep the same behavior: set active location to city
-  activeLocation = { type: "city", city, country };
+  if (!pickedCitySuggestion) {
+    cityFormError.textContent = "الرجاء اختيار مدينة من الاقتراحات.";
+    cityFormError.classList.remove("d-none");
+    return;
+  }
 
-  // IMPORTANT: unify storage with the same key used everywhere
+  activeLocation = {
+    type: "city",
+    city: pickedCitySuggestion.city,
+    country: pickedCitySuggestion.country,
+    latitude: pickedCitySuggestion.lat,
+    longitude: pickedCitySuggestion.lon,
+  };
+
   saveLocation(activeLocation);
 
   updateCityButtonLabel();
@@ -476,6 +460,5 @@ btnSaveCity.addEventListener("click", async () => {
   const modal = window.bootstrap.Modal.getOrCreateInstance(cityModalEl);
   modal.hide();
 
-  // keep your same option name (even if it's not used elsewhere yet)
   await init(activeLocation, { forceWeekRefresh: true });
 });
