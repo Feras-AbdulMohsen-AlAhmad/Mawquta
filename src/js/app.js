@@ -203,20 +203,41 @@ async function init(location, options = {}) {
 
   const { bypassCacheWeekRefresh = false } = options;
 
+  const isCoords = location.type === "coords";
+  const hasCityCoords =
+    location.type === "city" &&
+    typeof location.latitude === "number" &&
+    typeof location.longitude === "number";
+
+  const effectiveLatitude = isCoords
+    ? location.latitude
+    : hasCityCoords
+      ? location.latitude
+      : null;
+  const effectiveLongitude = isCoords
+    ? location.longitude
+    : hasCityCoords
+      ? location.longitude
+      : null;
+
+  const canUseCoords =
+    typeof effectiveLatitude === "number" &&
+    typeof effectiveLongitude === "number";
+
   let viewModel;
 
-  if (location.type === "coords") {
+  if (canUseCoords) {
     viewModel = await getTodayPrayerOverviewByCoords(
-      location.latitude,
-      location.longitude,
+      effectiveLatitude,
+      effectiveLongitude,
     );
 
     if (location.city && location.country) {
       metaLocation.textContent = `${location.city}، ${location.country}`;
     } else {
       const { city, country } = await reverseGeocodeToCityCountry(
-        location.latitude,
-        location.longitude,
+        effectiveLatitude,
+        effectiveLongitude,
         "ar",
       );
       metaLocation.textContent = `${city}، ${country}`;
@@ -241,8 +262,8 @@ async function init(location, options = {}) {
 
   btnBackToToday.classList.add("d-none");
 
-  if (location.type === "coords") {
-    const q = await getQiblaByCoords(location.latitude, location.longitude);
+  if (canUseCoords) {
+    const q = await getQiblaByCoords(effectiveLatitude, effectiveLongitude);
 
     qiblaDegrees.textContent = `${Math.round(q.direction)}°`;
 
@@ -259,10 +280,10 @@ async function init(location, options = {}) {
 
   let week;
 
-  if (location.type === "coords") {
+  if (canUseCoords) {
     week = await getCurrentWeekByCoords(
-      location.latitude,
-      location.longitude,
+      effectiveLatitude,
+      effectiveLongitude,
       new Date(),
       bypassCacheWeekRefresh,
     );

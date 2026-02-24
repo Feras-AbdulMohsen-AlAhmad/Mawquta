@@ -1,28 +1,30 @@
 /* themes.css */
 /* Tell the browser we support both schemes (helps form controls, scrollbars, etc.) */
-:root { color-scheme: light dark; } /* MDN pattern */ 
+:root {
+  color-scheme: light dark;
+} /* MDN pattern */
 
 /* ---------- Light (default) ---------- */
 :root,
-:root[data-bs-theme="light"]{
+:root[data-bs-theme="light"] {
   /* Surfaces */
-  --bg: #F7F9FC;
-  --surface: #FFFFFF;
-  --surface-2: #F1F4F9;
+  -bg-: #f7f9fc;
+  --surface: #ffffff;
+  --surface-2: #f1f4f9;
 
   /* Text */
-  --text: #0F172A;
-  --text-muted: #5B677A;
+  --text: #0f172a;
+  --text-muted: #5b677a;
 
   /* Brand / Accent (inspired by your green/clean references) */
-  --primary: #0EA5A4;
-  --primary-600: #0B8C8B;
+  --primary: #0ea5a4;
+  --primary-600: #0b8c8b;
 
   /* Premium accent (subtle gold for “next prayer” / Ramadan) */
-  --accent: #C9A227;
+  --accent: #c9a227;
 
   /* Borders & Shadows */
-  --border: rgba(15, 23, 42, 0.10);
+  --border: rgba(15, 23, 42, 0.1);
   --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 
   /* Radius & Spacing tokens */
@@ -30,41 +32,44 @@
   --radius-sm: 12px;
 
   /* Motion */
-  --ease: cubic-bezier(.2,.8,.2,1);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --dur-1: 160ms;
   --dur-2: 260ms;
 }
 
 /* ---------- Dark ---------- */
-:root[data-bs-theme="dark"]{
+:root[data-bs-theme="dark"] {
   /* Surfaces (inspired by your navy/gold premium references) */
-  --bg: #070B16;
-  --surface: #0B1224;
-  --surface-2: #101B33;
+  --bg: #070b16;
+  --surface: #0b1224;
+  --surface-2: #101b33;
 
   /* Text */
-  --text: rgba(255,255,255,0.92);
-  --text-muted: rgba(255,255,255,0.65);
+  --text: rgba(255, 255, 255, 0.92);
+  --text-muted: rgba(255, 255, 255, 0.65);
 
   /* Keep same identity, different luminance */
-  --primary: #20C6B5;
-  --primary-600: #17B3A4;
+  --primary: #20c6b5;
+  --primary-600: #17b3a4;
 
   /* Gold accent is PERFECT in dark */
-  --accent: #D8B24C;
+  --accent: #d8b24c;
 
-  --border: rgba(255,255,255,0.10);
-  --shadow: 0 14px 40px rgba(0,0,0,0.45);
+  --border: rgba(255, 255, 255, 0.1);
+  --shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
 
   --radius: 16px;
   --radius-sm: 12px;
 
-  --ease: cubic-bezier(.2,.8,.2,1);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --dur-1: 160ms;
   --dur-2: 260ms;
 }
 
 /* Optional: reduce motion respect */
-@media (prefers-reduced-motion: reduce){
-  :root { --dur-1: 0ms; --dur-2: 0ms; }
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+  }
 }
