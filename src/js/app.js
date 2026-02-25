@@ -113,7 +113,11 @@ function updateLocateButtonLabel() {
   }
 }
 
-updateLocateButtonLabel();
+function setUpdatedAt(text) {
+  const metaUpdatedAt = document.getElementById("metaUpdatedAt");
+  if (!metaUpdatedAt) return;
+  metaUpdatedAt.textContent = text;
+}
 
 /* =========================================================
    DOM References (Common UI)
@@ -143,6 +147,24 @@ function bindCityModalDom() {
   citySuggestHint = document.getElementById("citySuggestHint");
 }
 
+function setCityModalError(message) {
+  if (!cityFormError) return;
+  cityFormError.textContent = message;
+  cityFormError.classList.remove("d-none");
+}
+
+function clearCityModalError() {
+  if (!cityFormError) return;
+  cityFormError.textContent = "";
+  cityFormError.classList.add("d-none");
+}
+
+function resetCitySuggestionsUI() {
+  if (citySuggestionsEl) renderCitySuggestions(citySuggestionsEl, [], null);
+  if (citySuggestHint)
+    citySuggestHint.textContent = "ابدأ بكتابة 3 أحرف لعرض الاقتراحات.";
+}
+
 /* =========================================================
    City Suggestions (Autocomplete)
 ========================================================= */
@@ -150,7 +172,7 @@ const runCitySearch = debounce(async () => {
   if (!inputCity || !citySuggestionsEl || !citySuggestHint || !btnSaveCity)
     return;
 
-  const q = String(inputCity.value || "").trim();
+  const q = normalizeText(inputCity.value);
 
   pickedCitySuggestion = null;
   btnSaveCity.disabled = true;
@@ -170,7 +192,7 @@ const runCitySearch = debounce(async () => {
       lang: "en",
     });
 
-    if (suggestions.length === 0) {
+    if (!suggestions.length) {
       renderCitySuggestions(citySuggestionsEl, [], null);
       citySuggestHint.textContent = "لا توجد نتائج. جرّب كتابة اسم مختلف.";
       return;
@@ -204,6 +226,7 @@ async function init(location, options = {}) {
   const todayContainer = document.getElementById("todayTimings");
   const nextPrayerCard = document.getElementById("nextPrayerCard");
   const metaLocation = document.getElementById("metaLocation");
+  const metaDate = document.getElementById("metaDate");
 
   const ramadanCard = document.getElementById("ramadanCard");
 
@@ -211,11 +234,11 @@ async function init(location, options = {}) {
   const qiblaDegrees = document.getElementById("qiblaDegrees");
 
   const weekContainer = document.getElementById("weekPreview");
-  const metaDate = document.getElementById("metaDate");
-  const metaUpdatedAt = document.getElementById("metaUpdatedAt");
 
+  // Task #1: single unified option name
   const { bypassCacheWeekRefresh = false } = options;
 
+  // Unified coords resolution: coords mode OR city-with-coords mode
   const isCoords = location.type === "coords";
   const hasCityCoords =
     location.type === "city" &&
@@ -236,9 +259,16 @@ async function init(location, options = {}) {
   const canUseCoords =
     typeof effectiveLatitude === "number" &&
     typeof effectiveLongitude === "number";
-  let viewModel;
 
+  // Reset UI state controlled by init
+  if (btnBackToToday) btnBackToToday.classList.add("d-none");
+
+  let todayOk = false;
+
+  // -------- 1) Today + Next Prayer (safe) --------
   try {
+    let viewModel;
+
     if (canUseCoords) {
       viewModel = await getTodayPrayerOverviewByCoords(
         effectiveLatitude,
@@ -269,107 +299,111 @@ async function init(location, options = {}) {
       viewModel.nextPrayer.key,
     );
     renderNextPrayerCountdown(nextPrayerCard, viewModel.nextPrayer, () =>
-      init(location),
+      init(activeLocation),
     );
+
+    todayOk = true;
   } catch (err) {
     console.error("Today timings failed:", err);
-
-    // Minimal fallback: keep UI as-is and show a hint
-    metaUpdatedAt.textContent = "تعذر تحديث البيانات (Offline)";
+    setUpdatedAt("تعذر تحديث البيانات (Offline)");
   }
 
-  renderTodayPrayers(
-    todayContainer,
-    viewModel.prayers,
-    viewModel.nextPrayer.key,
-  );
+  // -------- 2) Qibla (safe) --------
+  try {
+    if (canUseCoords) {
+      const q = await getQiblaByCoords(effectiveLatitude, effectiveLongitude);
+      qiblaDegrees.textContent = `${Math.round(q.direction)}°`;
 
-  renderNextPrayerCountdown(nextPrayerCard, viewModel.nextPrayer, () =>
-    init(location),
-  );
-
-  btnBackToToday.classList.add("d-none");
-
-  if (canUseCoords) {
-    const q = await getQiblaByCoords(effectiveLatitude, effectiveLongitude);
-
-    qiblaDegrees.textContent = `${Math.round(q.direction)}°`;
-
-    renderQibla(qiblaCard, q, () => {
-      document.getElementById("btnLocate")?.click();
-    });
-  } else {
+      renderQibla(qiblaCard, q, () => {
+        document.getElementById("btnLocate")?.click();
+      });
+    } else {
+      qiblaDegrees.textContent = "—";
+      renderQibla(qiblaCard, null, () => {
+        document.getElementById("btnLocate")?.click();
+      });
+    }
+  } catch (err) {
+    console.error("Qibla failed:", err);
     qiblaDegrees.textContent = "—";
-
     renderQibla(qiblaCard, null, () => {
       document.getElementById("btnLocate")?.click();
     });
   }
 
-  let week;
+  // -------- 3) Week (safe) --------
+  try {
+    let week;
 
-  if (canUseCoords) {
-    week = await getCurrentWeekByCoords(
-      effectiveLatitude,
-      effectiveLongitude,
-      new Date(),
-      bypassCacheWeekRefresh,
-    );
-  } else {
-    week = await getCurrentWeekByCity(
-      location.city,
-      location.country,
-      new Date(),
-      bypassCacheWeekRefresh,
-    );
-  }
-
-  renderWeekPreview(weekContainer, week, (selectedDay) => {
-    const apiDateStr = selectedDay?.date?.gregorian?.date;
-
-    const now = new Date();
-    const dd = String(now.getDate()).padStart(2, "0");
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const yyyy = String(now.getFullYear());
-    const todayStr = `${dd}-${mm}-${yyyy}`;
-
-    const isTodaySelected = apiDateStr === todayStr;
-
-    if (isTodaySelected) {
-      btnBackToToday.classList.add("d-none");
+    if (canUseCoords) {
+      week = await getCurrentWeekByCoords(
+        effectiveLatitude,
+        effectiveLongitude,
+        new Date(),
+        bypassCacheWeekRefresh,
+      );
     } else {
-      btnBackToToday.classList.remove("d-none");
+      week = await getCurrentWeekByCity(
+        location.city,
+        location.country,
+        new Date(),
+        bypassCacheWeekRefresh,
+      );
     }
 
-    const todayContainer2 = document.getElementById("todayTimings");
-    const nextPrayerCard2 = document.getElementById("nextPrayerCard");
-    const metaDate2 = document.getElementById("metaDate");
+    renderWeekPreview(weekContainer, week, (selectedDay) => {
+      if (!selectedDay?.timings) return;
 
-    const viewModel2 = buildPrayerViewModelFromTimings(selectedDay.timings);
+      const apiDateStr = selectedDay?.date?.gregorian?.date;
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, "0");
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const yyyy = String(now.getFullYear());
+      const todayStr = `${dd}-${mm}-${yyyy}`;
 
-    metaDate2.textContent = selectedDay?.date?.gregorian?.date || "—";
+      const isTodaySelected = apiDateStr === todayStr;
 
-    renderTodayPrayers(
-      todayContainer2,
-      viewModel2.prayers,
-      viewModel2.nextPrayer.key,
+      if (btnBackToToday) {
+        if (isTodaySelected) btnBackToToday.classList.add("d-none");
+        else btnBackToToday.classList.remove("d-none");
+      }
+
+      const viewModel2 = buildPrayerViewModelFromTimings(selectedDay.timings);
+
+      if (metaDate)
+        metaDate.textContent = selectedDay?.date?.gregorian?.date || "—";
+
+      renderTodayPrayers(
+        todayContainer,
+        viewModel2.prayers,
+        viewModel2.nextPrayer.key,
+      );
+      renderNextPrayerCountdown(nextPrayerCard, viewModel2.nextPrayer, () =>
+        init(activeLocation),
+      );
+    });
+
+    if (metaDate)
+      metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
+  } catch (err) {
+    console.error("Week failed:", err);
+  }
+
+  // -------- 4) Ramadan (safe) --------
+  try {
+    const ramadanViewModel = await getRamadanCountdown();
+    renderRamadanCountdown(ramadanCard, ramadanViewModel);
+  } catch (err) {
+    console.error("Ramadan failed:", err);
+  }
+
+  // Only overwrite UpdatedAt with a normal timestamp if Today succeeded
+  if (todayOk) {
+    const now = new Date();
+    setUpdatedAt(
+      `آخر تحديث: ${now.toLocaleTimeString("ar", { hour: "2-digit", minute: "2-digit" })}`,
     );
-
-    renderNextPrayerCountdown(nextPrayerCard2, viewModel2.nextPrayer, () =>
-      init(location),
-    );
-  });
-
-  const now2 = new Date();
-  metaUpdatedAt.textContent = `آخر تحديث: ${now2.toLocaleTimeString("ar", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })}`;
-
-  metaDate.textContent = week?.[0]?.date?.gregorian?.date || "—";
-
-  const ramadanviewModel = await getRamadanCountdown();
-  renderRamadanCountdown(ramadanCard, ramadanviewModel);
+  }
 }
 
 /* =========================================================
@@ -377,8 +411,10 @@ async function init(location, options = {}) {
 ========================================================= */
 async function bootstrap() {
   updateCityButtonLabel();
+  updateLocateButtonLabel();
 
   bindCityModalDom();
+
   if (btnSaveCity) {
     btnSaveCity.disabled = true;
     btnSaveCity.title = "اختر مدينة من الاقتراحات أولاً";
@@ -394,12 +430,14 @@ bootstrap();
 /* =========================================================
    Header Buttons & General Actions
 ========================================================= */
-document.getElementById("btnBackToToday").addEventListener("click", () => {
+document.getElementById("btnBackToToday")?.addEventListener("click", () => {
   init(activeLocation);
 });
 
-document.getElementById("btnRefresh").addEventListener("click", async () => {
+document.getElementById("btnRefresh")?.addEventListener("click", async () => {
   const btn = document.getElementById("btnRefresh");
+  if (!btn) return;
+
   const oldText = btn.textContent;
 
   try {
@@ -412,30 +450,22 @@ document.getElementById("btnRefresh").addEventListener("click", async () => {
   }
 });
 
-document.getElementById("btnLocate").addEventListener("click", async () => {
+document.getElementById("btnLocate")?.addEventListener("click", async () => {
   try {
     const { latitude, longitude } = await getCurrentCoords();
-
     const { city, country } = await reverseGeocodeToCityCountry(
       latitude,
       longitude,
       "ar",
     );
 
-    const newLocation = {
-      type: "coords",
-      latitude,
-      longitude,
-      city,
-      country,
-    };
+    const newLocation = { type: "coords", latitude, longitude, city, country };
 
     saveLocation(newLocation);
     activeLocation = newLocation;
 
-    updateLocateButtonLabel();
-
     updateCityButtonLabel();
+    updateLocateButtonLabel();
 
     await init(activeLocation);
   } catch (e) {
@@ -447,21 +477,16 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
 /* =========================================================
    City Modal (Open / Save)
 ========================================================= */
-document.getElementById("btnPickCity").addEventListener("click", () => {
+document.getElementById("btnPickCity")?.addEventListener("click", () => {
   bindCityModalDom();
-  if (!cityFormError || !btnSaveCity) return;
+  if (!cityModalEl || !btnSaveCity) return;
 
-  cityFormError.classList.add("d-none");
-  cityFormError.textContent = "";
+  clearCityModalError();
+  resetCitySuggestionsUI();
 
   pickedCitySuggestion = null;
-
   btnSaveCity.disabled = true;
   btnSaveCity.title = "اختر مدينة من الاقتراحات أولاً";
-
-  if (citySuggestionsEl) renderCitySuggestions(citySuggestionsEl, [], null);
-  if (citySuggestHint)
-    citySuggestHint.textContent = "ابدأ بكتابة 3 أحرف لعرض الاقتراحات.";
 
   if (activeLocation?.type === "city") {
     inputCity.value = activeLocation.city || "";
@@ -475,25 +500,22 @@ document.getElementById("btnPickCity").addEventListener("click", () => {
   modal.show();
 });
 
-btnSaveCity.addEventListener("click", async () => {
+btnSaveCity?.addEventListener("click", async () => {
   bindCityModalDom();
-  if (!cityFormError || !btnSaveCity) return;
+  if (!btnSaveCity) return;
 
-  cityFormError.classList.add("d-none");
-  cityFormError.textContent = "";
+  clearCityModalError();
 
   const city = normalizeText(inputCity.value);
   const country = normalizeText(inputCountry.value);
 
   if (!city || !country) {
-    cityFormError.textContent = "الرجاء إدخال المدينة والدولة.";
-    cityFormError.classList.remove("d-none");
+    setCityModalError("الرجاء إدخال المدينة والدولة.");
     return;
   }
 
   if (!pickedCitySuggestion) {
-    cityFormError.textContent = "الرجاء اختيار مدينة من الاقتراحات.";
-    cityFormError.classList.remove("d-none");
+    setCityModalError("الرجاء اختيار مدينة من الاقتراحات.");
     return;
   }
 
@@ -508,9 +530,10 @@ btnSaveCity.addEventListener("click", async () => {
   saveLocation(activeLocation);
 
   updateCityButtonLabel();
+  updateLocateButtonLabel();
 
   const modal = window.bootstrap.Modal.getOrCreateInstance(cityModalEl);
   modal.hide();
 
-  await init(activeLocation, { forceWeekRefresh: true });
+  await init(activeLocation, { bypassCacheWeekRefresh: true });
 });

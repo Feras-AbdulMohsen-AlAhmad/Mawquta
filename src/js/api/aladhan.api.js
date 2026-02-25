@@ -42,6 +42,7 @@ async function getTimingsByCoords(latitude, longitude) {
       longitude,
     },
   });
+
   return res.data.data.timings;
 }
 
