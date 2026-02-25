@@ -24,11 +24,11 @@ export async function searchCitySuggestions(query, options = {}) {
 
   const items = Array.isArray(res?.data?.geonames) ? res.data.geonames : [];
 
-  return items.map((x) => ({
-    label: `${x.name}, ${x.countryName}`,
-    city: x.name,
-    country: x.countryName,
-    lat: Number(x.lat),
-    lon: Number(x.lng),
+  return items.map((item) => ({
+    label: `${item.name}, ${item.countryName}`,
+    city: item.name,
+    country: item.countryName,
+    lat: Number(item.lat),
+    lon: Number(item.lng),
   }));
 }

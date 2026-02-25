@@ -102,6 +102,19 @@ function updateCityButtonLabel() {
   }
 }
 
+function updateLocateButtonLabel() {
+  const btn = document.getElementById("btnLocate");
+  if (!btn) return;
+
+  if (activeLocation?.type === "city") {
+    btn.textContent = "استخدم موقعي بدل المدينة";
+  } else {
+    btn.textContent = "موقعي";
+  }
+}
+
+updateLocateButtonLabel();
+
 /* =========================================================
    DOM References (Common UI)
 ========================================================= */
@@ -223,31 +236,46 @@ async function init(location, options = {}) {
   const canUseCoords =
     typeof effectiveLatitude === "number" &&
     typeof effectiveLongitude === "number";
-
   let viewModel;
 
-  if (canUseCoords) {
-    viewModel = await getTodayPrayerOverviewByCoords(
-      effectiveLatitude,
-      effectiveLongitude,
-    );
-
-    if (location.city && location.country) {
-      metaLocation.textContent = `${location.city}، ${location.country}`;
-    } else {
-      const { city, country } = await reverseGeocodeToCityCountry(
+  try {
+    if (canUseCoords) {
+      viewModel = await getTodayPrayerOverviewByCoords(
         effectiveLatitude,
         effectiveLongitude,
-        "ar",
       );
-      metaLocation.textContent = `${city}، ${country}`;
+
+      if (location.city && location.country) {
+        metaLocation.textContent = `${location.city}، ${location.country}`;
+      } else {
+        const { city, country } = await reverseGeocodeToCityCountry(
+          effectiveLatitude,
+          effectiveLongitude,
+          "ar",
+        );
+        metaLocation.textContent = `${city}، ${country}`;
+      }
+    } else {
+      viewModel = await getTodayPrayerOverviewByCity(
+        location.city,
+        location.country,
+      );
+      metaLocation.textContent = `${location.city}، ${location.country}`;
     }
-  } else {
-    viewModel = await getTodayPrayerOverviewByCity(
-      location.city,
-      location.country,
+
+    renderTodayPrayers(
+      todayContainer,
+      viewModel.prayers,
+      viewModel.nextPrayer.key,
     );
-    metaLocation.textContent = `${location.city}، ${location.country}`;
+    renderNextPrayerCountdown(nextPrayerCard, viewModel.nextPrayer, () =>
+      init(location),
+    );
+  } catch (err) {
+    console.error("Today timings failed:", err);
+
+    // Minimal fallback: keep UI as-is and show a hint
+    metaUpdatedAt.textContent = "تعذر تحديث البيانات (Offline)";
   }
 
   renderTodayPrayers(
@@ -405,7 +433,10 @@ document.getElementById("btnLocate").addEventListener("click", async () => {
     saveLocation(newLocation);
     activeLocation = newLocation;
 
+    updateLocateButtonLabel();
+
     updateCityButtonLabel();
+
     await init(activeLocation);
   } catch (e) {
     console.error(e);
