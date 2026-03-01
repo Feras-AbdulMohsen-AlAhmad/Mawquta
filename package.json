@@ -1,5 +1,5 @@
 {
-  "name": "muslimsalat",
+  "name": "mawquta",
   "version": "1.0.0",
   "description": "A comprehensive Islamic prayer times web application built with a layered architecture. Get accurate prayer times, qibla direction, Islamic calendar, and 99 Divine Names (Asma Al-Husna) for any location worldwide.",
   "main": "index.js",
