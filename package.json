@@ -10,16 +10,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Feras-AbdulMohsen-AlAhmad/MuslimSalat.git"
+    "url": "git+https://github.com/Feras-AbdulMohsen-AlAhmad/Mawquta.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/Feras-AbdulMohsen-AlAhmad/MuslimSalat/issues"
+    "url": "https://github.com/Feras-AbdulMohsen-AlAhmad/Mawquta/issues"
   },
-  "homepage": "https://github.com/Feras-AbdulMohsen-AlAhmad/MuslimSalat#readme",
+  "homepage": "https://github.com/Feras-AbdulMohsen-AlAhmad/Mawquta#readme",
   "dependencies": {
     "axios": "^1.13.6"
   }

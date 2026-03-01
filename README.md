@@ -1,4 +1,4 @@
-# Muslim Salat - Prayer Times Application
+# Mawquta - Prayer Times Application
 
 A comprehensive Islamic prayer times web application built with a layered architecture. Get accurate prayer times, qibla direction, Islamic calendar, and 99 Divine Names (Asma Al-Husna) for any location worldwide.
 
@@ -65,18 +65,21 @@ The application follows a **Layered Architecture** pattern:
 ## Getting Started
 
 ### Prerequisites
+
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Internet connection (for API calls)
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
-git clone https://github.com/yourusername/MuslimSalat.git
-cd MuslimSalat/prayer-times
+git clone https://github.com/Feras-AbdulMohsen-AlAhmad/Mawquta.git
+cd Mawquta
 ```
 
 2. Open in browser:
+
 ```bash
 # Option 1: Open directly
 open index.html
@@ -121,6 +124,7 @@ python3 -m http.server 8000
 ## API Integration
 
 ### Al-Adhan API
+
 - **Base URL**: `https://api.aladhan.com/v1`
 - **Key Endpoints**:
   - `/timings?latitude=&longitude=&method=` - Prayer times
@@ -132,6 +136,7 @@ python3 -m http.server 8000
   - `/geo?city=&country=` - Geocoding
 
 ### Prayer Calculation Methods
+
 - 0: Shia
 - 1: Hanafi
 - 2: ISNA (default)
@@ -204,15 +209,15 @@ The application uses a centralized state store with an observer pattern:
 
 ```javascript
 // Subscribe to state changes
-AppState.subscribe('prayerTimes', (newData) => {
-    console.log('Prayer times updated:', newData);
+AppState.subscribe("prayerTimes", (newData) => {
+  console.log("Prayer times updated:", newData);
 });
 
 // Get state value
-const location = AppState.get('location');
+const location = AppState.get("location");
 
 // Set state value (automatically notifies observers)
-AppState.set('prayerTimes', newData);
+AppState.set("prayerTimes", newData);
 
 // Load/save to localStorage
 AppState.loadFromStorage();
@@ -222,13 +227,17 @@ AppState.saveToStorage();
 ## Customization
 
 ### Change Prayer Method
+
 Edit `config.js`:
+
 ```javascript
-DEFAULT_METHOD: 2 // Change to your preferred method
+DEFAULT_METHOD: 2; // Change to your preferred method
 ```
 
 ### Change Default Location
+
 Edit `config.js`:
+
 ```javascript
 DEFAULT_LOCATION: {
     latitude: 30.0444,
@@ -238,12 +247,14 @@ DEFAULT_LOCATION: {
 ```
 
 ### Customize Colors
+
 Edit `assets/css/main.css` and `assets/css/themes.css`:
+
 ```css
 :root {
-    --primary-color: #1a1a1a;
-    --secondary-color: #ffd700;
-    --accent-color: #27ae60;
+  --primary-color: #1a1a1a;
+  --secondary-color: #ffd700;
+  --accent-color: #27ae60;
 }
 ```
 
@@ -303,6 +314,7 @@ For issues, bug reports, or feature requests, please create an issue on GitHub o
 ## Author
 
 **Feras Abdul Mohsen AlAhmad**
+
 - GitHub: [@Feras-AbdulMohsen-AlAhmad](https://github.com/Feras-AbdulMohsen-AlAhmad)
 
 ---
