@@ -4,7 +4,8 @@
   "description": "A comprehensive Islamic prayer times web application built with a layered architecture. Get accurate prayer times, qibla direction, Islamic calendar, and 99 Divine Names (Asma Al-Husna) for any location worldwide.",
   "main": "index.js",
   "scripts": {
-    "dev": "vercel dev",
+    "dev": "npx serve src -l 3000",
+    "vercel:dev": "vercel dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,6 @@
   },
   "homepage": "https://github.com/Feras-AbdulMohsen-AlAhmad/MuslimSalat#readme",
   "dependencies": {
-    "axios": "^1.13.4"
+    "axios": "^1.13.6"
   }
 }
