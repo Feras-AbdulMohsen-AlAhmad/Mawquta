@@ -8,13 +8,14 @@ export function renderCitySuggestions(containerEl, suggestions, onPick) {
 
   containerEl.innerHTML = suggestions
     .map(
-      (sug, idx) => `
-        <button type="button"
-          class="list-group-item list-group-item-action"
-          data-idx="${idx}">
-          ${sug.label}
-        </button>
-      `,
+      (s, idx) => `
+      <button type="button"
+        class="list-group-item list-group-item-action"
+        data-idx="${idx}"
+        dir="ltr">
+        ${s.label}
+      </button>
+    `,
     )
     .join("");
 
