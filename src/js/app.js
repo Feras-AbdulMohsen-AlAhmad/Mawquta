@@ -192,8 +192,6 @@ const runCitySearch = debounce(async () => {
       lang: "en",
     });
 
-    // console.log("Suggestions:", suggestions);
-
     if (!suggestions.length) {
       renderCitySuggestions(citySuggestionsEl, [], null);
       citySuggestHint.textContent = "لا توجد نتائج. جرّب كتابة اسم مختلف.";

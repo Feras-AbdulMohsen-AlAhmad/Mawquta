@@ -8,7 +8,7 @@ function normalizeTime(timeStr) {
 
 // Get day label in Arabic and English from date object
 function getDayLabelAR(dateObj) {
-  // dateObj is like: { gregorian: { date: "09-02-2026", weekday: { en: "Monday", ar: "الاثنين" } } ... }
+  // dateObj is like: { gregorian: { date: "DD-MM-YYYY", weekday: { en: "Monday", ar: "الاثنين" } } ... }
 
   const ar = dateObj?.gregorian?.weekday?.ar;
   const en = dateObj?.gregorian?.weekday?.en;

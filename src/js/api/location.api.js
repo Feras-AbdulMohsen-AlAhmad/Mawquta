@@ -66,6 +66,5 @@ export async function reverseGeocodeToCityCountry(
   const city = data.city || data.locality || data.principalSubdivision || "";
 
   const country = data.countryName || "";
-  console.log(city, country);
   return { city, country, raw: data };
 }
