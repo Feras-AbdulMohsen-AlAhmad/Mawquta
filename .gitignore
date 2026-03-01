@@ -21,6 +21,7 @@ build/
 # API keys and secrets
 .env
 .env.local
+.env.*
 .env.*.local
 
 # OS files
