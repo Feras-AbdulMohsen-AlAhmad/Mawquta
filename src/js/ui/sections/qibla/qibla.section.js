@@ -19,7 +19,7 @@ export function renderQiblaSection(rootElement, sectionData = {}) {
 
           ${renderQiblaVisual()}
 
-          <div class="qibla-card__data" data-qibla-data aria-live="polite"></div>
+          <div class="qibla-card__data" data-qibla-data></div>
         </div>
       </div>
 

@@ -6,6 +6,12 @@
 // The runtime never requests geolocation itself and never issues Qibla,
 // Ramadan or daily-timings requests. week.service functions are injected so
 // this module stays Node-testable (aladhan.api.js requires window.axios).
+//
+// Date rollover: a lightweight interval (default 30s) checks the location-local
+// date key. When the local date changes (e.g. midnight in the location
+// timezone), the weekly data is reloaded once for the current location. The
+// interval never issues a request itself — it only compares date keys and lets
+// the existing load() dedupe/sequence protection handle the actual fetch.
 
 import {
   buildWeeklySectionData,
@@ -13,6 +19,24 @@ import {
   getTodayDateKey,
 } from "../../../services/weekly-formatter.service.js";
 import { renderWeeklyPrayerTableCard } from "./components/prayer-week-table.component.js";
+import { CONFIG } from "../../../config/app.config.js";
+
+const DEFAULT_ROLLOVER_INTERVAL_MS = 30000;
+
+// Resolves the authoritative timezone for a location. Normalized locations
+// always carry `location.timezone`; when it is absent the project fallback
+// (CONFIG.TZ_FALLBACK) is used instead of the device/system timezone so the
+// rollover check stays deterministic per location.
+function getEffectiveTimezone(location) {
+  if (
+    location &&
+    typeof location.timezone === "string" &&
+    location.timezone.trim()
+  ) {
+    return location.timezone;
+  }
+  return CONFIG.TZ_FALLBACK;
+}
 
 function defaultFormatLocation(location) {
   if (!location) return "الموقع غير محدد";
@@ -49,6 +73,9 @@ export function createWeeklyPrayerRuntime(options = {}) {
     getCurrentWeekByCoords,
     formatLocation = defaultFormatLocation,
     now = () => new Date(),
+    rolloverIntervalMs = DEFAULT_ROLLOVER_INTERVAL_MS,
+    setIntervalFn = globalThis.setInterval,
+    clearIntervalFn = globalThis.clearInterval,
   } = options;
 
   let sequence = 0;
@@ -57,6 +84,8 @@ export function createWeeklyPrayerRuntime(options = {}) {
   let pendingKey = null;
   let unsubscribe = null;
   let retryBound = false;
+  let rolloverTimer = null;
+  let lastDateKey = null;
 
   const state = {
     status: "idle",
@@ -126,7 +155,7 @@ export function createWeeklyPrayerRuntime(options = {}) {
   }
 
   function buildLoadKey(location) {
-    const todayKey = getTodayDateKey(location.timezone, now());
+    const todayKey = getTodayDateKey(getEffectiveTimezone(location), now());
     if (location.type === "coords") {
       return `coords:${location.latitude},${location.longitude}:${todayKey}`;
     }
@@ -155,7 +184,8 @@ export function createWeeklyPrayerRuntime(options = {}) {
     applyState();
 
     try {
-      const weekAnchor = getTodayDateInTimeZone(location.timezone, now());
+      const timeZone = getEffectiveTimezone(location);
+      const weekAnchor = getTodayDateInTimeZone(timeZone, now());
 
       const calendarDays =
         location.type === "coords"
@@ -183,7 +213,7 @@ export function createWeeklyPrayerRuntime(options = {}) {
 
       const sectionData = buildWeeklySectionData({
         calendarDays,
-        timeZone: location.timezone,
+        timeZone,
         now: now(),
       });
 
@@ -227,8 +257,33 @@ export function createWeeklyPrayerRuntime(options = {}) {
       loadKey = null;
     }
 
+    // Recompute the rollover date key immediately for the new location so the
+    // rollover check never triggers a second load for the same date.
+    lastDateKey = getTodayDateKey(getEffectiveTimezone(location), now());
+
     state.location = location;
     void load(location);
+  }
+
+  function checkRollover() {
+    if (!state.location) return;
+
+    const currentDateKey = getTodayDateKey(
+      getEffectiveTimezone(state.location),
+      now(),
+    );
+    if (currentDateKey === lastDateKey) return;
+
+    // Local date changed: update the tracked key and reload for the current
+    // location. load() dedupes via pendingKey/loadKey so no duplicate
+    // in-flight request is created.
+    lastDateKey = currentDateKey;
+    void load(state.location);
+  }
+
+  function startRolloverCheck() {
+    if (rolloverTimer !== null || !setIntervalFn) return;
+    rolloverTimer = setIntervalFn(checkRollover, rolloverIntervalMs);
   }
 
   function bindRetry() {
@@ -244,6 +299,10 @@ export function createWeeklyPrayerRuntime(options = {}) {
   function destroy() {
     sequence += 1;
     pendingKey = null;
+    if (rolloverTimer !== null) {
+      if (clearIntervalFn) clearIntervalFn(rolloverTimer);
+      rolloverTimer = null;
+    }
     if (unsubscribe) {
       unsubscribe();
       unsubscribe = null;
@@ -256,6 +315,7 @@ export function createWeeklyPrayerRuntime(options = {}) {
 
   bindRetry();
   unsubscribe = locationService.subscribe(onLocationState);
+  startRolloverCheck();
 
   return Object.freeze({ destroy });
 }
