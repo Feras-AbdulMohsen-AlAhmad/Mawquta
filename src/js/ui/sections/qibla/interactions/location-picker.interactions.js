@@ -8,10 +8,7 @@ import { normalizeLocation } from "../../../../services/location.service.js";
 function formatLocation(location) {
   if (!location) return "الموقع غير محدد";
 
-  if (
-    location.city === "Damascus" &&
-    location.country === "Syria"
-  ) {
+  if (location.city === "Damascus" && location.country === "Syria") {
     return "دمشق، سوريا";
   }
 
@@ -31,10 +28,7 @@ function closePicker(modalElement) {
   bootstrapApi.Modal.getOrCreateInstance(modalElement).hide();
 }
 
-export function bindLocationPickerInteractions(
-  rootDocument,
-  locationService,
-) {
+export function bindLocationPickerInteractions(rootDocument, locationService) {
   const modalElement = rootDocument?.getElementById("qiblaCityModal");
   if (!modalElement || !locationService) return () => {};
 
@@ -59,6 +53,7 @@ export function bindLocationPickerInteractions(
   let searchSequence = 0;
   let searchTimer = null;
   let searchAbortController = null;
+  let isActive = true;
 
   function clearCandidate() {
     candidate = null;
@@ -179,6 +174,8 @@ export function bindLocationPickerInteractions(
   }
 
   async function handleGeolocation() {
+    if (!isActive) return;
+
     clearCandidate();
     resultsElement?.replaceChildren();
     searchSequence += 1;
@@ -212,13 +209,21 @@ export function bindLocationPickerInteractions(
       locationService.completeCandidateRequest(requestToken);
     } catch (error) {
       locationService.failRequest(requestToken, error);
-      setStatus(
-        statusElement,
-        "تعذر اعتماد موقع المتصفح أو منطقته الزمنية. بقي الموقع الحالي دون تغيير.",
-        true,
-      );
+      if (locationService.isRequestCurrent(requestToken)) {
+        setStatus(
+          statusElement,
+          "تعذر اعتماد موقع المتصفح أو منطقته الزمنية. بقي الموقع الحالي دون تغيير.",
+          true,
+        );
+      }
     } finally {
-      if (geolocationButton) geolocationButton.disabled = false;
+      if (
+        isActive &&
+        locationService.isRequestCurrent(requestToken) &&
+        geolocationButton
+      ) {
+        geolocationButton.disabled = false;
+      }
     }
   }
 
@@ -257,10 +262,7 @@ export function bindLocationPickerInteractions(
     clearCandidate();
     resultsElement?.replaceChildren();
     if (queryInput) queryInput.value = "";
-    setStatus(
-      statusElement,
-      "ابحث عن مدينة أو استخدم موقع المتصفح بإذن صريح.",
-    );
+    setStatus(statusElement, "ابحث عن مدينة أو استخدم موقع المتصفح بإذن صريح.");
   }
 
   function handleModalShown() {
@@ -284,10 +286,12 @@ export function bindLocationPickerInteractions(
   modalElement.addEventListener("shown.bs.modal", handleModalShown);
 
   return () => {
+    isActive = false;
     unsubscribe();
     searchSequence += 1;
     searchAbortController?.abort();
     if (searchTimer) globalThis.clearTimeout(searchTimer);
+    locationService.cancelPendingRequest();
     queryInput?.removeEventListener("input", handleQueryInput);
     geolocationButton?.removeEventListener("click", handleGeolocation);
     confirmButton?.removeEventListener("click", handleConfirm);
