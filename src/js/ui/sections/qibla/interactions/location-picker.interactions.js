@@ -250,6 +250,10 @@ export function bindLocationPickerInteractions(
     );
   }
 
+  function handleModalShown() {
+    globalThis.setTimeout(() => queryInput?.focus(), 0);
+  }
+
   const unsubscribe = locationService.subscribe((state) => {
     if (state.location) {
       const label = formatLocation(state.location);
@@ -264,7 +268,7 @@ export function bindLocationPickerInteractions(
   geolocationButton?.addEventListener("click", handleGeolocation);
   confirmButton?.addEventListener("click", handleConfirm);
   modalElement.addEventListener("hidden.bs.modal", handleModalHidden);
-  modalElement.addEventListener("shown.bs.modal", () => queryInput?.focus());
+  modalElement.addEventListener("shown.bs.modal", handleModalShown);
 
   return () => {
     unsubscribe();
@@ -275,5 +279,6 @@ export function bindLocationPickerInteractions(
     geolocationButton?.removeEventListener("click", handleGeolocation);
     confirmButton?.removeEventListener("click", handleConfirm);
     modalElement.removeEventListener("hidden.bs.modal", handleModalHidden);
+    modalElement.removeEventListener("shown.bs.modal", handleModalShown);
   };
 }
