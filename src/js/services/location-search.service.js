@@ -10,24 +10,31 @@ export async function searchCitySuggestions(query, options = {}) {
     signal,
   } = options;
 
+  let response;
   try {
     const url = new URL("/api/geocode", window.location.origin);
     url.searchParams.set("q", q);
     url.searchParams.set("limit", String(maxRows));
     url.searchParams.set("lang", lang);
 
-    const response = await fetch(url.toString(), { signal });
-    if (!response.ok) {
+    response = await fetch(url.toString(), { signal });
+  } catch (error) {
+    // Aborts are benign: the caller already invalidated this request through
+    // its own sequence guard. Every other failure is a real, recoverable error.
+    if (error?.name === "AbortError" || signal?.aborted) {
       return [];
     }
-
-    const data = await response.json();
-    if (!data?.ok) {
-      return [];
-    }
-
-    return Array.isArray(data.results) ? data.results : [];
-  } catch {
-    return [];
+    throw error;
   }
+
+  if (!response.ok) {
+    throw new Error(`geocode request failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!data?.ok) {
+    throw new Error("geocode response failed");
+  }
+
+  return Array.isArray(data.results) ? data.results : [];
 }

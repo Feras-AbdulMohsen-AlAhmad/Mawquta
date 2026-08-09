@@ -133,10 +133,23 @@ export function bindLocationPickerInteractions(
 
   async function runSearch(query, sequence, abortController) {
     setStatus(statusElement, "جارٍ البحث...");
-    const results = await searchCitySuggestions(query, {
-      lang: "ar",
-      signal: abortController.signal,
-    });
+
+    let results;
+    try {
+      results = await searchCitySuggestions(query, {
+        lang: "ar",
+        signal: abortController.signal,
+      });
+    } catch {
+      if (sequence !== searchSequence || abortController.signal.aborted) return;
+      resultsElement?.replaceChildren();
+      setStatus(
+        statusElement,
+        "تعذر الوصول إلى خدمة البحث. حاول مجددًا.",
+        true,
+      );
+      return;
+    }
 
     if (sequence !== searchSequence || abortController.signal.aborted) return;
     renderSearchResults(results);
