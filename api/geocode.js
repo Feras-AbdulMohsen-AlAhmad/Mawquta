@@ -1,5 +1,7 @@
 // api/geocode.js
 
+const DEFAULT_GEOCODE_TIMEOUT_MS = 6000;
+
 function isValidIanaTimezone(timezone) {
   if (!timezone) return false;
 
@@ -11,10 +13,31 @@ function isValidIanaTimezone(timezone) {
   }
 }
 
+function resolveTimeoutMs() {
+  const parsed = Number(process.env.GEOCODE_TIMEOUT_MS);
+  return Number.isFinite(parsed) && parsed > 0
+    ? parsed
+    : DEFAULT_GEOCODE_TIMEOUT_MS;
+}
+
+function normalizeLimit(value) {
+  const parsed = Number(value);
+  if (Number.isFinite(parsed) && parsed >= 1) {
+    return Math.min(Math.floor(parsed), 12);
+  }
+  return 8;
+}
+
 export default async function handler(req, res) {
   try {
+    if (req.method !== "GET") {
+      return res
+        .status(405)
+        .json({ ok: false, error: "Method not allowed" });
+    }
+
     const q = String(req.query.q || "").trim();
-    const limit = Math.min(Number(req.query.limit || 8), 12);
+    const limit = normalizeLimit(req.query.limit);
     const lang = String(req.query.lang || "en");
 
     if (!q || q.length < 3) {
@@ -36,7 +59,20 @@ export default async function handler(req, res) {
     url.searchParams.set("lang", lang);
     url.searchParams.set("username", username);
 
-    const r = await fetch(url.toString());
+    let r;
+    try {
+      r = await fetch(url.toString(), {
+        signal: AbortSignal.timeout(resolveTimeoutMs()),
+      });
+    } catch (error) {
+      if (error?.name === "TimeoutError" || error?.name === "AbortError") {
+        return res
+          .status(504)
+          .json({ ok: false, error: "GeoNames upstream timeout" });
+      }
+      throw error;
+    }
+
     if (!r.ok) {
       return res
         .status(502)
