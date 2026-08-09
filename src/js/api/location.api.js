@@ -47,10 +47,17 @@ export function getCurrentCoords(options = {}) {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
+        try {
+          const latitude = position?.coords?.latitude;
+          const longitude = position?.coords?.longitude;
+          requireNumber(latitude, "latitude");
+          requireNumber(longitude, "longitude");
+          requireLatitude(latitude);
+          requireLongitude(longitude);
+          resolve({ latitude, longitude });
+        } catch (error) {
+          reject(error);
+        }
       },
       (err) => reject(err),
       {
@@ -93,5 +100,6 @@ export async function reverseGeocodeToCityCountry(
 
   return { city, country, timezone };
 }
+
 
 

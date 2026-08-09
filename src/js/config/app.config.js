@@ -6,10 +6,6 @@ export const CONFIG = {
   TZ_FALLBACK: "Asia/Damascus",
   CALENDAR_CACHE_TTL_MS: 6 * 60 * 60 * 1000, // 6 hours
 
-  // Geonames API configuration
-  GEONAMES_BASE_URL: "https://secure.geonames.org",
-  GEONAMES_USERNAME: "firas_ahmad",
-
   // Qibla calculation constants
   KAABA_COORDS: {
     latitude: 21.4225241,

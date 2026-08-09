@@ -71,6 +71,7 @@ export function updateHeroSectionLiveState(rootElement, updates = {}) {
   const dayLabelEl = rootElement.querySelector("[data-hero-day-label]");
   const hijriDateEl = rootElement.querySelector("[data-hero-hijri-date]");
   const gregorianDateEl = rootElement.querySelector("[data-hero-gregorian-date]");
+  const liveStatusEl = rootElement.querySelector("[data-hero-live-status]");
 
   if (timeEl && nextPrayerTime != null) timeEl.textContent = nextPrayerTime;
   if (labelEl && nextPrayerLabel != null) labelEl.textContent = nextPrayerLabel;
@@ -80,6 +81,16 @@ export function updateHeroSectionLiveState(rootElement, updates = {}) {
   if (dayLabelEl && dayLabel != null) dayLabelEl.textContent = dayLabel;
   if (hijriDateEl && hijriDate != null) hijriDateEl.textContent = hijriDate;
   if (gregorianDateEl && gregorianDate != null) gregorianDateEl.textContent = gregorianDate;
+
+  // Announce only meaningful next-prayer transitions through the visually
+  // hidden polite live region. Placeholder ("—") and repeat labels are never
+  // re-announced, so the per-second countdown stays silent for assistive tech.
+  if (liveStatusEl && nextPrayerLabel != null && nextPrayerLabel !== "—") {
+    const liveMessage = `الصلاة القادمة: ${nextPrayerLabel}`;
+    if (liveStatusEl.textContent !== liveMessage) {
+      liveStatusEl.textContent = liveMessage;
+    }
+  }
 
   return rootElement;
 }

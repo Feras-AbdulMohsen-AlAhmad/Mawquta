@@ -15,7 +15,7 @@ function renderCountdownPart(part) {
 
 export function renderHeroCountdown() {
   return `
-    <section class="hero-countdown" aria-live="polite" aria-label="الوقت المتبقي للصلاة القادمة">
+    <section class="hero-countdown" aria-label="الوقت المتبقي للصلاة القادمة">
       <p class="hero-countdown__label" data-hero-countdown-label>الوقت المتبقي</p>
 
       <div class="hero-countdown__grid" data-hero-countdown>
@@ -29,6 +29,8 @@ export function renderHeroCountdown() {
           return `${partMarkup}${separatorMarkup}`;
         }).join("\n")}
       </div>
+
+      <span class="visually-hidden" data-hero-live-status aria-live="polite"></span>
     </section>
   `;
 }
