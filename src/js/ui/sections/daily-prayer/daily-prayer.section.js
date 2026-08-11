@@ -22,9 +22,10 @@ export function renderDailyPrayerSection(rootElement, sectionData = {}) {
           statusLabel,
         })}
 
-        <div class="daily-prayer-cards-track" data-daily-data role="list" aria-label="بطاقات الصلوات اليومية">
+        <div class="daily-prayer-cards-track" data-daily-data role="list" tabindex="0" aria-label="بطاقات الصلوات اليومية" aria-describedby="daily-prayer-cards-hint">
           ${renderDailyPrayerCards(prayers, activeKey)}
         </div>
+        <p class="daily-prayer-cards-hint" id="daily-prayer-cards-hint" aria-hidden="true">اسحب لرؤية بقية الصلوات <span aria-hidden="true">←</span></p>
       </div>
     </section>
 

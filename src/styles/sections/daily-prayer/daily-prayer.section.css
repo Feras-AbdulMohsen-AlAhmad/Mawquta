@@ -54,6 +54,10 @@
   align-items: stretch;
 }
 
+.daily-prayer-section .daily-prayer-cards-hint {
+  display: none;
+}
+
 .daily-prayer-section .daily-prayer-card {
   --daily-card-bg-position-y: -64px;
   position: relative;
@@ -250,6 +254,7 @@
   }
 
   .daily-prayer-section .daily-prayer-cards-track {
+    position: relative;
     display: flex;
     direction: rtl;
     gap: 10px;
@@ -262,6 +267,21 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .daily-prayer-section .daily-prayer-cards-track:focus-visible {
+    outline: 2px solid var(--Secondary-500);
+    outline-offset: 4px;
+  }
+
+  .daily-prayer-section .daily-prayer-cards-hint {
+    display: block;
+    margin: 10px 0 0;
+    color: var(--Primary-700);
+    font-size: var(--ui-font-2xs);
+    font-weight: var(--ui-weight-semibold);
+    line-height: var(--ui-lh-snug);
+    text-align: start;
   }
 
   .daily-prayer-section .daily-prayer-cards-track::-webkit-scrollbar {

@@ -390,7 +390,7 @@
 
   .hero-prayer-card {
     width: 100%;
-    min-height: 500px;
+    min-height: clamp(440px, 116vw, 500px);
     padding: 18px 14px 16px;
     border-radius: 18px;
     gap: 16px;
@@ -614,7 +614,7 @@
   }
 
   .hero-prayer-card {
-    min-height: 420px;
+    min-height: clamp(390px, 112vw, 430px);
     padding: 12px 10px;
   }
 

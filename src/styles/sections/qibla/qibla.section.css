@@ -221,3 +221,30 @@
     padding: 12px 14px 14px;
   }
 }
+
+@media (max-width: 575.98px) {
+  .qibla-section .qibla-card__head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "heading action"
+      "degree degree";
+    align-items: start;
+    row-gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .qibla-section .qibla-card__heading {
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .qibla-section .qibla-card__degree {
+    justify-self: end;
+    padding-top: 2px;
+    font-size: clamp(28px, 8vw, 34px);
+  }
+
+  .qibla-section .qibla-city-btn {
+    justify-self: end;
+  }
+}
