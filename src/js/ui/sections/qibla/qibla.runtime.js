@@ -9,6 +9,7 @@
 // stays Node-testable.
 
 import { buildQiblaLocationKey } from "../../../services/qibla.service.js";
+import { renderFeedbackState } from "../../shared/feedback/feedback.js";
 
 function defaultFormatLocation(location) {
   if (!location) return "الموقع غير محدد";
@@ -20,22 +21,9 @@ function defaultFormatLocation(location) {
   return `${location.city}، ${location.country}`;
 }
 
-function renderQiblaLoadingState() {
-  return '<div class="qibla-loading" role="status" aria-label="جارٍ حساب اتجاه القبلة">جارٍ حساب اتجاه القبلة…</div>';
-}
-
-function renderQiblaEmptyState() {
-  return '<div class="qibla-empty" role="status">لا تتوفر بيانات لحساب اتجاه القبلة حالياً.</div>';
-}
-
-function renderQiblaErrorState() {
-  return `
-    <div class="qibla-error" role="alert">
-      <p class="qibla-error__message">تعذر حساب اتجاه القبلة.</p>
-      <button type="button" class="qibla-error__retry" data-qibla-retry>إعادة المحاولة</button>
-    </div>
-  `;
-}
+const renderQiblaLoadingState = () => renderFeedbackState({ type: "loading", className: "qibla-loading", message: "جارٍ حساب اتجاه القبلة…", ariaLabel: "جارٍ حساب اتجاه القبلة" });
+const renderQiblaEmptyState = () => renderFeedbackState({ type: "empty", className: "qibla-empty", message: "لا تتوفر بيانات لحساب اتجاه القبلة حالياً." });
+const renderQiblaErrorState = () => renderFeedbackState({ type: "error", className: "qibla-error", message: "تعذر حساب اتجاه القبلة.", retryAttribute: "qibla-retry" });
 
 export function createQiblaRuntime(options = {}) {
   const {

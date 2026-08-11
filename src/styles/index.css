@@ -10,6 +10,7 @@
 
 /* Shared primitives/components */
 @import "./shared/primitives/ui-primitives.css";
+@import "./shared/primitives/feedback.css";
 @import "./shared/primitives/section-base.css";
 @import "./shared/components/section/section-heading.css";
 @import "./shared/components/schedule/schedule-table.css";
