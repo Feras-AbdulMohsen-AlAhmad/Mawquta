@@ -21,3 +21,23 @@
   flex-direction: column;
   gap: 36px;
 }
+
+@media (min-width: 1200px) {
+  .qibla-section {
+    padding-block: 56px;
+  }
+
+  .qibla-section .qibla-card {
+    padding: 28px;
+    gap: 44px;
+    border-radius: 20px;
+  }
+
+  .qibla-section .qibla-visual {
+    min-height: 448px;
+  }
+
+  .qibla-section .qibla-compass {
+    --qibla-compass-size: min(100%, 400px);
+  }
+}

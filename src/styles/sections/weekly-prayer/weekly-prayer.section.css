@@ -39,3 +39,29 @@
   background-image: url("../../../assets/icons/sections/weekly-prayer/shalat-1.svg");
 }
 
+@media (min-width: 1200px) {
+  .weekly-prayer-section {
+    padding-block: 64px 236px;
+  }
+
+  .weekly-prayer-section .weekly-prayer-section__head {
+    margin-bottom: 40px;
+  }
+
+  .weekly-prayer-section .schedule-table th,
+  .weekly-prayer-section .schedule-table td {
+    padding-block: 16px;
+    padding-inline: 24px;
+  }
+
+  .weekly-prayer-section::before {
+    width: 320px;
+    height: 320px;
+  }
+
+  .weekly-prayer-section::after {
+    width: 280px;
+    height: 280px;
+  }
+}
+

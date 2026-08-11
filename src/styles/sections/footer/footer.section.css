@@ -116,3 +116,21 @@
     --footer-sections-gap: 48px;
   }
 }
+
+@media (min-width: 1200px) {
+  .site-footer {
+    padding-block-start: 72px;
+  }
+
+  .footer-content {
+    padding-bottom: 108px;
+  }
+
+  .footer-main-grid {
+    row-gap: 24px;
+  }
+
+  .footer-bottom {
+    min-height: 48px;
+  }
+}

@@ -86,3 +86,26 @@
   line-height: 48px;
   margin: 0;
 }
+
+@media (min-width: 1200px) {
+  .hero-prayer-card {
+    width: min(100%, 684px);
+    border-radius: 28px;
+  }
+
+  .hero-prayer-card__gloss {
+    background: linear-gradient(
+      180deg,
+      rgba(18, 66, 53, 0.03) 0%,
+      rgba(18, 66, 53, 0.06) 48%,
+      rgba(18, 66, 53, 0.18) 100%
+    );
+  }
+
+  .hero-countdown {
+    width: min(100%, 480px);
+    min-height: 196px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.18);
+  }
+}

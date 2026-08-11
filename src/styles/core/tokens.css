@@ -297,3 +297,9 @@
   --z-sticky: 40;
   --z-modal: 100;
 }
+
+@media (min-width: 1200px) {
+  :root {
+    --ui-header-inner-min-h: 74px;
+  }
+}

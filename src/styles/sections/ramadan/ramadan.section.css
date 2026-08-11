@@ -244,3 +244,41 @@
     font-size: var(--ui-font-title-md);
   }
 }
+
+@media (min-width: 1200px) {
+  .ramadan-section {
+    padding-block: 72px 48px;
+  }
+
+  .ramadan-topbar {
+    margin-bottom: 40px;
+  }
+
+  .ramadan-first__shell {
+    width: 78%;
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .ramadan-first__times {
+    gap: 20px;
+  }
+
+  .ramadan-first__countdown {
+    padding: 40px 32px 32px;
+  }
+
+  .ramadan-month-table-section {
+    padding-block: 72px 32px;
+  }
+
+  .ramadan-month-table-section .ramadan-table-head {
+    margin-bottom: 48px;
+  }
+
+  .ramadan-month-table-section .schedule-table th,
+  .ramadan-month-table-section .schedule-table td {
+    padding-block: 15px;
+    padding-inline: 24px;
+  }
+}
