@@ -93,3 +93,24 @@
   background: var(--Secondary-500);
   color: var(--white);
 }
+
+@media (min-width: 1200px) {
+  .site-header__inner {
+    padding-block: 16px;
+    gap: 14px;
+  }
+
+  .site-header__brand-image {
+    height: 40px;
+    max-inline-size: 128px;
+  }
+
+  .site-header__link,
+  .site-header__controls .header-chip {
+    min-height: 42px;
+  }
+
+  .site-header__link {
+    padding-inline: 14px;
+  }
+}

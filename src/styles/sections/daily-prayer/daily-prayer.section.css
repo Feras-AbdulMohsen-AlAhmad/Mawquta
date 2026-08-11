@@ -153,6 +153,27 @@
   padding: 16px;
 }
 
+@media (min-width: 1200px) {
+  .daily-prayer-section {
+    padding-block-start: 64px;
+    padding-block-end: 172px;
+  }
+
+  .daily-prayer-section .daily-prayer-section__head {
+    margin-bottom: 40px;
+  }
+
+  .daily-prayer-section .daily-prayer-cards-track {
+    gap: 24px;
+  }
+
+  .daily-prayer-section .daily-prayer-card {
+    min-block-size: 288px;
+    padding: 28px;
+    border-radius: 16px;
+  }
+}
+
 @media (min-width: 992px) and (max-width: 1199.98px) {
   .daily-prayer-section .daily-prayer-cards-track {
     grid-template-columns: repeat(3, minmax(0, 1fr));
