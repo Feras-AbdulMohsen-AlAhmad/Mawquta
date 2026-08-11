@@ -131,6 +131,18 @@
   }
 }
 
+@media (max-width: 767.98px) {
+  .site-header__nav {
+    padding-block: 8px calc(12px + env(safe-area-inset-bottom, 0px));
+    gap: 8px;
+  }
+
+  .site-header__controls {
+    gap: 8px;
+    padding-top: 10px;
+  }
+}
+
 @media (max-width: 575.98px) {
   .site-header__inner {
     gap: 6px;
@@ -164,7 +176,7 @@
   }
 
   .site-header__brand-image {
-    max-inline-size: 106px;
+    max-inline-size: clamp(92px, 28vw, 106px);
   }
 }
 

@@ -1,5 +1,13 @@
 /* Responsive overrides */
 @media (max-width: 767.98px) {
+  .site-footer {
+    padding-block-start: 36px;
+  }
+
+  .footer-content {
+    padding-bottom: 18px;
+  }
+
   .footer-main-grid {
     --footer-sections-gap: 24px;
   }
@@ -66,6 +74,8 @@
   .footer-desc,
   .footer-note-inline,
   .footer-legal-note {
+    margin-inline: 8px;
+    margin-top: 16px;
     font-size: 13px;
     line-height: 21px;
   }

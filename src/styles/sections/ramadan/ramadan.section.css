@@ -124,12 +124,17 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .ramadan-first__shell {
+    width: 100%;
+    padding: var(--ui-space-3);
+  }
+
   .ramadan-first__countdown {
     border-radius: var(--ui-radius-lg);
   }
 
   .ramadan-first__timer {
-    width: 100%;
+    width: min(100%, 248px);
   }
 
   .ramadan-first__progress-track {
