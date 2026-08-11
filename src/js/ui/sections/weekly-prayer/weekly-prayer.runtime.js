@@ -20,6 +20,7 @@ import {
 } from "../../../services/weekly-formatter.service.js";
 import { renderWeeklyPrayerTableCard } from "./components/prayer-week-table.component.js";
 import { CONFIG } from "../../../config/app.config.js";
+import { renderFeedbackState } from "../../shared/feedback/feedback.js";
 
 const DEFAULT_ROLLOVER_INTERVAL_MS = 30000;
 
@@ -48,22 +49,9 @@ function defaultFormatLocation(location) {
   return `${location.city}، ${location.country}`;
 }
 
-function renderWeeklyPrayerLoadingState() {
-  return '<div class="weekly-prayer-loading" role="status" aria-label="جارٍ تحميل مواقيت الصلاة الأسبوعية">جارٍ تحميل مواقيت الأسبوع…</div>';
-}
-
-function renderWeeklyPrayerEmptyState() {
-  return '<div class="weekly-prayer-empty" role="status">لا تتوفر بيانات مواقيت لهذا الأسبوع حالياً.</div>';
-}
-
-function renderWeeklyPrayerErrorState() {
-  return `
-    <div class="weekly-prayer-error" role="alert">
-      <p class="weekly-prayer-error__message">تعذر تحميل مواقيت الصلاة الأسبوعية.</p>
-      <button type="button" class="weekly-prayer-error__retry" data-weekly-retry>إعادة المحاولة</button>
-    </div>
-  `;
-}
+const renderWeeklyPrayerLoadingState = () => renderFeedbackState({ type: "loading", className: "weekly-prayer-loading", message: "جارٍ تحميل مواقيت الأسبوع…", ariaLabel: "جارٍ تحميل مواقيت الصلاة الأسبوعية" });
+const renderWeeklyPrayerEmptyState = () => renderFeedbackState({ type: "empty", className: "weekly-prayer-empty", message: "لا تتوفر بيانات مواقيت لهذا الأسبوع حالياً." });
+const renderWeeklyPrayerErrorState = () => renderFeedbackState({ type: "error", className: "weekly-prayer-error", message: "تعذر تحميل مواقيت الصلاة الأسبوعية.", retryAttribute: "weekly-retry" });
 
 export function createWeeklyPrayerRuntime(options = {}) {
   const {

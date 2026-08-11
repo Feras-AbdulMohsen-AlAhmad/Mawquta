@@ -16,6 +16,7 @@ export function renderAppShell(rootElement) {
       </main>
 
       <footer class="site-footer" id="site-footer" data-mount="footer"></footer>
+      <div id="app-toast-region" class="toast-region" aria-live="polite" aria-atomic="false"></div>
     </div>
   `;
 
