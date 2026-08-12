@@ -41,16 +41,14 @@
 }
 
 .header-language__chevron {
-  width: 6px;
-  height: 6px;
-  border-right: 1.2px solid currentColor;
-  border-bottom: 1.2px solid currentColor;
-  transform: rotate(45deg) translateY(-1px);
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
   transition: transform var(--tr);
 }
 
 .header-language.is-open .header-language__chevron {
-  transform: rotate(-135deg) translateY(-1px);
+  transform: rotate(180deg);
 }
 
 .header-language__menu {

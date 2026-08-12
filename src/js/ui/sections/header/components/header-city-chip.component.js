@@ -1,6 +1,6 @@
 import { renderSectionHeadChip } from "../../../shared/components/section/section-head-chip.component.js";
 
-export function renderHeaderCityChip() {
+export function renderHeaderCityChip(locationIconPath) {
   return renderSectionHeadChip({
     tagName: "button",
     rootClassName: "site-header__city",
@@ -17,7 +17,9 @@ export function renderHeaderCityChip() {
     textAttributes: {
       "data-global-location-display": true,
     },
-    iconType: "decorative",
+    iconType: "image",
     iconClassName: "site-header__city-icon",
+    iconSrc: locationIconPath,
+    iconAlt: "",
   });
 }
