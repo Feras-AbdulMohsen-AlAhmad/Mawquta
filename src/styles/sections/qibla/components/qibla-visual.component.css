@@ -6,7 +6,11 @@
   min-height: clamp(320px, 27vw, 410px);
   padding: 2px 18px 0;
   overflow: hidden;
+  flex-wrap: wrap;
+  gap: 10px 20px;
 }
+
+.qibla-section .qibla-compass-stage { position: relative; inline-size: min(100%, 360px); aspect-ratio: 1; z-index: 1; }
 
 .qibla-section .qibla-compass {
   --qibla-compass-size: min(100%, 360px);
@@ -19,6 +23,8 @@
   background: none;
   box-shadow: none;
   border-radius: 0;
+  inline-size: 100%;
+  block-size: 100%;
 }
 
 .qibla-section .qibla-compass::before {
@@ -35,6 +41,22 @@
   block-size: 100%;
   object-fit: contain;
 }
+
+.qibla-section .qibla-compass__dial-rotator,
+.qibla-section .qibla-compass__needle,
+.qibla-section .qibla-compass__forward-marker { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.qibla-section .qibla-compass__dial-rotator { will-change: transform; }
+.qibla-section .qibla-compass__needle { display: grid; place-items: center; pointer-events: none; will-change: transform; }
+.qibla-section .qibla-compass__needle svg { inline-size: 28px; block-size: 44px; transform: translateY(-41%); }
+.qibla-section .qibla-compass__forward-marker { inset: 5% 0 auto; block-size: 38px; display: flex; flex-direction: column; align-items: center; color: var(--Secondary-500); font-size: 18px; line-height: 1; z-index: 3; pointer-events: none; }
+.qibla-section .qibla-compass__forward-marker small { margin-top: 3px; color: #64748b; font-size: 9px; font-weight: 600; }
+.qibla-section .qibla-compass__controls { flex: 1 1 220px; min-inline-size: min(100%, 220px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; z-index: 2; }
+.qibla-section .qibla-compass__enable { border: 0; border-radius: 999px; padding: 10px 16px; background: var(--Secondary-500); color: var(--white); font: inherit; font-weight: 700; cursor: pointer; }
+.qibla-section .qibla-compass__enable:focus-visible { outline: 3px solid color-mix(in srgb, var(--Secondary-500) 35%, transparent); outline-offset: 3px; }
+.qibla-section .qibla-compass__enable:disabled { opacity: .65; cursor: wait; }
+.qibla-section .qibla-compass__guidance { margin: 0; color: var(--Secondary-500); font-size: clamp(15px, 1rem + .2vw, 18px); font-weight: 700; }
+.qibla-section .qibla-compass__sensor-status, .qibla-section .qibla-compass__accuracy { margin: 0; color: #64748b; font-size: 12px; line-height: 1.5; }
+.qibla-section .qibla-compass[data-qibla-aligned="true"] .qibla-compass__center { background: #16794c; box-shadow: 0 0 0 4px rgba(22,121,76,.18), 0 0 0 8px rgba(22,121,76,.1); }
 
 .qibla-section .qibla-visual__decor {
   position: absolute;
@@ -77,4 +99,14 @@
 .qibla-section .qibla-visual__decor--right::before,
 .qibla-section .qibla-visual__decor--right::after {
   content: none;
+}
+
+@media (max-width: 767.98px) {
+  .qibla-section .qibla-compass-stage { inline-size: min(100%, 224px); }
+  .qibla-section .qibla-compass__controls { flex-basis: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qibla-section .qibla-compass__dial-rotator,
+  .qibla-section .qibla-compass__needle { transition: none !important; }
 }

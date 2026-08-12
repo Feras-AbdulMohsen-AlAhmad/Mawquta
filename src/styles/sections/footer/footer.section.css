@@ -130,6 +130,7 @@
 @media (min-width: 1200px) {
   .site-footer {
     padding-block-start: 72px;
+    padding-block-end: 2px;
   }
 
   .footer-content {

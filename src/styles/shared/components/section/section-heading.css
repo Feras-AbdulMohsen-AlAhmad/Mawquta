@@ -123,12 +123,12 @@ img.section-head-chip__icon {
 }
 
 .daily-prayer-section__eyebrow-icon {
-  background: url("../../../../assets/icons/shared/prayer/prayer-rug.svg")
+  background: url("../../../../assets/icons/shared/prayer-rug.svg")
     center/contain no-repeat;
 }
 
 .weekly-prayer-section__eyebrow-icon {
-  background: url("../../../../assets/icons/shared/prayer/prayer-rug.svg")
+  background: url("../../../../assets/icons/shared/prayer-rug.svg")
     center/contain no-repeat;
 }
 

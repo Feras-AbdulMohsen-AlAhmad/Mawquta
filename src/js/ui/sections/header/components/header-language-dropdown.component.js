@@ -33,6 +33,7 @@ export function renderHeaderLanguageDropdown({
   currentLanguage,
   options,
   menuId = "headerLanguageMenu",
+  chevronPath,
 }) {
   return `
     <div class="header-language" data-lang-dropdown>
@@ -57,7 +58,7 @@ export function renderHeaderLanguageDropdown({
         />
         <span class="header-language__label" data-lang-label>${currentLanguage.label}</span>
         <span class="header-language__code" data-lang-code>${currentLanguage.code}</span>
-        <span class="header-language__chevron" aria-hidden="true"></span>
+        <img class="header-language__chevron" src="${chevronPath}" alt="" width="12" height="12" aria-hidden="true" />
       </button>
 
       <div

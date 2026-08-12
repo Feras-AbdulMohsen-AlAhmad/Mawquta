@@ -1,3 +1,11 @@
+.qibla-city-modal {
+  display: none;
+}
+
+.qibla-city-modal.show {
+  display: block;
+}
+
 .qibla-city-modal__dialog {
   max-width: min(100% - 24px, 520px);
 }

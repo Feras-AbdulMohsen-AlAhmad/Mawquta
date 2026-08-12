@@ -105,7 +105,7 @@
 }
 
 .ramadan-first-time__icon--iftar {
-  background-image: url("../../../../assets/icons/shared/misc/moon-icon.svg");
+  background-image: url("../../../../assets/icons/shared/theme-moon.svg");
 }
 
 .ramadan-first__countdown {
@@ -258,7 +258,7 @@
 }
 
 .ramadan-first__progress-icon--start {
-  background-image: url("../../../../assets/icons/shared/misc/moon-icon.svg");
+  background-image: url("../../../../assets/icons/shared/theme-moon.svg");
 }
 
 .ramadan-first__progress-icon--end {

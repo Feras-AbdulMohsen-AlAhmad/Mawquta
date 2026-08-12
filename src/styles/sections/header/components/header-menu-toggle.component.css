@@ -16,12 +16,11 @@
     box-shadow var(--tr);
 }
 
-.header-menu-toggle span {
+.header-menu-toggle__icon {
   display: block;
-  width: 16px;
-  height: 2px;
-  background: var(--Primary-900);
-  border-radius: 2px;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .header-menu-toggle:focus-visible {

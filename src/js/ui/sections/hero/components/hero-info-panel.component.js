@@ -15,7 +15,7 @@ function renderHeroLocationChip() {
     },
     iconType: "image",
     iconClassName: "hero-location-chip__icon",
-    iconSrc: "./assets/icons/sections/hero/hero-location-icon.svg",
+    iconSrc: "./assets/icons/shared/location-pin.svg",
     iconAlt: "",
   });
 }
