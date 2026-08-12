@@ -1,5 +1,7 @@
 /* Daily Prayer Section (Figma parity: node 2201:7925) */
 .daily-prayer-section {
+  --daily-prayer-card-max-width: 246px;
+  --daily-prayer-card-max-height: 264px;
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -30,14 +32,14 @@
   inline-size: min(34vw, 348px);
   block-size: min(34vw, 348px);
   transform: translateY(48px);
-  background-image: url("../../../assets/icons/sections/daily-prayer/prayer-decor-reading.svg");
+  background-image: url("../../../assets/illustrations/daily-prayer/daily-prayer-left-ornament.svg");
 }
 
 .daily-prayer-section::after {
   inset-inline-end: -24px;
   inline-size: min(29vw, 300px);
   block-size: min(29vw, 300px);
-  background-image: url("../../../assets/icons/sections/daily-prayer/prayer-decor-ramadhan.svg");
+  background-image: url("../../../assets/illustrations/daily-prayer/daily-prayer-right-ornament.svg");
 }
 
 .daily-prayer-section .daily-prayer-section__meta-prefix,
@@ -49,9 +51,11 @@
 
 .daily-prayer-section .daily-prayer-cards-track {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, var(--daily-prayer-card-max-width)));
   gap: clamp(10px, 1vw, 24px);
-  align-items: stretch;
+  justify-content: center;
+  justify-items: center;
+  align-items: start;
 }
 
 .daily-prayer-section .daily-prayer-cards-hint {
@@ -59,13 +63,13 @@
 }
 
 .daily-prayer-section .daily-prayer-card {
-  --daily-card-bg-position-y: -64px;
   position: relative;
   isolation: isolate;
   display: flex;
-  inline-size: 100%;
-  min-block-size: 264px;
-  aspect-ratio: 324 / 264;
+  inline-size: min(100%, var(--daily-prayer-card-max-width));
+  max-inline-size: var(--daily-prayer-card-max-width);
+  block-size: auto;
+  aspect-ratio: 246 / 264;
   border-radius: 12px;
   overflow: hidden;
   color: var(--white);
@@ -73,33 +77,19 @@
   background-color: #2a2718;
   background-repeat: no-repeat;
   background-size: 100% auto;
-  background-position: center var(--daily-card-bg-position-y);
+  background-position: center top;
   box-shadow: none;
 }
 
-.daily-prayer-section .daily-prayer-card--fajr {
-  --daily-card-bg-position-y: -64px;
-  background-image: url("../../../assets/icons/sections/daily-prayer/prayer-card-fajr-bg.svg");
-}
-
-.daily-prayer-section .daily-prayer-card--dhuhr {
-  --daily-card-bg-position-y: -64px;
-  background-image: url("../../../assets/icons/sections/daily-prayer/prayer-card-dhuhr-bg.svg");
-}
-
-.daily-prayer-section .daily-prayer-card--asr {
-  --daily-card-bg-position-y: -96px;
-  background-image: url("../../../assets/icons/sections/daily-prayer/prayer-card-asr-bg.svg");
-}
-
-.daily-prayer-section .daily-prayer-card--maghrib {
-  --daily-card-bg-position-y: 12px;
-  background-image: url("../../../assets/icons/sections/daily-prayer/prayer-card-maghrib-bg.svg");
-}
-
-.daily-prayer-section .daily-prayer-card--isha {
-  --daily-card-bg-position-y: 44px;
-  background-image: url("../../../assets/icons/sections/daily-prayer/prayer-card-isha-bg.svg");
+.daily-prayer-section .daily-prayer-card__artwork {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  pointer-events: none;
 }
 
 .daily-prayer-section .daily-prayer-card--active {
@@ -172,7 +162,6 @@
   }
 
   .daily-prayer-section .daily-prayer-card {
-    min-block-size: 288px;
     padding: 28px;
     border-radius: 16px;
   }
@@ -180,12 +169,11 @@
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
   .daily-prayer-section .daily-prayer-cards-track {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 246px));
     gap: 12px;
   }
 
   .daily-prayer-section .daily-prayer-card {
-    min-block-size: 236px;
     padding: 20px;
   }
 
@@ -215,7 +203,6 @@
   }
 
   .daily-prayer-section .daily-prayer-card {
-    min-block-size: 220px;
     padding: 18px;
   }
 
@@ -290,8 +277,9 @@
 
   .daily-prayer-section .daily-prayer-card {
     direction: rtl;
-    flex: 0 0 clamp(210px, 52vw, 290px);
-    min-block-size: 192px;
+    flex: 0 0 min(var(--daily-prayer-card-max-width), calc(100vw - 32px));
+    max-width: none;
+    max-inline-size: min(var(--daily-prayer-card-max-width), calc(100vw - 32px));
     border-radius: 10px;
     padding: 16px;
     scroll-snap-align: start;
@@ -329,8 +317,7 @@
   }
 
   .daily-prayer-section .daily-prayer-card {
-    flex: 0 0 clamp(206px, 78vw, 236px);
-    min-block-size: 184px;
+    flex-basis: min(var(--daily-prayer-card-max-width), calc(100vw - 32px));
     border-radius: 10px;
     padding: 14px;
   }
