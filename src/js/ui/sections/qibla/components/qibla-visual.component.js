@@ -25,7 +25,7 @@ const QIBLA_ARROW_SVG = `
 
 export function renderQiblaVisual() {
   return `
-    <div class="qibla-visual" data-qibla-visual aria-label="اتجاه القبلة">
+    <div class="qibla-visual" data-qibla-visual>
       <img
         class="qibla-visual__decor qibla-visual__decor--left"
         src="${QIBLA_ICON_PATHS.decorLeft}"
@@ -35,19 +35,22 @@ export function renderQiblaVisual() {
         decoding="async"
       />
 
-      <div class="qibla-compass" role="img" data-qibla-compass aria-label="اتجاه القبلة">
-        <img
-          class="qibla-compass__asset"
-          src="${QIBLA_ICON_PATHS.compass}"
-          aria-hidden="true"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        />
+      <div class="qibla-compass-stage">
+        <div class="qibla-compass" role="img" data-qibla-compass aria-label="اتجاه القبلة">
+          <div class="qibla-compass__dial-rotator" data-qibla-dial>
+            <img class="qibla-compass__asset" src="${QIBLA_ICON_PATHS.compass}" aria-hidden="true" alt="" loading="lazy" decoding="async" />
+          </div>
+          <span class="qibla-compass__needle" data-qibla-arrow aria-hidden="true">${QIBLA_ARROW_SVG}</span>
+          <span class="qibla-compass__forward-marker" aria-hidden="true">▲<small>أعلى الهاتف</small></span>
+          <span class="qibla-compass__center" aria-hidden="true"></span>
+        </div>
+      </div>
 
-        <span class="qibla-compass__arrow" data-qibla-arrow aria-hidden="true">
-          ${QIBLA_ARROW_SVG}
-        </span>
+      <div class="qibla-compass__controls" data-qibla-controls>
+        <button type="button" class="qibla-compass__enable" data-qibla-heading-enable>تفعيل بوصلة الجهاز</button>
+        <p class="qibla-compass__guidance" data-qibla-guidance>اتجاه القبلة من الشمال</p>
+        <p class="qibla-compass__sensor-status" data-qibla-heading-status>البوصلة الثابتة متاحة</p>
+        <p class="qibla-compass__accuracy" data-qibla-accuracy hidden></p>
       </div>
 
       <img
