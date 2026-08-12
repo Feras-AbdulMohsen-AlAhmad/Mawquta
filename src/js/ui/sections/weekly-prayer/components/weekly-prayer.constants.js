@@ -1,11 +1,11 @@
 export const WEEKLY_ICON_PATHS = {
-  day: "assets/icons/shared/prayer/today.svg",
-  date: "assets/icons/shared/prayer/date.svg",
-  fajr: "assets/icons/shared/prayer/fajr.svg",
-  dhuhr: "assets/icons/shared/prayer/dhuhr.svg",
-  asr: "assets/icons/shared/prayer/asr.svg",
-  maghrib: "assets/icons/shared/prayer/maghrib.svg",
-  isha: "assets/icons/shared/prayer/isha.svg",
+  day: "assets/icons/shared/calendar-check.svg",
+  date: "assets/icons/shared/calendar.svg",
+  fajr: "assets/icons/prayer-times/prayer-fajr.svg",
+  dhuhr: "assets/icons/prayer-times/prayer-dhuhr.svg",
+  asr: "assets/icons/prayer-times/prayer-asr.svg",
+  maghrib: "assets/icons/prayer-times/prayer-maghrib.svg",
+  isha: "assets/icons/prayer-times/prayer-isha.svg",
 };
 
 export const WEEKLY_TABLE_COLUMNS = [

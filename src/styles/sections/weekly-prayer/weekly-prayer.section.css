@@ -1,10 +1,10 @@
 /* Weekly Prayer section surface and ornaments */
-
-/* Base section shell */
 .weekly-prayer-section {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  background: #f8f7f4;
+  padding-block: 48px 196px;
 }
 
 .weekly-prayer-section > .container-xl {
@@ -26,42 +26,347 @@
 }
 
 .weekly-prayer-section::before {
-  left: 0;
-  width: 264px;
-  height: 264px;
-  background-image: url("../../../assets/icons/sections/weekly-prayer/kabah-1.svg");
+  right: 0;
+  width: 348px;
+  height: 348px;
+  opacity: 0.16;
+  background-image: url("../../../assets/illustrations/weekly-prayer/weekly-prayer-kaaba-illustration.svg");
 }
 
 .weekly-prayer-section::after {
-  right: 0;
-  width: 230px;
-  height: 230px;
-  background-image: url("../../../assets/icons/sections/weekly-prayer/shalat-1.svg");
+  left: 0;
+  width: 300px;
+  height: 300px;
+  opacity: 0.16;
+  background-image: url("../../../assets/illustrations/weekly-prayer/weekly-prayer-salat-illustration.svg");
 }
 
-@media (min-width: 1200px) {
+.weekly-prayer-section .weekly-prayer-section__head {
+  margin-bottom: 48px;
+  align-items: flex-start;
+}
+
+.weekly-prayer-section .weekly-prayer-section__badge {
+  min-height: 50px;
+  padding: 5px;
+  border: 1px solid #eaeeec;
+  border-radius: 12px;
+  background: #d3dad5;
+  box-sizing: border-box;
+}
+
+.weekly-prayer-section .weekly-prayer-section__badge-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #dd9730;
+  border-radius: 8px;
+  padding: 8px 24px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.weekly-prayer-section .weekly-prayer-section__eyebrow {
+  color: #dd9730;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+  background: #fff;
+  border-radius: 32px;
+  padding: 8px 16px;
+}
+
+.weekly-prayer-section .weekly-prayer-section__name {
+  color: #17654e;
+  font-family: var(--font-body);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.weekly-prayer-section .weekly-prayer-section__meta {
+  color: #64748b;
+  background: rgba(15, 82, 51, 0.08);
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.weekly-prayer-section .weekly-prayer-data {
+  width: 100%;
+}
+
+/* Figma parity: Weekly Prayer owns these schedule dimensions; Ramadan keeps its shared treatment. */
+.weekly-prayer-section .schedule-table-card {
+  width: 100%;
+  border: 1px solid rgba(15, 82, 51, 0.1);
+  border-radius: 24px;
+  box-shadow:
+    0 4px 8px -4px rgba(18, 66, 53, 0.16),
+    0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.weekly-prayer-section .schedule-table-card__top {
+  min-height: 80px;
+  box-sizing: border-box;
+  padding: 24px 24px 25px;
+  gap: 16px;
+  border-bottom: 1px solid rgba(15, 82, 51, 0.1);
+}
+
+.weekly-prayer-section .schedule-table-subtitle {
+  font-family: var(--font-quote);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 24px;
+  color: #124235;
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table-range {
+  background: rgba(15, 82, 51, 0.05);
+  padding: 4px 12px;
+  border-radius: 9999px;
+}
+
+.weekly-prayer-section .schedule-table-range__text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  color: #64748b;
+}
+
+.weekly-prayer-section .schedule-table {
+  table-layout: fixed;
+  min-width: 0;
+}
+
+.weekly-prayer-section .schedule-table th {
+  padding: 16px 24px;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  color: #64748b;
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table th.table-head--prayer,
+.weekly-prayer-section .schedule-table th.table-head--date {
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table-head-label {
+  direction: rtl;
+  /* In RTL, flex-start is the physical right edge of the cell. */
+  justify-content: flex-start;
+  gap: 8px;
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table-head-text {
+  display: block;
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table td {
+  height: 56px;
+  box-sizing: border-box;
+  padding: 16px 56px 16px 24px;
+  font-family: "Reem Kufi", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  color: #475569;
+  text-align: right;
+}
+
+/* Body values align with the header text edge, not with the trailing icon. */
+.weekly-prayer-section .weekly-table-cell-value {
+  display: block;
+  width: 100%;
+  text-align: right;
+  direction: rtl;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--fajr,
+.weekly-prayer-section .schedule-table td.table-cell--dhuhr,
+.weekly-prayer-section .schedule-table td.table-cell--asr,
+.weekly-prayer-section .schedule-table td.table-cell--maghrib,
+.weekly-prayer-section .schedule-table td.table-cell--isha,
+.weekly-prayer-section .schedule-table td.table-cell--day,
+.weekly-prayer-section .schedule-table td.table-cell--date {
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--prayer {
+  text-align: end;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--fajr .weekly-table-cell-value,
+.weekly-prayer-section .schedule-table td.table-cell--dhuhr .weekly-table-cell-value,
+.weekly-prayer-section .schedule-table td.table-cell--asr .weekly-table-cell-value,
+.weekly-prayer-section .schedule-table td.table-cell--maghrib .weekly-table-cell-value,
+.weekly-prayer-section .schedule-table td.table-cell--isha .weekly-table-cell-value,
+.weekly-prayer-section .schedule-table td.table-cell--day .weekly-table-cell-value,
+.weekly-prayer-section .schedule-table td.table-cell--date .weekly-table-cell-value {
+  margin-inline-start: 0;
+  margin-inline-end: auto;
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--prayer .weekly-table-cell-value {
+  direction: ltr;
+  text-align: end;
+}
+
+.weekly-prayer-section .table-time-pill .weekly-table-cell-value {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: right;
+  direction: ltr;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--day,
+.weekly-prayer-section .schedule-table td.table-cell--date {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--day {
+  color: #334155;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--date {
+  color: #64748b;
+}
+
+.weekly-prayer-section .schedule-table tbody tr {
+  height: 56px;
+  border-top: 1px solid rgba(15, 82, 51, 0.05);
+  border-bottom: 0;
+}
+
+.weekly-prayer-section .schedule-table tbody tr.table-row--today {
+  background: rgba(15, 82, 51, 0.16);
+}
+
+.weekly-prayer-section .schedule-table tbody tr.table-row--today td {
+  color: #0f5233;
+}
+
+.weekly-prayer-section .schedule-table tbody tr.table-row--today td.table-cell--date {
+  color: rgba(15, 82, 51, 0.8);
+}
+
+.weekly-prayer-section .schedule-table tbody tr.table-row--today td .weekly-table-cell-value {
+  font-weight: 700;
+}
+
+.weekly-prayer-section .schedule-table tbody tr.table-row--today td.table-cell--day::before {
+  background: rgba(15, 82, 51, 0.75);
+}
+
+.weekly-prayer-section .table-cell--active {
+  height: 56px;
+  padding: 4px 0 !important;
+}
+
+.weekly-prayer-section .table-time-pill {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 16px 56px 16px 24px;
+  /* Keep the visual border without shrinking the text's content box. */
+  border: 0;
+  border-radius: 8px;
+  background-color: #dd9730;
+  background-image: url("../../../assets/patterns/weekly-prayer/weekly-current-prayer-cell-pattern.svg");
+  background-repeat: repeat;
+  background-position: center;
+  background-size: 246px 48px;
+  box-shadow: inset 0 0 0 1px #dd9730;
+  color: #fff;
+  font-family: "Reem Kufi", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 16px;
+  transition: none;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--active .table-time-pill {
+  padding-inline: 24px 56px;
+  text-align: right;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--active .weekly-table-cell-value {
+  display: block;
+  width: 100%;
+  direction: ltr;
+  text-align: right;
+}
+
+.weekly-prayer-section .table-time-pill:hover {
+  box-shadow: inset 0 0 0 1px #dd9730;
+  transform: none;
+}
+
+@media (min-width: 1729px) {
   .weekly-prayer-section {
-    padding-block: 64px 251px;
+    min-height: 956px;
+    box-sizing: border-box;
   }
 
-  .weekly-prayer-section .weekly-prayer-section__head {
-    margin-bottom: 40px;
+  .weekly-prayer-section > .container-xl {
+    min-height: 712px;
+    box-sizing: border-box;
   }
+}
 
-  .weekly-prayer-section .schedule-table th,
-  .weekly-prayer-section .schedule-table td {
-    padding-block: 16px;
-    padding-inline: 24px;
+@media (max-width: 1199.98px) {
+  .weekly-prayer-section {
+    padding-block: 36px;
   }
 
   .weekly-prayer-section::before {
-    width: 320px;
-    height: 320px;
+    width: 280px;
+    height: 280px;
   }
 
   .weekly-prayer-section::after {
-    width: 280px;
-    height: 280px;
+    width: 240px;
+    height: 240px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .weekly-prayer-section {
+    padding-block: 24px;
+  }
+
+  .weekly-prayer-section .weekly-prayer-section__head {
+    margin-bottom: 24px;
+  }
+
+  .weekly-prayer-section::before,
+  .weekly-prayer-section::after {
+    width: 180px;
+    height: 180px;
   }
 }
 

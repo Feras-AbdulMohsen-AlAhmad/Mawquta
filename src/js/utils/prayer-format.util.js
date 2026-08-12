@@ -29,3 +29,15 @@ export function normalizeTime(timeStr) {
 
   return `${hh}:${mm}`;
 }
+
+/** Formats normalized 24-hour prayer data in the Weekly Prayer Figma style. */
+export function formatPrayerTimeForDisplay(timeStr) {
+  const normalized = normalizeTime(timeStr);
+  const match = /^(\d{2}):(\d{2})$/.exec(normalized);
+  if (!match) return normalized;
+
+  const hour = Number(match[1]);
+  const suffix = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${String(displayHour).padStart(2, "0")}:${match[2]} ${suffix}`;
+}

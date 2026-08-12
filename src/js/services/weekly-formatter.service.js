@@ -4,7 +4,11 @@
 // prayer section. Kept free of browser/axios dependencies so it can be
 // tested directly in Node.
 
-import { PRAYER_LABELS_AR, normalizeTime } from "../utils/prayer-format.util.js";
+import {
+  PRAYER_LABELS_AR,
+  formatPrayerTimeForDisplay,
+  normalizeTime,
+} from "../utils/prayer-format.util.js";
 
 export const WEEK_LENGTH = 7;
 
@@ -142,7 +146,7 @@ function buildRow(dayObject, index, todayDateKey) {
   return {
     dateKey,
     day: getArabicDayName(dayObject),
-    date: `${pad2(day)}/${pad2(month)}`,
+    date: `${ARABIC_MONTH_NAMES[month] ?? month} ${day}`,
     fajr: normalizePrayerTime(timings.Fajr, "fajr", dateKey),
     dhuhr: normalizePrayerTime(timings.Dhuhr, "dhuhr", dateKey),
     asr: normalizePrayerTime(timings.Asr, "asr", dateKey),
@@ -186,9 +190,8 @@ export function buildWeekRangeText(rows) {
   const month = Number(firstDateKey.slice(5, 7));
   const year = firstDateKey.slice(0, 4);
 
-  return `${firstDateKey.slice(8, 10)} - ${lastDateKey.slice(8, 10)} ${
-    ARABIC_MONTH_NAMES[month] ?? month
-  } ${year}`;
+  const monthName = ARABIC_MONTH_NAMES[month] ?? month;
+  return `${monthName} ${Number(firstDateKey.slice(8, 10))} - ${monthName} ${Number(lastDateKey.slice(8, 10))} , ${year}`;
 }
 
 /**
@@ -242,7 +245,7 @@ export function buildMobileCard({ rows, timeZone, now = new Date() }) {
     prayers: PRAYER_COLUMN_KEYS.map((key) => ({
       key,
       label: PRAYER_LABELS_AR[key] ?? key,
-      time: todayRow[key],
+      time: formatPrayerTimeForDisplay(todayRow[key]),
       isActive: key === activeKey,
     })),
   };

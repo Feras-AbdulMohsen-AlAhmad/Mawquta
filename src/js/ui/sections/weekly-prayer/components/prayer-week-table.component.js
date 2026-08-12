@@ -13,7 +13,7 @@ export function renderWeeklyPrayerTableCard({
   return `
     <div class="schedule-table-card">
       <div class="schedule-table-card__top">
-        <p class="schedule-table-subtitle">الصلاة لسبعة أيام</p>
+        <p class="schedule-table-subtitle">الصلاوات لسبع أيام قادمة</p>
         <div class="schedule-table-range" aria-label="نطاق الأسبوع">
           <span class="schedule-table-range__icon" aria-hidden="true"></span>
           <span class="schedule-table-range__text" data-weekly-range>${rangeText}</span>

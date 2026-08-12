@@ -1,11 +1,14 @@
 import { renderScheduleTableHeader } from "../../../shared/primitives/schedule-table.primitives.js";
+import { formatPrayerTimeForDisplay } from "../../../../utils/prayer-format.util.js";
 
 function renderDesktopPrayerCell(row, prayerKey) {
+  const displayTime = formatPrayerTimeForDisplay(row[prayerKey]);
+  const cellClass = `table-cell--prayer table-cell--${prayerKey}`;
   if (row.activePrayer === prayerKey) {
-    return `<td class="table-cell--active"><span class="table-time-pill">${row[prayerKey]}</span></td>`;
+    return `<td class="${cellClass} table-cell--active"><span class="table-time-pill"><span class="weekly-table-cell-value">${displayTime}</span></span></td>`;
   }
 
-  return `<td>${row[prayerKey]}</td>`;
+  return `<td class="${cellClass}"><span class="weekly-table-cell-value">${displayTime}</span></td>`;
 }
 
 function renderDesktopTableRow(row) {
@@ -13,13 +16,13 @@ function renderDesktopTableRow(row) {
 
   return `
     <tr${todayClass}>
-      <td class="table-cell--day">${row.day}</td>
+      <td class="table-cell--day"><span class="weekly-table-cell-value">${row.day}</span></td>
       ${renderDesktopPrayerCell(row, "fajr")}
       ${renderDesktopPrayerCell(row, "dhuhr")}
       ${renderDesktopPrayerCell(row, "asr")}
       ${renderDesktopPrayerCell(row, "maghrib")}
       ${renderDesktopPrayerCell(row, "isha")}
-      <td class="table-cell--date">${row.date}</td>
+      <td class="table-cell--date"><span class="weekly-table-cell-value">${row.date}</span></td>
     </tr>
   `;
 }
