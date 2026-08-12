@@ -274,7 +274,7 @@
   }
 
   .ramadan-month-table-section {
-    padding-block: 72px 32px;
+    padding-block: 72px 22px;
   }
 
   .ramadan-month-table-section .ramadan-table-head {
@@ -283,7 +283,7 @@
 
   .ramadan-month-table-section .schedule-table th,
   .ramadan-month-table-section .schedule-table td {
-    padding-block: 15px;
+    padding-block: 13px;
     padding-inline: 24px;
   }
 }
