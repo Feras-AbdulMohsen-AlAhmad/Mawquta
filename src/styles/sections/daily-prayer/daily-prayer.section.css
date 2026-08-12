@@ -15,6 +15,30 @@
   z-index: 1;
 }
 
+/* Match the Weekly Prayer two-layer toggle control. */
+.daily-prayer-section .daily-prayer-section__badge {
+  min-height: 50px;
+  padding: 5px;
+  border: 1px solid #eaeeec;
+  border-radius: 12px;
+  background: #d3dad5;
+  box-sizing: border-box;
+}
+
+.daily-prayer-section .daily-prayer-section__badge-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 24px;
+  border-radius: 8px;
+  background: #dd9730;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
 .daily-prayer-section::before,
 .daily-prayer-section::after {
   content: "";
@@ -29,16 +53,16 @@
 
 .daily-prayer-section::before {
   inset-inline-start: 0;
-  inline-size: min(34vw, 348px);
-  block-size: min(34vw, 348px);
-  transform: translateY(48px);
+  inline-size: min(16vw, 172px);
+  block-size: min(16vw, 172px);
+  transform: translateY(24px);
   background-image: url("../../../assets/illustrations/daily-prayer/daily-prayer-left-ornament.svg");
 }
 
 .daily-prayer-section::after {
-  inset-inline-end: -24px;
-  inline-size: min(29vw, 300px);
-  block-size: min(29vw, 300px);
+  inset-inline-end: -8px;
+  inline-size: min(16vw, 172px);
+  block-size: min(16vw, 172px);
   background-image: url("../../../assets/illustrations/daily-prayer/daily-prayer-right-ornament.svg");
 }
 
@@ -225,15 +249,15 @@
   }
 
   .daily-prayer-section::before {
-    inline-size: 220px;
-    block-size: 220px;
-    transform: translateY(32px);
+    inline-size: 165px;
+    block-size: 165px;
+    transform: translateY(24px);
   }
 
   .daily-prayer-section::after {
     inset-inline-end: -16px;
-    inline-size: 190px;
-    block-size: 190px;
+    inline-size: 142.5px;
+    block-size: 142.5px;
   }
 
   .daily-prayer-section .daily-prayer-card__inner {
@@ -305,15 +329,15 @@
   }
 
   .daily-prayer-section::before {
-    inline-size: 180px;
-    block-size: 180px;
-    transform: translateY(26px);
+    inline-size: 135px;
+    block-size: 135px;
+    transform: translateY(19.5px);
   }
 
   .daily-prayer-section::after {
     inset-inline-end: -12px;
-    inline-size: 160px;
-    block-size: 160px;
+    inline-size: 120px;
+    block-size: 120px;
   }
 
   .daily-prayer-section .daily-prayer-card {

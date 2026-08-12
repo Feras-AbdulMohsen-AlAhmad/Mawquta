@@ -35,8 +35,8 @@
 }
 
 .hero__corner {
-  width: 116px;
-  height: 116px;
+  width: 87px;
+  height: 87px;
   opacity: 1;
   background-position: center;
   background-repeat: no-repeat;
@@ -68,9 +68,9 @@
 }
 
 .hero__lantern {
-  width: 132px;
-  height: 372px;
-  top: -32px;
+  width: 99px;
+  height: 279px;
+  top: -24px;
   left: 0;
   background: url("../../../../assets/illustrations/hero/hero-ramadan-lanterns.svg")
     center/contain no-repeat;

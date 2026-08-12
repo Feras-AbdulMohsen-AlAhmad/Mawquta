@@ -41,6 +41,8 @@
 }
 
 .hero-verse__ornament--left {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
   background-image: url("../../../../assets/illustrations/hero/verse-ornament.svg");
 }
 
@@ -91,8 +93,8 @@
 .date-card__cal {
   width: 32px;
   height: 32px;
-  background: url("../../../../assets/icons/shared/calendar.svg")
-    center/contain no-repeat;
+  background: url("../../../../assets/icons/shared/calendar.svg") center/contain
+    no-repeat;
 }
 
 .date-card__day {
