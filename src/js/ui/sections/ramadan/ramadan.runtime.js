@@ -23,6 +23,7 @@ import {
   MONTH_TABLE_ICON_PATHS,
   RAMADAN_MONTH_TABLE_COLUMNS,
 } from "./components/ramadan-month-table.constants.js";
+import { renderFeedbackState } from "../../shared/feedback/feedback.js";
 
 const AR_WEEKDAYS = [
   "الأحد",
@@ -75,30 +76,12 @@ function getCountdownTitle(nextEvent) {
     : "الوقت المتبقي للإمساك";
 }
 
-function renderRamadanLoadingState() {
-  return '<div class="ramadan-prayer-loading" role="status" aria-label="جارٍ تحميل بيانات رمضان">جارٍ تحميل بيانات رمضان…</div>';
-}
+const renderRamadanLoadingState = () => renderFeedbackState({ type: "loading", className: "ramadan-prayer-loading", message: "جارٍ تحميل بيانات رمضان…", ariaLabel: "جارٍ تحميل بيانات رمضان" });
+const renderRamadanRevalidatingState = () => renderFeedbackState({ type: "loading", className: "ramadan-prayer-stale", message: "جارٍ التحديث…" });
+const renderRamadanEmptyDataState = () => renderFeedbackState({ type: "empty", className: "ramadan-prayer-empty", message: "لا تتوفر بيانات رمضان حالياً." });
 
-function renderRamadanRevalidatingState() {
-  return '<div class="ramadan-prayer-stale" role="status">جارٍ التحديث…</div>';
-}
-
-function renderRamadanEmptyDataState() {
-  return '<div class="ramadan-prayer-empty" role="status">لا تتوفر بيانات رمضان حالياً.</div>';
-}
-
-function renderRamadanOffSeasonState() {
-  return '<div class="ramadan-prayer-empty" role="status">لا يوجد رمضان ضمن الشهر الحالي.</div>';
-}
-
-function renderRamadanErrorState() {
-  return `
-    <div class="ramadan-prayer-error" role="alert">
-      <p class="ramadan-prayer-error__message">تعذر تحميل بيانات رمضان.</p>
-      <button type="button" class="ramadan-prayer-error__retry" data-ramadan-retry>إعادة المحاولة</button>
-    </div>
-  `;
-}
+const renderRamadanOffSeasonState = () => renderFeedbackState({ type: "empty", className: "ramadan-prayer-empty", message: "لا يوجد رمضان ضمن الشهر الحالي." });
+const renderRamadanErrorState = () => renderFeedbackState({ type: "error", className: "ramadan-prayer-error", message: "تعذر تحميل بيانات رمضان.", retryAttribute: "ramadan-retry" });
 
 export function createRamadanRuntime(options = {}) {
   const {

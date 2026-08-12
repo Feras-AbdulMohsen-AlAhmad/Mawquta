@@ -11,6 +11,7 @@ function renderPrayerCard(prayer, activeKey) {
 
   return `
     <article class="daily-prayer-card daily-prayer-card--${prayer.key}${activeClass}" role="listitem" aria-label="${getPrayerAriaLabel(prayer)}"${activeAttributes}>
+      <img class="daily-prayer-card__artwork" src="assets/illustrations/daily-prayer/${prayer.key}-card-artwork.png" alt="" aria-hidden="true" />
       <div class="daily-prayer-card__inner">
         <h3 class="daily-prayer-card__name">${prayer.label}</h3>
         <div class="daily-prayer-card__time-wrap">

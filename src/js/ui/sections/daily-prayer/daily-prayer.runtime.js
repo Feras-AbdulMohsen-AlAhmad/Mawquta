@@ -20,6 +20,7 @@ import {
 } from "../../../utils/time.util.js";
 import { renderDailyPrayerCards } from "./components/prayer-cards.component.js";
 import { updateHeroSectionLiveState } from "../hero/hero.section.js";
+import { renderFeedbackState } from "../../shared/feedback/feedback.js";
 
 function defaultFormatLocation(location) {
   if (!location) return "الموقع غير محدد";
@@ -31,22 +32,9 @@ function defaultFormatLocation(location) {
   return `${location.city}، ${location.country}`;
 }
 
-function renderDailyLoadingState() {
-  return '<div class="daily-prayer-loading" role="status" aria-label="جارٍ تحميل مواقيت الصلاة اليومية">جارٍ تحميل مواقيت اليوم…</div>';
-}
-
-function renderDailyEmptyState() {
-  return '<div class="daily-prayer-empty" role="status">لا تتوفر بيانات مواقيت لهذا اليوم حالياً.</div>';
-}
-
-function renderDailyErrorState() {
-  return `
-    <div class="daily-prayer-error" role="alert">
-      <p class="daily-prayer-error__message">تعذر تحميل مواقيت الصلاة اليومية.</p>
-      <button type="button" class="daily-prayer-error__retry" data-daily-retry>إعادة المحاولة</button>
-    </div>
-  `;
-}
+const renderDailyLoadingState = () => renderFeedbackState({ type: "loading", className: "daily-prayer-loading", message: "جارٍ تحميل مواقيت اليوم…", ariaLabel: "جارٍ تحميل مواقيت الصلاة اليومية" });
+const renderDailyEmptyState = () => renderFeedbackState({ type: "empty", className: "daily-prayer-empty", message: "لا تتوفر بيانات مواقيت لهذا اليوم حالياً." });
+const renderDailyErrorState = () => renderFeedbackState({ type: "error", className: "daily-prayer-error", message: "تعذر تحميل مواقيت الصلاة اليومية.", retryAttribute: "daily-retry" });
 
 export function createDailyPrayerRuntime(options = {}) {
   const {

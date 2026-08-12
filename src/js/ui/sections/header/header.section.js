@@ -14,7 +14,7 @@ export function renderHeaderSection(rootElement, sectionData = {}) {
     <div class="container-xl">
       <div class="site-header__inner">
         ${renderHeaderBrand(HEADER_ICON_PATHS.brandLogo)}
-        ${renderHeaderMenuToggle()}
+        ${renderHeaderMenuToggle(HEADER_ICON_PATHS.menu)}
         ${renderHeaderNavigation(HEADER_ICON_PATHS)}
       </div>
     </div>

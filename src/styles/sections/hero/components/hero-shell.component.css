@@ -35,8 +35,8 @@
 }
 
 .hero__corner {
-  width: 116px;
-  height: 116px;
+  width: 87px;
+  height: 87px;
   opacity: 1;
   background-position: center;
   background-repeat: no-repeat;
@@ -68,11 +68,11 @@
 }
 
 .hero__lantern {
-  width: 132px;
-  height: 372px;
-  top: -32px;
+  width: 99px;
+  height: 279px;
+  top: -24px;
   left: 0;
-  background: url("../../../../assets/icons/sections/hero/ramadan-lantern.svg")
+  background: url("../../../../assets/illustrations/hero/hero-ramadan-lanterns.svg")
     center/contain no-repeat;
   opacity: 1;
   z-index: 1;
@@ -83,7 +83,7 @@
   aspect-ratio: 1 / 1;
   left: clamp(0px, 37.92vw, 728px);
   top: clamp(260px, 54.34%, 476px);
-  background: url("../../../../assets/icons/sections/hero/center-pattern.svg")
+  background: url("../../../../assets/patterns/hero/hero-mandala-pattern.svg")
     center/contain no-repeat;
   opacity: 1;
 }
@@ -94,7 +94,7 @@
   top: 32px;
   left: 50%;
   transform: translateX(-50%);
-  background: url("../../../../assets/icons/sections/hero/bism-allah-alrahman-alrahim.svg")
+  background: url("../../../../assets/illustrations/hero/bismillah-calligraphy.svg")
     center/contain no-repeat;
   opacity: 1;
   z-index: 1;

@@ -1,4 +1,4 @@
-export function renderHeaderMenuToggle() {
+export function renderHeaderMenuToggle(menuIconPath) {
   return `
     <button
       type="button"
@@ -8,7 +8,7 @@ export function renderHeaderMenuToggle() {
       aria-controls="siteNav"
       aria-expanded="false"
     >
-      <span></span><span></span><span></span>
+      <img class="header-menu-toggle__icon" src="${menuIconPath}" alt="" width="24" height="24" />
     </button>
   `;
 }

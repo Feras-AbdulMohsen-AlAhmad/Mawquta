@@ -28,7 +28,11 @@ function closePicker(modalElement) {
   bootstrapApi.Modal.getOrCreateInstance(modalElement).hide();
 }
 
-export function bindLocationPickerInteractions(rootDocument, locationService) {
+export function bindLocationPickerInteractions(
+  rootDocument,
+  locationService,
+  toastController = null,
+) {
   const modalElement = rootDocument?.getElementById("qiblaCityModal");
   if (!modalElement || !locationService) return () => {};
 
@@ -128,6 +132,7 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
 
   async function runSearch(query, sequence, abortController) {
     setStatus(statusElement, "جارٍ البحث...");
+    if (queryInput) queryInput.setAttribute("aria-busy", "true");
 
     let results;
     try {
@@ -143,11 +148,13 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
         "تعذر الوصول إلى خدمة البحث. حاول مجددًا.",
         true,
       );
+      toastController?.show("error", "تعذر البحث عن المدينة. حاول مجددًا.", { key: "location-search-error" });
       return;
     }
 
     if (sequence !== searchSequence || abortController.signal.aborted) return;
     renderSearchResults(results);
+    if (queryInput) queryInput.setAttribute("aria-busy", "false");
   }
 
   function handleQueryInput() {
@@ -162,6 +169,7 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
 
     if (query.length < 3) {
       setStatus(statusElement, "أدخل ثلاثة أحرف على الأقل للبحث.");
+      queryInput?.setAttribute("aria-busy", "false");
       return;
     }
 
@@ -183,7 +191,10 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
 
     const requestToken = locationService.beginRequest();
     setStatus(statusElement, "بانتظار إذن الموقع وتحديد المنطقة الزمنية...");
-    if (geolocationButton) geolocationButton.disabled = true;
+    if (geolocationButton) {
+      geolocationButton.disabled = true;
+      geolocationButton.setAttribute("aria-busy", "true");
+    }
 
     try {
       const coordinates = await getCurrentCoords();
@@ -207,6 +218,7 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
 
       presentCandidate(nextCandidate, "geolocation", requestToken);
       locationService.completeCandidateRequest(requestToken);
+      toastController?.show("success", "تم تحديد موقعك. راجعه ثم أكد الاختيار.", { key: "geolocation-success" });
     } catch (error) {
       locationService.failRequest(requestToken, error);
       if (locationService.isRequestCurrent(requestToken)) {
@@ -215,6 +227,7 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
           "تعذر اعتماد موقع المتصفح أو منطقته الزمنية. بقي الموقع الحالي دون تغيير.",
           true,
         );
+        toastController?.show("error", "تعذر تحديد موقعك. بقي الموقع الحالي دون تغيير.", { key: "geolocation-error" });
       }
     } finally {
       if (
@@ -223,6 +236,7 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
         geolocationButton
       ) {
         geolocationButton.disabled = false;
+        geolocationButton.setAttribute("aria-busy", "false");
       }
     }
   }
@@ -247,6 +261,7 @@ export function bindLocationPickerInteractions(rootDocument, locationService) {
       }
 
       setStatus(statusElement, "تم اعتماد الموقع وحفظ اختيارك بأمان.");
+      toastController?.show("success", "تم اعتماد الموقع بنجاح.", { key: "location-accepted" });
       clearCandidate();
       closePicker(modalElement);
     } catch {

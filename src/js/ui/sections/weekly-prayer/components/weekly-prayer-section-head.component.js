@@ -3,7 +3,7 @@ import { renderSectionHeadChip } from "../../../shared/components/section/sectio
 export function renderWeeklyPrayerSectionHead({
   cityName,
   metaText,
-  eyebrowText = "في مدينتك الآن",
+  eyebrowText = "مواقيت الصلاة في",
 }) {
   return `
     <div class="section-head weekly-prayer-section__head">
@@ -18,7 +18,7 @@ export function renderWeeklyPrayerSectionHead({
         <h2 class="section-city__name weekly-prayer-section__name section-head__title" data-weekly-city>${cityName}</h2>
         <span class="section-city__meta weekly-prayer-section__meta section-head__meta">${metaText}</span>
       </div>
-      <span class="section-badge weekly-prayer-section__badge section-head__badge">الأسبوعية</span>
+      <span class="section-badge weekly-prayer-section__badge section-head__badge"><span class="weekly-prayer-section__badge-label">الاسبوعية</span></span>
     </div>
   `;
 }

@@ -34,6 +34,7 @@ import {
   getTimingsByCoords,
 } from "../api/aladhan.api.js";
 import { bindLocationPickerInteractions } from "../ui/sections/qibla/interactions/location-picker.interactions.js";
+import { createToastController } from "../ui/shared/feedback/feedback.js";
 
 const locationService = createLocationService();
 
@@ -137,6 +138,7 @@ function bootstrapApp() {
   renderQiblaSection(appQiblaRoot);
   renderRamadanSection(appRamadanRoot);
   renderFooterSection(appFooterRoot);
+  const toastController = createToastController(document);
 
   weeklyPrayerRuntime = createWeeklyPrayerRuntime({
     rootElement: appWeeklyPrayerRoot,
@@ -172,6 +174,7 @@ function bootstrapApp() {
   unbindLocationPicker = bindLocationPickerInteractions(
     document,
     locationService,
+    toastController,
   );
   registerCleanup(() => unbindLocationPicker?.());
 }

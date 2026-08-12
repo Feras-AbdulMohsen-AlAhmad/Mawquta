@@ -21,7 +21,7 @@ export function renderDailyPrayerSectionHead({
           <span class="daily-prayer-section__meta-prefix">الحالة:</span>
         </span>
       </div>
-      <span class="section-badge daily-prayer-section__badge section-head__badge">اليومية</span>
+      <span class="section-badge daily-prayer-section__badge section-head__badge"><span class="daily-prayer-section__badge-label">اليومية</span></span>
     </div>
   `;
 }

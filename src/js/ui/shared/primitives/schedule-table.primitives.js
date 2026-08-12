@@ -24,7 +24,7 @@ export function resolveScheduleTableHeaderClass(
 }
 
 export function renderScheduleTableHeaderCell(column, headerClassName) {
-  return `<th scope="col" class="${headerClassName}"><span class="schedule-table-head-label"><span class="schedule-table-head-icon" aria-hidden="true"><img src="${column.icon}" alt="" loading="lazy" decoding="async" /></span><span>${column.label}</span></span></th>`;
+  return `<th scope="col" class="${headerClassName}"><span class="schedule-table-head-label"><span class="schedule-table-head-icon" aria-hidden="true"><img src="${column.icon}" alt="" loading="lazy" decoding="async" /></span><span class="schedule-table-head-text">${column.label}</span></span></th>`;
 }
 
 export function renderScheduleTableHeader(

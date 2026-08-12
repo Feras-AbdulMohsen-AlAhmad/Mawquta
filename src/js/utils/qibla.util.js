@@ -26,6 +26,25 @@ export function normalizeBearing(value) {
   return ((value % 360) + 360) % 360;
 }
 
+export const normalize360 = normalizeBearing;
+
+export function shortestSignedAngle(value) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new Error("qibla util: angle must be a finite number");
+  }
+  return ((value + 180) % 360 + 360) % 360 - 180;
+}
+
+export function smoothCircularAngle(previous, current, factor = 0.2) {
+  if (!Number.isFinite(previous) || !Number.isFinite(current)) {
+    throw new Error("qibla util: smoothing angles must be finite");
+  }
+  if (!Number.isFinite(factor) || factor <= 0 || factor > 1) {
+    throw new Error("qibla util: smoothing factor must be in (0, 1]");
+  }
+  return normalize360(previous + shortestSignedAngle(current - previous) * factor);
+}
+
 // Rounds a bearing to the nearest integer degree used for display.
 export function roundDegreesForDisplay(bearing) {
   return Math.round(normalizeBearing(bearing));

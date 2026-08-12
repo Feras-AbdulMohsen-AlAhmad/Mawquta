@@ -16,7 +16,7 @@
   }
 
   .hero__center-pattern {
-    width: clamp(420px, 37vw, 680px);
+    width: clamp(315px, 27.75vw, 510px);
     left: clamp(220px, 36vw, 640px);
     top: clamp(290px, 56%, 470px);
   }
@@ -71,7 +71,7 @@
   }
 
   .hero__center-pattern {
-    width: clamp(360px, 48vw, 580px);
+    width: clamp(270px, 36vw, 435px);
     left: clamp(180px, 33vw, 420px);
     top: clamp(320px, 55%, 430px);
     opacity: 1;
@@ -181,8 +181,8 @@
   }
 
   .hero__corner {
-    width: 92px;
-    height: 92px;
+    width: 69px;
+    height: 69px;
   }
 
   .hero__basmala {
@@ -390,7 +390,7 @@
 
   .hero-prayer-card {
     width: 100%;
-    min-height: 500px;
+    min-height: clamp(440px, 116vw, 500px);
     padding: 18px 14px 16px;
     border-radius: 18px;
     gap: 16px;
@@ -466,8 +466,8 @@
   }
 
   .hero__corner {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
   }
 
   .hero__basmala {
@@ -614,7 +614,7 @@
   }
 
   .hero-prayer-card {
-    min-height: 420px;
+    min-height: clamp(390px, 112vw, 430px);
     padding: 12px 10px;
   }
 

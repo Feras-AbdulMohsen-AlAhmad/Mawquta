@@ -29,10 +29,11 @@ export function renderHeaderControls(iconPaths) {
 
   return `
     <div class="site-header__controls">
-      ${renderHeaderCityChip()}
+      ${renderHeaderCityChip(iconPaths.location)}
       ${renderHeaderLanguageDropdown({
         currentLanguage,
         options: languageOptions,
+        chevronPath: iconPaths.chevron,
       })}
       ${renderHeaderThemeToggle(iconPaths.moon)}
     </div>

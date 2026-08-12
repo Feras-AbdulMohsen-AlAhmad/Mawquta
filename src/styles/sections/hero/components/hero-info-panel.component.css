@@ -37,11 +37,13 @@
 }
 
 .hero-verse__ornament--right {
-  background-image: url("../../../../assets/icons/sections/hero/quran-pattern-left.svg");
+  background-image: url("../../../../assets/illustrations/hero/verse-ornament.svg");
 }
 
 .hero-verse__ornament--left {
-  background-image: url("../../../../assets/icons/sections/hero/quran-pattern-right.svg");
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  background-image: url("../../../../assets/illustrations/hero/verse-ornament.svg");
 }
 
 /* Date panel and CTA */
@@ -68,7 +70,7 @@
   width: 200px;
   height: 200px;
   pointer-events: none;
-  background: url("../../../../assets/icons/sections/hero/center-pattern.svg")
+  background: url("../../../../assets/patterns/hero/date-card-mandala-pattern.svg")
     center/contain no-repeat;
   opacity: 1;
 }
@@ -91,8 +93,8 @@
 .date-card__cal {
   width: 32px;
   height: 32px;
-  background: url("../../../../assets/icons/sections/hero/hero-calendar-icon.svg")
-    center/contain no-repeat;
+  background: url("../../../../assets/icons/shared/calendar.svg") center/contain
+    no-repeat;
 }
 
 .date-card__day {
