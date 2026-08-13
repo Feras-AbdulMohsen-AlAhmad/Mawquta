@@ -1,4 +1,8 @@
 function renderFooterLinkItem(linkItem) {
+  if (!linkItem.href) {
+    return `<li><span>${linkItem.label}</span></li>`;
+  }
+
   return `<li><a href="${linkItem.href}">${linkItem.label}</a></li>`;
 }
 

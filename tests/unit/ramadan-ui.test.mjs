@@ -25,7 +25,13 @@ const constantsUrl = pathToFileURL(
 const { renderRamadanSection } = await import(sectionUrl);
 const { renderRamadanTopbar } = await import(topbarUrl);
 const { renderRamadanCountdownCard } = await import(countdownUrl);
-const { renderRamadanMonthTableGrid } = await import(gridUrl);
+const {
+  renderRamadanMonthTableGrid,
+  renderRamadanTimetableLoading,
+  renderRamadanTimetableNoLocation,
+  renderRamadanTimetableNoData,
+  renderRamadanTimetableError,
+} = await import(gridUrl);
 const { MONTH_TABLE_ICON_PATHS, RAMADAN_MONTH_TABLE_COLUMNS } =
   await import(constantsUrl);
 
@@ -188,6 +194,14 @@ await checkAsync("UI-05", async () => {
   for (const forbidden of ["2026", "15:42", "04:12", "18:42", "1448", "أحد</td>", ">05:00<"]) {
     assert.ok(!root.innerHTML.includes(forbidden), `section no static fixture ${forbidden}`);
   }
+});
+
+await checkAsync("UI-06", async () => {
+  assert.ok(renderRamadanTimetableLoading().includes("ramadan-timetable-skeleton"));
+  assert.ok(renderRamadanTimetableNoLocation().includes("اختر مدينة لعرض إمساكية رمضان"));
+  assert.ok(renderRamadanTimetableNoData().includes("إمساكية رمضان غير متاحة"));
+  assert.ok(renderRamadanTimetableError().includes("data-ramadan-retry"));
+  assert.ok(!renderRamadanTimetableLoading().includes("05:42"));
 });
 
 const passed = results.filter((r) => r.pass).length;

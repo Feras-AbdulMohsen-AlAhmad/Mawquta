@@ -6,7 +6,7 @@ export const MONTH_TABLE_ICON_PATHS = {
   fajr: "assets/icons/shared/prayer/fajr.svg",
   date: "assets/icons/shared/prayer/date.svg",
   day: "assets/icons/shared/prayer/today.svg",
-  ramadan: "assets/icons/sections/ramadan/moon-and-stars.svg",
+  ramadan: "assets/icons/ramadan/ramadan-crescent-star.svg",
   download: "assets/icons/sections/ramadan/action-download.svg",
   share: "assets/icons/sections/ramadan/action-share.svg",
 };

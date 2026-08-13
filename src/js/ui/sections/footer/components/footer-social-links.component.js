@@ -1,8 +1,16 @@
 function renderFooterSocialItem(item) {
+  const content = `
+    <img src="${item.iconPath}" alt="" aria-hidden="true" />
+    <span>${item.label}</span>
+  `;
+
+  if (!item.href) {
+    return `<span class="footer-social-inline__item" aria-label="${item.ariaLabel}">${content}</span>`;
+  }
+
   return `
-    <a class="footer-social-inline__item" href="${item.href}" aria-label="${item.ariaLabel}">
-      <img src="${item.iconPath}" alt="" aria-hidden="true" />
-      <span>${item.label}</span>
+    <a class="footer-social-inline__item" href="${item.href}" aria-label="${item.ariaLabel}" target="_blank" rel="noreferrer noopener">
+      ${content}
     </a>
   `;
 }
@@ -10,19 +18,19 @@ function renderFooterSocialItem(item) {
 export function renderFooterSocialLinks(iconPaths) {
   const socialLinks = [
     {
-      href: "#",
+      href: null,
       ariaLabel: "Instagram",
       iconPath: iconPaths.instagram,
       label: "@firas_a7mad",
     },
     {
-      href: "#",
+      href: null,
       ariaLabel: "LinkedIn",
       iconPath: iconPaths.linkedin,
       label: "Firas AL-Ahmad",
     },
     {
-      href: "#",
+      href: null,
       ariaLabel: "GitHub",
       iconPath: iconPaths.github,
       label: "Firas AL-Ahmad",

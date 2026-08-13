@@ -20,6 +20,55 @@ const ROW_FIELD_BY_COLUMN = {
   date: "gregorianDate",
 };
 
+function renderTimetableState({ title, message, actionLabel, actionAttribute = "" , type }) {
+  return `
+    <div class="ramadan-timetable-state ramadan-timetable-state--${type}" role="status">
+      <div class="ramadan-timetable-state__icon" aria-hidden="true"></div>
+      <h3>${title}</h3>
+      ${message ? `<p>${message}</p>` : ""}
+      ${actionLabel ? `<button type="button" class="ramadan-timetable-state__action" ${actionAttribute}>${actionLabel}</button>` : ""}
+    </div>
+  `;
+}
+
+export function renderRamadanTimetableLoading() {
+  return `
+    <div class="ramadan-timetable-skeleton" role="status" aria-label="جارٍ تحميل إمساكية رمضان">
+      <span class="ramadan-timetable-skeleton__label">جارٍ تحميل إمساكية رمضان...</span>
+      <div class="ramadan-timetable-skeleton__head"></div>
+      ${Array.from({ length: 7 }, () => '<div class="ramadan-timetable-skeleton__row"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>').join("")}
+    </div>
+  `;
+}
+
+export function renderRamadanTimetableNoLocation() {
+  return renderTimetableState({
+    type: "empty no-location",
+    title: "اختر مدينة لعرض إمساكية رمضان",
+    message: "ستظهر هنا مواقيت الإمساك والإفطار وأوقات الصلاة طوال الشهر",
+    actionLabel: "اختيار مدينة",
+    actionAttribute: "data-global-location-control",
+  });
+}
+
+export function renderRamadanTimetableNoData() {
+  return renderTimetableState({
+    type: "empty no-data",
+    title: "إمساكية رمضان غير متاحة لهذه المدينة حاليًا",
+    actionLabel: "اختيار مدينة أخرى",
+    actionAttribute: "data-global-location-control",
+  });
+}
+
+export function renderRamadanTimetableError() {
+  return renderTimetableState({
+    type: "error",
+    title: "تعذر تحميل إمساكية رمضان",
+    actionLabel: "إعادة المحاولة",
+    actionAttribute: "data-ramadan-retry",
+  });
+}
+
 function resolveRamadanCellClass(columnKey) {
   if (columnKey === "day") {
     return "table-cell--day";
@@ -44,7 +93,7 @@ function renderRamadanTableCell(row, columnKey) {
     row.activePrayerKeys.includes(columnKey);
 
   if (isActivePrayerCell) {
-    return `<td class="table-cell--active"><span class="table-time-pill">${row[columnKey]}</span></td>`;
+    return `<td class="table-cell--active"><span class="table-time-pill">${row[columnKey] ?? "--:--"}</span></td>`;
   }
 
   const rowField = ROW_FIELD_BY_COLUMN[columnKey] ?? columnKey;
@@ -78,7 +127,7 @@ function renderRamadanMobileList(rows, iconPaths) {
       dateIconPath: iconPaths.date,
       prayers: RAMADAN_MOBILE_PRAYERS.map((prayerConfig) => ({
         label: prayerConfig.label,
-        time: row[prayerConfig.key],
+        time: row[prayerConfig.key] ?? "--:--",
         iconPath: iconPaths[prayerConfig.key],
         isActive:
           Array.isArray(row.activePrayerKeys) &&

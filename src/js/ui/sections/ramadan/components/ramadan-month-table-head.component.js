@@ -35,7 +35,7 @@ function renderRamadanTableHeadActions(iconPaths) {
       ${actionButtons
         .map(
           (actionButton, actionIndex) =>
-            `<button type="button" class="ramadan-table-action" data-ramadan-tab aria-selected="${actionIndex === 0 ? "true" : "false"}"><span>${actionButton.label}</span><img src="${actionButton.iconPath}" alt="" loading="lazy" decoding="async" /></button>`,
+            `<button type="button" class="ramadan-table-action" data-ramadan-tab data-ramadan-table-action aria-selected="${actionIndex === 0 ? "true" : "false"}" disabled><span>${actionButton.label}</span><img src="${actionButton.iconPath}" alt="" loading="lazy" decoding="async" /></button>`,
         )
         .join("\n")}
     </div>
@@ -47,7 +47,7 @@ export function renderRamadanMonthTableHead(iconPaths) {
     <div class="ramadan-table-head">
       <div class="ramadan-table-head__content">
         ${renderRamadanTableHeadChip(iconPaths)}
-        <h2 class="ramadan-table-title">جدول شهر رمضان</h2>
+        <h2 class="ramadan-table-title">إمساكية شهر رمضان</h2>
       </div>
 
       ${renderRamadanTableHeadActions(iconPaths)}

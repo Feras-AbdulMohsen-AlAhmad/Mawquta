@@ -69,9 +69,54 @@
   inset-block-start: clamp(-48px, -3.2vw, -36px);
   width: clamp(164px, 11vw, 200px);
   height: clamp(164px, 11vw, 200px);
-  background: url("../../../../assets/icons/sections/ramadan/pattern-city-and-history.svg")
-    center/contain no-repeat;
+  background: url("../../../../assets/patterns/shared/islamic-mandala-pattern.svg")
+    left center/contain no-repeat;
   pointer-events: none;
+}
+
+@media (max-width: 767.98px) {
+  .ramadan-topbar__chip::before {
+    inset-inline-start: -60px;
+    inset-block-start: -44px;
+    width: 170px;
+    height: 170px;
+    background-position: left center;
+    background-size: contain;
+  }
+
+  .ramadan-topbar__chip {
+    min-block-size: 58px;
+    padding: 12px 14px;
+  }
+
+  .ramadan-topbar__chip-content {
+    gap: var(--ui-space-2);
+  }
+
+  .ramadan-topbar__chip-label,
+  .ramadan-topbar__chip-value {
+    font-size: var(--ui-font-xs);
+    line-height: var(--ui-lh-ui);
+  }
+
+  .ramadan-topbar__summary {
+    gap: var(--ui-space-2);
+  }
+
+  .ramadan-topbar__month,
+  .ramadan-topbar__month.section-head__title {
+    font-size: var(--ui-font-title-md);
+  }
+
+  .ramadan-topbar__meta {
+    min-block-size: 28px;
+    padding: 2px 8px;
+  }
+
+  .ramadan-topbar__meta-prefix,
+  .ramadan-topbar__meta-value {
+    font-size: var(--ui-font-2xs);
+  }
 }
 
 .ramadan-topbar__chip > * {
@@ -131,11 +176,11 @@
 }
 
 .ramadan-topbar__icon--calendar {
-  background-image: url("../../../../assets/icons/sections/ramadan/topbar-calendar-icon.svg");
+  background-image: url("../../../../assets/icons/shared/calendar.svg");
 }
 
 .ramadan-topbar__icon--location {
-  background-image: url("../../../../assets/icons/sections/ramadan/topbar-location-icon.svg");
+  background-image: url("../../../../assets/icons/shared/location-pin.svg");
 }
 
 .ramadan-topbar__summary {

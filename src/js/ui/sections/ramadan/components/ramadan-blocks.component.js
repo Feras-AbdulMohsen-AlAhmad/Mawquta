@@ -13,7 +13,7 @@ export function renderRamadanMonthTable() {
 
       <div data-ramadan-month-table-grid></div>
 
-      <div class="ramadan-month-table__more">
+      <div class="ramadan-month-table__more" data-ramadan-table-more>
         <button type="button" class="section-more-button section-more-button--filled" data-rt-load-more>عرض المزيد</button>
       </div>
     </section>

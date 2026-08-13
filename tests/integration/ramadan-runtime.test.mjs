@@ -217,7 +217,7 @@ await checkAsync("RR-01", async () => {
   assert.equal(ramadan.length, 1);
   assert.equal(ramadan.calls[0].city, "Damascus");
   assert.equal(hook(root, "[data-ramadan-city]"), "دمشق، سوريا");
-  assert.equal(hook(root, "[data-ramadan-month]"), "رمضان 1447");
+  assert.equal(hook(root, "[data-ramadan-month]"), "رمضان 2026");
   assert.equal(hook(root, "[data-ramadan-day]"), "26");
   assert.equal(hook(root, "[data-ramadan-day-label]"), "اليوم");
   assert.equal(hook(root, "[data-ramadan-imsak]"), "05:28");
@@ -457,7 +457,7 @@ await checkAsync("RR-08", async () => {
   assert.equal(hook(root, "[data-ramadan-iftar]"), "--:--");
   assert.equal(hook(root, "[data-ramadan-countdown-hours]"), "--");
   assert.equal(hook(root, "[data-ramadan-countdown-title]"), "—");
-  assert.equal(tableHtml(root), "", "no table off-season");
+  assert.ok(tableHtml(root).includes("إمساكية رمضان غير متاحة"), "no-data state off-season");
   assert.ok(dataHtml(root).includes("لا يوجد رمضان ضمن الشهر الحالي."), "off-season message");
   runtime.destroy();
 });

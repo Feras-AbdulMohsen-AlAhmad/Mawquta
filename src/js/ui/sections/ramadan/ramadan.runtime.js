@@ -15,10 +15,17 @@ import {
 import {
   getDateKeyInTimeZone,
   getTimePartsInTimeZone,
+  buildOccursAt,
   computeRemainingSeconds,
   formatRemaining,
 } from "../../../utils/time.util.js";
 import { renderRamadanMonthTableGrid } from "./components/ramadan-month-table-grid.component.js";
+import {
+  renderRamadanTimetableLoading,
+  renderRamadanTimetableNoLocation,
+  renderRamadanTimetableNoData,
+  renderRamadanTimetableError,
+} from "./components/ramadan-month-table-grid.component.js";
 import {
   MONTH_TABLE_ICON_PATHS,
   RAMADAN_MONTH_TABLE_COLUMNS,
@@ -76,6 +83,14 @@ function getCountdownTitle(nextEvent) {
     : "الوقت المتبقي للإمساك";
 }
 
+function getProgressPercent(contract, nowDate) {
+  if (!contract?.imsak || !contract?.maghrib || !contract?.dateKey || !contract?.timezone) return 0;
+  const start = buildOccursAt({ dateKey: contract.dateKey, time: contract.imsak, timeZone: contract.timezone }).getTime();
+  const end = buildOccursAt({ dateKey: contract.dateKey, time: contract.maghrib, timeZone: contract.timezone }).getTime();
+  if (end <= start) return 0;
+  return Math.round(Math.max(0, Math.min(1, (nowDate.getTime() - start) / (end - start))) * 100);
+}
+
 const renderRamadanLoadingState = () => renderFeedbackState({ type: "loading", className: "ramadan-prayer-loading", message: "جارٍ تحميل بيانات رمضان…", ariaLabel: "جارٍ تحميل بيانات رمضان" });
 const renderRamadanRevalidatingState = () => renderFeedbackState({ type: "loading", className: "ramadan-prayer-stale", message: "جارٍ التحديث…" });
 const renderRamadanEmptyDataState = () => renderFeedbackState({ type: "empty", className: "ramadan-prayer-empty", message: "لا تتوفر بيانات رمضان حالياً." });
@@ -121,10 +136,30 @@ export function createRamadanRuntime(options = {}) {
       hours: rootElement?.querySelector("[data-ramadan-countdown-hours]"),
       minutes: rootElement?.querySelector("[data-ramadan-countdown-minutes]"),
       seconds: rootElement?.querySelector("[data-ramadan-countdown-seconds]"),
+      progressLabel: rootElement?.querySelector("[data-ramadan-progress-label]"),
+      progressImsak: rootElement?.querySelector("[data-ramadan-progress-imsak]"),
+      progressIftar: rootElement?.querySelector("[data-ramadan-progress-iftar]"),
+      progressFill: rootElement?.querySelector("[data-ramadan-progress-fill]"),
+      progressTrack: rootElement?.querySelector("[role=progressbar]"),
       tableGrid: rootElement?.querySelector("[data-ramadan-month-table-grid]"),
+      tableMore: rootElement?.querySelector("[data-ramadan-table-more]"),
+      tableActions: typeof rootElement?.querySelectorAll === "function"
+        ? rootElement.querySelectorAll("[data-ramadan-table-action]")
+        : [],
       headHijri: rootElement?.querySelector("[data-rt-head-hijri]"),
       headGregorian: rootElement?.querySelector("[data-rt-head-gregorian]"),
     };
+  }
+
+  function setTimetableState(elements, html, { hasData = false, showMore = false } = {}) {
+    if (elements.tableGrid) elements.tableGrid.innerHTML = html;
+    elements.tableActions?.forEach((button) => {
+      if (button) button.disabled = !hasData;
+      if (typeof button?.setAttribute === "function") {
+        button.setAttribute("aria-disabled", String(!hasData));
+      }
+    });
+    if (elements.tableMore) elements.tableMore.hidden = !showMore;
   }
 
   function renderStatus(elements, html) {
@@ -142,6 +177,11 @@ export function createRamadanRuntime(options = {}) {
     if (elements.hours) elements.hours.textContent = "--";
     if (elements.minutes) elements.minutes.textContent = "--";
     if (elements.seconds) elements.seconds.textContent = "--";
+    if (elements.progressLabel) elements.progressLabel.textContent = "--%";
+    if (elements.progressImsak) elements.progressImsak.textContent = "--:--";
+    if (elements.progressIftar) elements.progressIftar.textContent = "--:--";
+    if (elements.progressFill?.style) elements.progressFill.style.inlineSize = "0%";
+    if (typeof elements.progressTrack?.setAttribute === "function") elements.progressTrack.setAttribute("aria-valuenow", "0");
     if (elements.tableGrid) elements.tableGrid.innerHTML = "";
     if (elements.headHijri) elements.headHijri.textContent = "—";
     if (elements.headGregorian) elements.headGregorian.textContent = "—";
@@ -170,6 +210,10 @@ export function createRamadanRuntime(options = {}) {
     if (elements.hours) elements.hours.textContent = parts.hours;
     if (elements.minutes) elements.minutes.textContent = parts.minutes;
     if (elements.seconds) elements.seconds.textContent = parts.seconds;
+    const progress = getProgressPercent(state.contract, current);
+    if (elements.progressLabel) elements.progressLabel.textContent = `${progress}%`;
+    if (elements.progressFill?.style) elements.progressFill.style.inlineSize = `${progress}%`;
+    if (typeof elements.progressTrack?.setAttribute === "function") elements.progressTrack.setAttribute("aria-valuenow", String(progress));
   }
 
   function renderSuccess(elements) {
@@ -186,17 +230,19 @@ export function createRamadanRuntime(options = {}) {
 
     if (contract.isRamadan) {
       if (elements.month) {
-        elements.month.textContent = `${contract.hijriDate.monthName} ${contract.hijriDate.year}`;
+        elements.month.textContent = `${contract.hijriDate.monthName} ${contract.dateKey.slice(0, 4)}`;
       }
       if (elements.dayLabel) elements.dayLabel.textContent = "اليوم";
       if (elements.day) elements.day.textContent = String(contract.ramadanDay);
       if (elements.imsak) elements.imsak.textContent = contract.imsak ?? "--:--";
       if (elements.iftar) elements.iftar.textContent = contract.maghrib ?? "--:--";
+      if (elements.progressImsak) elements.progressImsak.textContent = contract.imsak ?? "--:--";
+      if (elements.progressIftar) elements.progressIftar.textContent = contract.maghrib ?? "--:--";
 
       renderCountdown(elements);
 
       if (elements.tableGrid) {
-        elements.tableGrid.innerHTML = renderRamadanMonthTableGrid({
+        setTimetableState(elements, renderRamadanMonthTableGrid({
           columns: RAMADAN_MONTH_TABLE_COLUMNS,
           rows: contract.monthRows,
           iconPaths: MONTH_TABLE_ICON_PATHS,
@@ -204,7 +250,7 @@ export function createRamadanRuntime(options = {}) {
             ? formatLocation(state.location)
             : "—",
           rangeLabel: contract.monthRangeLabel,
-        });
+        }), { hasData: true, showMore: true });
       }
 
       if (elements.headHijri) {
@@ -218,6 +264,7 @@ export function createRamadanRuntime(options = {}) {
     }
 
     clearDynamicValues(elements);
+    setTimetableState(elements, renderRamadanTimetableNoData());
     return renderRamadanOffSeasonState();
   }
 
@@ -250,6 +297,16 @@ export function createRamadanRuntime(options = {}) {
           : statusHtml,
       );
       return;
+    }
+
+    if (!state.location) {
+      setTimetableState(elements, renderRamadanTimetableNoLocation());
+    } else if (state.status === "loading" || state.status === "stale") {
+      setTimetableState(elements, renderRamadanTimetableLoading());
+    } else if (state.status === "error") {
+      setTimetableState(elements, renderRamadanTimetableError());
+    } else {
+      setTimetableState(elements, renderRamadanTimetableNoData());
     }
 
     clearDynamicValues(elements);

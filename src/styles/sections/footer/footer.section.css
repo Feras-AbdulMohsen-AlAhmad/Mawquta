@@ -129,19 +129,19 @@
 
 @media (min-width: 1200px) {
   .site-footer {
-    padding-block-start: 72px;
-    padding-block-end: 2px;
+    padding-block-start: 96px;
+    padding-block-end: 0;
   }
 
   .footer-content {
-    padding-bottom: 108px;
+    padding-bottom: 24px;
   }
 
   .footer-main-grid {
-    row-gap: 24px;
+    row-gap: 0;
   }
 
   .footer-bottom {
-    min-height: 48px;
+    min-height: 36px;
   }
 }
