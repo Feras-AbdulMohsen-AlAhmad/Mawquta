@@ -1,66 +1,74 @@
-const QIBLA_ICON_PATHS = {
-  decorLeft: "./assets/icons/sections/qibla/qibla-left-sujud.svg",
-  compass: "./assets/icons/sections/qibla/qibla-compass.svg",
-  decorRight: "./assets/icons/sections/qibla/qibla-right-tasbee.svg",
+const QIBLA_ASSETS = {
+  decorLeft: "./assets/illustrations/qibla/qibla-sujud-illustration.svg",
+  decorRight: "./assets/illustrations/qibla/qibla-tasbih-illustration.svg",
 };
 
-const QIBLA_ARROW_SVG = `
-  <svg
-    width="28"
-    height="44"
-    viewBox="0 0 28 44"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <path
-      d="M14 2L26 42L14 33L2 42L14 2Z"
-      fill="#DD9730"
-      stroke="#7A6D79"
-      stroke-width="2"
-      stroke-linejoin="round"
-    />
-  </svg>
-`;
+function point(cx, cy, radius, degrees) {
+  const angle = ((degrees - 90) * Math.PI) / 180;
+  return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
+}
+
+function tick(degrees) {
+  const major = degrees % 30 === 0;
+  const [x1, y1] = point(200, 200, major ? 174 : 180, degrees);
+  const [x2, y2] = point(200, 200, 185, degrees);
+  const className = major ? " qibla-tick--major" : "";
+  return `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" class="qibla-tick${className}" />`;
+}
+
+function dialTicks() {
+  return Array.from({ length: 36 }, (_, index) => tick(index * 10)).join("");
+}
 
 export function renderQiblaVisual() {
   return `
     <div class="qibla-visual" data-qibla-visual>
-      <img
-        class="qibla-visual__decor qibla-visual__decor--left"
-        src="${QIBLA_ICON_PATHS.decorLeft}"
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        decoding="async"
-      />
+      <img class="qibla-visual__decor qibla-visual__decor--left" src="${QIBLA_ASSETS.decorLeft}" alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
-      <div class="qibla-compass-stage">
+      <div class="qibla-compass-stage" data-qibla-compass-stage>
         <div class="qibla-compass" role="img" data-qibla-compass aria-label="اتجاه القبلة">
-          <div class="qibla-compass__dial-rotator" data-qibla-dial>
-            <img class="qibla-compass__asset" src="${QIBLA_ICON_PATHS.compass}" aria-hidden="true" alt="" loading="lazy" decoding="async" />
-          </div>
-          <span class="qibla-compass__needle" data-qibla-arrow aria-hidden="true">${QIBLA_ARROW_SVG}</span>
-          <span class="qibla-compass__forward-marker" aria-hidden="true">▲<small>أعلى الهاتف</small></span>
-          <span class="qibla-compass__center" aria-hidden="true"></span>
+          <svg class="qibla-compass__svg" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
+            <defs>
+              <radialGradient id="qiblaDialFace" cx="50%" cy="42%" r="62%">
+                <stop offset="0" stop-color="#ffffff" />
+                <stop offset="1" stop-color="#fffcf7" />
+              </radialGradient>
+            </defs>
+            <g class="qibla-compass__dial-rotator" data-qibla-dial>
+              <circle cx="200" cy="200" r="193" class="qibla-dial-halo" />
+              <circle cx="200" cy="200" r="188" class="qibla-dial-outer" />
+              <circle cx="200" cy="200" r="178" fill="url(#qiblaDialFace)" class="qibla-dial-face" />
+              <circle cx="200" cy="200" r="164" class="qibla-dial-inner" />
+              <g class="qibla-dial-ticks">${dialTicks()}</g>
+              <text x="200" y="55" class="qibla-cardinal qibla-cardinal--north">N</text>
+              <text x="345" y="207" class="qibla-cardinal">E</text>
+              <text x="200" y="357" class="qibla-cardinal">S</text>
+              <text x="55" y="207" class="qibla-cardinal">W</text>
+            </g>
+            <g class="qibla-needle" data-qibla-arrow>
+              <path d="M200 58 L211 184 L200 200 L189 184 Z" class="qibla-needle__shaft" />
+              <path d="M200 42 L215 78 L200 69 L185 78 Z" class="qibla-needle__head" />
+              <path d="M200 342 L194 214 L200 200 L206 214 Z" class="qibla-needle__counterweight" />
+            </g>
+            <g class="qibla-kaaba-center">
+              <circle cx="200" cy="200" r="34" class="qibla-kaaba-center__halo" />
+              <rect x="181" y="184" width="38" height="34" rx="3" class="qibla-kaaba-center__body" />
+              <path d="M181 193h38M187 184v34M213 184v34" class="qibla-kaaba-center__detail" />
+              <circle cx="200" cy="200" r="7" class="qibla-kaaba-center__pivot" />
+            </g>
+          </svg>
+          <span class="qibla-compass__forward-marker" aria-hidden="true"><span></span><small>أعلى الهاتف</small></span>
         </div>
       </div>
 
       <div class="qibla-compass__controls" data-qibla-controls>
-        <button type="button" class="qibla-compass__enable" data-qibla-heading-enable>تفعيل بوصلة الجهاز</button>
         <p class="qibla-compass__guidance" data-qibla-guidance>اتجاه القبلة من الشمال</p>
         <p class="qibla-compass__sensor-status" data-qibla-heading-status>البوصلة الثابتة متاحة</p>
         <p class="qibla-compass__accuracy" data-qibla-accuracy hidden></p>
+        <button type="button" class="qibla-compass__enable" data-qibla-heading-enable>تفعيل بوصلة الجهاز</button>
       </div>
 
-      <img
-        class="qibla-visual__decor qibla-visual__decor--right"
-        src="${QIBLA_ICON_PATHS.decorRight}"
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        decoding="async"
-      />
+      <img class="qibla-visual__decor qibla-visual__decor--right" src="${QIBLA_ASSETS.decorRight}" alt="" aria-hidden="true" loading="lazy" decoding="async" />
     </div>
   `;
 }
