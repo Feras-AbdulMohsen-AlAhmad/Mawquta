@@ -1,12 +1,13 @@
 /* Bottom bar */
 .footer-bottom {
   width: 100%;
-  min-height: 32px;
+  min-height: 36px;
   background: #dd9730;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-block: 6px;
 }
 
 .footer-bottom p {

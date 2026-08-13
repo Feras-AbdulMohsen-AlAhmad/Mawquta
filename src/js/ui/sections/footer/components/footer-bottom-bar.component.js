@@ -1,7 +1,7 @@
 export function renderFooterBottomBar() {
   return `
     <div class="footer-bottom">
-      <p>© 2026 Mawquta. جميع الحقوق محفوظة.</p>
+      <p>© ${new Date().getFullYear()} Mawquta — تصميم وتطوير: فراس الاحمد</p>
     </div>
   `;
 }
