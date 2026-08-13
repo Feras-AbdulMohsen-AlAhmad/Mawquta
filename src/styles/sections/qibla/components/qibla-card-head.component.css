@@ -6,9 +6,9 @@
   grid-template-areas: "heading degree action";
   align-items: center;
   gap: 12px;
-  min-height: 74px;
-  padding: 12px;
-  border-radius: 14px;
+  min-height: 80px;
+  padding: 16px;
+  border-radius: 16px;
   background: var(--Background-50);
   overflow: hidden;
 }
@@ -21,7 +21,7 @@
   flex-direction: column;
   align-items: start;
   justify-content: center;
-  gap: 6px;
+  gap: 16px;
   text-align: right;
   max-inline-size: min(100%, 640px);
 }
@@ -34,7 +34,7 @@
   gap: var(--ui-space-1-5);
   color: var(--Secondary-500);
   font-family: var(--font-body);
-  font-size: var(--ui-font-qibla-title);
+  font-size: 24px;
   font-weight: var(--ui-weight-bold);
   line-height: var(--ui-lh-relaxed);
 }
@@ -43,7 +43,7 @@
   inline-size: var(--ui-icon-qibla-title);
   block-size: var(--ui-icon-qibla-title);
   flex: 0 0 var(--ui-icon-qibla-title);
-  background: url("../../../../assets/icons/sections/qibla/qibla-heading-icon.svg") center/contain
+  background: url("../../../../assets/icons/qibla/qibla-compass.svg") center/contain
     no-repeat;
 }
 
@@ -55,8 +55,8 @@
   background: rgba(15, 82, 51, 0.08);
   color: #64748b;
   border-radius: 100px;
-  padding: 3px 10px;
-  font-size: clamp(12px, 0.72rem + 0.2vw, 14px);
+  padding: 4px 12px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.45;
   white-space: nowrap;
@@ -70,10 +70,10 @@
   border-radius: var(--ui-radius-md);
   background: var(--Secondary-500);
   color: var(--white);
-  min-height: var(--ui-btn-min-h);
-  padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
+  min-height: 52px;
+  padding: 16px 24px;
   font-family: var(--font-body);
-  font-size: var(--ui-btn-font-size);
+  font-size: 16px;
   font-weight: var(--ui-weight-bold);
   line-height: var(--ui-btn-line-height);
   white-space: nowrap;

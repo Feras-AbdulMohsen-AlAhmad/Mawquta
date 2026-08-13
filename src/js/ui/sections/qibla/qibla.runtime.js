@@ -19,8 +19,8 @@ function defaultFormatLocation(location) {
 
 function accuracyLabel(accuracy) {
   if (!Number.isFinite(accuracy)) return "دقة البوصلة غير متاحة";
-  if (accuracy <= 15) return "دقة البوصلة جيدة";
-  if (accuracy <= 30) return "دقة البوصلة متوسطة";
+  if (accuracy <= 10) return "دقة البوصلة جيدة";
+  if (accuracy <= 20) return "دقة البوصلة متوسطة";
   return "دقة البوصلة منخفضة";
 }
 
@@ -107,7 +107,7 @@ export function createQiblaRuntime(options = {}) {
   function applyState() {
     setText(elements.city, state.location ? formatLocation(state.location) : "دمشق، سوريا");
     setText(elements.status, getStatusText());
-    if (state.status === "success" && state.contract) { setText(elements.degree, state.contract.displayDegrees); elements.data.innerHTML = ""; headingState === "live" ? renderHeading({ heading: smoothedHeading, isReliable: true, accuracy: null }) : staticVisual(state.contract); return; }
+    if (state.status === "success" && state.contract) { setText(elements.degree, state.contract.displayDegrees); elements.data.innerHTML = ""; headingState === "live" && Number.isFinite(smoothedHeading) ? renderHeading({ heading: smoothedHeading, isReliable: true, accuracy: null }) : staticVisual(state.contract); return; }
     if (state.contract) return;
     setText(elements.degree, "--°"); elements.data.innerHTML = state.status === "empty" ? renderQiblaEmptyState() : state.status === "error" ? renderQiblaErrorState() : renderQiblaLoadingState();
   }

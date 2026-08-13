@@ -1,112 +1,40 @@
-.qibla-section .qibla-visual {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: clamp(320px, 27vw, 410px);
-  padding: 2px 18px 0;
-  overflow: hidden;
-  flex-wrap: wrap;
-  gap: 10px 20px;
-}
-
-.qibla-section .qibla-compass-stage { position: relative; inline-size: min(100%, 360px); aspect-ratio: 1; z-index: 1; }
-
-.qibla-section .qibla-compass {
-  --qibla-compass-size: min(100%, 360px);
-  position: relative;
-  inline-size: var(--qibla-compass-size);
-  block-size: var(--qibla-compass-size);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  box-shadow: none;
-  border-radius: 0;
-  inline-size: 100%;
-  block-size: 100%;
-}
-
-.qibla-section .qibla-compass::before {
-  content: none;
-}
-
-.qibla-section .qibla-compass::after {
-  content: none;
-}
-
-.qibla-section .qibla-compass__asset {
-  display: block;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-}
-
-.qibla-section .qibla-compass__dial-rotator,
-.qibla-section .qibla-compass__needle,
-.qibla-section .qibla-compass__forward-marker { position: absolute; inset: 0; transform-origin: 50% 50%; }
-.qibla-section .qibla-compass__dial-rotator { will-change: transform; }
-.qibla-section .qibla-compass__needle { display: grid; place-items: center; pointer-events: none; will-change: transform; }
-.qibla-section .qibla-compass__needle svg { inline-size: 28px; block-size: 44px; transform: translateY(-41%); }
-.qibla-section .qibla-compass__forward-marker { inset: 5% 0 auto; block-size: 38px; display: flex; flex-direction: column; align-items: center; color: var(--Secondary-500); font-size: 18px; line-height: 1; z-index: 3; pointer-events: none; }
-.qibla-section .qibla-compass__forward-marker small { margin-top: 3px; color: #64748b; font-size: 9px; font-weight: 600; }
-.qibla-section .qibla-compass__controls { flex: 1 1 220px; min-inline-size: min(100%, 220px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; z-index: 2; }
-.qibla-section .qibla-compass__enable { border: 0; border-radius: 999px; padding: 10px 16px; background: var(--Secondary-500); color: var(--white); font: inherit; font-weight: 700; cursor: pointer; }
-.qibla-section .qibla-compass__enable:focus-visible { outline: 3px solid color-mix(in srgb, var(--Secondary-500) 35%, transparent); outline-offset: 3px; }
-.qibla-section .qibla-compass__enable:disabled { opacity: .65; cursor: wait; }
-.qibla-section .qibla-compass__guidance { margin: 0; color: var(--Secondary-500); font-size: clamp(15px, 1rem + .2vw, 18px); font-weight: 700; }
-.qibla-section .qibla-compass__sensor-status, .qibla-section .qibla-compass__accuracy { margin: 0; color: #64748b; font-size: 12px; line-height: 1.5; }
-.qibla-section .qibla-compass[data-qibla-aligned="true"] .qibla-compass__center { background: #16794c; box-shadow: 0 0 0 4px rgba(22,121,76,.18), 0 0 0 8px rgba(22,121,76,.1); }
-
-.qibla-section .qibla-visual__decor {
-  position: absolute;
-  display: block;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-.qibla-section .qibla-visual__decor--left {
-  left: -24px;
-  bottom: -24px;
-
-  width: 278px;
-  height: 278px;
-  border: none;
-  border-radius: 0;
-  transform: none;
-  background: none;
-  object-position: left bottom;
-}
-
-.qibla-section .qibla-visual__decor--left::before,
-.qibla-section .qibla-visual__decor--left::after {
-  content: none;
-}
-
-.qibla-section .qibla-visual__decor--right {
-  right: 0;
-  bottom: 0;
-  width: 154px;
-  height: 242px;
-  border: none;
-  border-radius: 0;
-  transform: none;
-  mix-blend-mode: normal;
-  background: none;
-  object-position: right bottom;
-}
-
-.qibla-section .qibla-visual__decor--right::before,
-.qibla-section .qibla-visual__decor--right::after {
-  content: none;
-}
-
-@media (max-width: 767.98px) {
-  .qibla-section .qibla-compass-stage { inline-size: min(100%, 224px); }
-  .qibla-section .qibla-compass__controls { flex-basis: 100%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .qibla-section .qibla-compass__dial-rotator,
-  .qibla-section .qibla-compass__needle { transition: none !important; }
-}
+.qibla-section .qibla-visual { position:relative; display:flex; align-items:center; justify-content:center; min-height:560px; padding:34px 24px 26px; overflow:hidden; }
+.qibla-section .qibla-compass-stage { position:relative; inline-size:min(100%, 460px); aspect-ratio:1; flex:0 1 460px; z-index:1; }
+.qibla-section .qibla-compass { position:relative; inline-size:100%; block-size:100%; }
+.qibla-section .qibla-compass__svg { display:block; inline-size:100%; block-size:100%; overflow:visible; filter:drop-shadow(0 16px 26px rgba(18,66,53,.12)); }
+.qibla-section .qibla-compass__dial-rotator, .qibla-section .qibla-needle { transform-box:view-box; transform-origin:200px 200px; will-change:transform; }
+.qibla-section .qibla-dial-halo { fill:rgba(23,101,78,.08); }
+.qibla-section .qibla-dial-outer { fill:none; stroke:rgba(18,66,53,.25); stroke-width:2; }
+.qibla-section .qibla-dial-face { stroke:#fff; stroke-width:2; }
+.qibla-section .qibla-dial-inner { fill:none; stroke:rgba(221,151,48,.2); stroke-width:1.5; }
+.qibla-section .qibla-tick { stroke:#9aaca5; stroke-width:1.5; stroke-linecap:round; }
+.qibla-section .qibla-tick--major { stroke:#17654e; stroke-width:3; }
+.qibla-section .qibla-cardinal { fill:#17654e; font:700 17px var(--font-body), sans-serif; text-anchor:middle; dominant-baseline:middle; }
+.qibla-section .qibla-cardinal--north { fill:#dd9730; font-size:23px; }
+.qibla-section .qibla-needle { pointer-events:none; }
+.qibla-section .qibla-needle__shaft { fill:#dd9730; stroke:#a1521c; stroke-width:1; }
+.qibla-section .qibla-needle__head { fill:#f2b24e; stroke:#a1521c; stroke-width:1.5; }
+.qibla-section .qibla-needle__counterweight { fill:#a1521c; }
+.qibla-section .qibla-kaaba-center__halo { fill:#fff; stroke:rgba(221,151,48,.3); stroke-width:2; }
+.qibla-section .qibla-kaaba-center__body { fill:#124235; stroke:#dd9730; stroke-width:2; }
+.qibla-section .qibla-kaaba-center__detail { fill:none; stroke:#f2b24e; stroke-width:2; opacity:.8; }
+.qibla-section .qibla-kaaba-center__pivot { fill:#f2b24e; stroke:#fff; stroke-width:2; }
+.qibla-section .qibla-compass__forward-marker { position:absolute; inset:3% 0 auto; display:flex; flex-direction:column; align-items:center; gap:3px; color:#dd9730; pointer-events:none; z-index:2; }
+.qibla-section .qibla-compass__forward-marker span { display:block; inline-size:0; block-size:0; border-inline:7px solid transparent; border-block-start:11px solid #dd9730; }
+.qibla-section .qibla-compass__forward-marker small { color:#64748b; font-size:10px; }
+.qibla-section .qibla-compass__controls { display:flex; flex:0 1 260px; min-inline-size:220px; flex-direction:column; align-items:center; gap:9px; text-align:center; z-index:2; }
+.qibla-section .qibla-compass__guidance { margin:0; padding:11px 16px; border:1px solid rgba(221,151,48,.28); border-radius:999px; background:#fff; color:#124235; font-size:clamp(15px,1rem + .2vw,18px); font-weight:700; }
+.qibla-section .qibla-compass__sensor-status, .qibla-section .qibla-compass__accuracy { margin:0; color:#64748b; font-size:12px; line-height:1.5; }
+.qibla-section .qibla-compass__enable { order:4; border:1px solid #dd9730; border-radius:999px; padding:10px 16px; background:#dd9730; color:#fff; font:inherit; font-weight:700; cursor:pointer; }
+.qibla-section .qibla-compass__enable:focus-visible { outline:3px solid rgba(221,151,48,.35); outline-offset:3px; }
+.qibla-section .qibla-compass__enable:disabled { opacity:.65; cursor:wait; }
+.qibla-section .qibla-compass[data-qibla-aligned="true"] .qibla-dial-outer { stroke:#17654e; stroke-width:4; }
+.qibla-section .qibla-compass[data-qibla-aligned="true"] .qibla-kaaba-center__halo { fill:rgba(23,101,78,.12); stroke:#17654e; }
+.qibla-section .qibla-compass[data-qibla-aligned="true"] .qibla-compass__guidance { border-color:#17654e; background:rgba(23,101,78,.1); color:#124235; }
+.qibla-section .qibla-visual__decor { position:absolute; display:block; object-fit:contain; pointer-events:none; opacity:.16; z-index:0; }
+.qibla-section .qibla-visual__decor--left { left:16px; bottom:0; inline-size:240px; block-size:240px; }
+.qibla-section .qibla-visual__decor--right { right:0; bottom:0; inline-size:150px; block-size:260px; transform:rotate(15deg); transform-origin:100% 100%; }
+@media (max-width:991.98px) { .qibla-section .qibla-visual { min-height:470px; } .qibla-section .qibla-compass-stage { flex-basis:min(100%,380px); } .qibla-section .qibla-compass__controls { flex-basis:220px; } }
+@media (max-width:767.98px) { .qibla-section .qibla-visual { min-height:0; padding:24px 8px 18px; flex-wrap:wrap; gap:14px; } .qibla-section .qibla-compass-stage { flex-basis:min(88vw,360px); } .qibla-section .qibla-compass__controls { flex:1 1 100%; min-inline-size:100%; } .qibla-section .qibla-visual__decor--left { inline-size:150px; block-size:150px; } .qibla-section .qibla-visual__decor--right { inline-size:90px; block-size:155px; } }
+@media (max-width:399.98px) { .qibla-section .qibla-compass-stage { flex-basis:min(88vw,320px); } .qibla-section .qibla-visual__decor { display:none; } }
+@media (prefers-reduced-motion:reduce) { .qibla-section .qibla-compass__svg * { transition:none !important; } }
