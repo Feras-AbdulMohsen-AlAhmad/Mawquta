@@ -147,3 +147,153 @@
 .ramadan-month-table-section .section-more-button--filled:active {
   transform: translateY(1px);
 }
+
+.ramadan-month-table__more[hidden] {
+  display: none;
+}
+
+.ramadan-month-table-section .ramadan-table-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  filter: grayscale(0.2);
+}
+
+.ramadan-timetable-state,
+.ramadan-timetable-skeleton {
+  min-height: 360px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 4px 24px -6px rgba(18, 66, 53, 0.12);
+  padding: clamp(24px, 5vw, 56px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.ramadan-timetable-state__icon {
+  position: relative;
+  inline-size: 56px;
+  block-size: 56px;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--Secondary-500) 14%, var(--white));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 34px 34px;
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--Secondary-500) 5%, transparent);
+}
+
+.ramadan-timetable-state__icon::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border: 1px solid color-mix(in srgb, var(--Secondary-500) 18%, transparent);
+  border-radius: 50%;
+}
+
+.ramadan-timetable-state--empty.no-location .ramadan-timetable-state__icon {
+  background-image: url("../../../../assets/icons/shared/location-pin.svg");
+  background-size: 30px 30px;
+}
+
+.ramadan-timetable-state--empty.no-data .ramadan-timetable-state__icon {
+  background-image: url("../../../../assets/icons/ramadan/ramadan-crescent-star.svg");
+  background-size: 36px 36px;
+}
+
+.ramadan-timetable-state--error .ramadan-timetable-state__icon {
+  background-image: url("../../../../assets/icons/shared/hourglass.svg");
+  background-size: 31px 31px;
+  background-color: color-mix(in srgb, var(--Primary-700) 10%, var(--white));
+}
+
+.ramadan-timetable-state h3,
+.ramadan-timetable-state p {
+  margin: 0;
+}
+
+.ramadan-timetable-state h3 {
+  color: var(--Primary-700);
+  font-size: var(--ui-font-title-md);
+}
+
+.ramadan-timetable-state p {
+  max-inline-size: 520px;
+  color: var(--Text-600);
+  font-size: var(--ui-font-sm);
+}
+
+.ramadan-timetable-state__action {
+  min-block-size: var(--ui-btn-min-h-sm);
+  margin-top: 8px;
+  border: 0;
+  border-radius: var(--ui-radius-md);
+  padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x);
+  background: var(--Secondary-500);
+  color: var(--white);
+  font: inherit;
+  font-weight: var(--ui-weight-bold);
+  cursor: pointer;
+}
+
+.ramadan-timetable-skeleton {
+  align-items: stretch;
+  gap: 10px;
+}
+
+.ramadan-timetable-skeleton__label {
+  align-self: center;
+  color: var(--Text-600);
+  font-size: var(--ui-font-sm);
+}
+
+.ramadan-timetable-skeleton__head,
+.ramadan-timetable-skeleton__row {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ramadan-timetable-skeleton__head {
+  block-size: 48px;
+}
+
+.ramadan-timetable-skeleton__row {
+  block-size: 38px;
+}
+
+.ramadan-timetable-skeleton__head::before,
+.ramadan-timetable-skeleton__head::after,
+.ramadan-timetable-skeleton__row i {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef2ef 25%, #f8faf8 37%, #eef2ef 63%);
+  background-size: 400% 100%;
+  animation: ramadan-timetable-skeleton 1.4s ease infinite;
+}
+
+@keyframes ramadan-timetable-skeleton {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (max-width: 575.98px) {
+  .ramadan-timetable-state,
+  .ramadan-timetable-skeleton {
+    min-height: 280px;
+    padding: 24px 16px;
+  }
+
+  .ramadan-timetable-skeleton__head,
+  .ramadan-timetable-skeleton__row {
+    min-width: 680px;
+  }
+
+  .ramadan-timetable-skeleton {
+    overflow-x: auto;
+    align-items: stretch;
+  }
+}

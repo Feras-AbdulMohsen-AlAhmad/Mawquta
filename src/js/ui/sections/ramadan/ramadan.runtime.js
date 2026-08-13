@@ -21,6 +21,12 @@ import {
 } from "../../../utils/time.util.js";
 import { renderRamadanMonthTableGrid } from "./components/ramadan-month-table-grid.component.js";
 import {
+  renderRamadanTimetableLoading,
+  renderRamadanTimetableNoLocation,
+  renderRamadanTimetableNoData,
+  renderRamadanTimetableError,
+} from "./components/ramadan-month-table-grid.component.js";
+import {
   MONTH_TABLE_ICON_PATHS,
   RAMADAN_MONTH_TABLE_COLUMNS,
 } from "./components/ramadan-month-table.constants.js";
@@ -136,9 +142,24 @@ export function createRamadanRuntime(options = {}) {
       progressFill: rootElement?.querySelector("[data-ramadan-progress-fill]"),
       progressTrack: rootElement?.querySelector("[role=progressbar]"),
       tableGrid: rootElement?.querySelector("[data-ramadan-month-table-grid]"),
+      tableMore: rootElement?.querySelector("[data-ramadan-table-more]"),
+      tableActions: typeof rootElement?.querySelectorAll === "function"
+        ? rootElement.querySelectorAll("[data-ramadan-table-action]")
+        : [],
       headHijri: rootElement?.querySelector("[data-rt-head-hijri]"),
       headGregorian: rootElement?.querySelector("[data-rt-head-gregorian]"),
     };
+  }
+
+  function setTimetableState(elements, html, { hasData = false, showMore = false } = {}) {
+    if (elements.tableGrid) elements.tableGrid.innerHTML = html;
+    elements.tableActions?.forEach((button) => {
+      if (button) button.disabled = !hasData;
+      if (typeof button?.setAttribute === "function") {
+        button.setAttribute("aria-disabled", String(!hasData));
+      }
+    });
+    if (elements.tableMore) elements.tableMore.hidden = !showMore;
   }
 
   function renderStatus(elements, html) {
@@ -221,7 +242,7 @@ export function createRamadanRuntime(options = {}) {
       renderCountdown(elements);
 
       if (elements.tableGrid) {
-        elements.tableGrid.innerHTML = renderRamadanMonthTableGrid({
+        setTimetableState(elements, renderRamadanMonthTableGrid({
           columns: RAMADAN_MONTH_TABLE_COLUMNS,
           rows: contract.monthRows,
           iconPaths: MONTH_TABLE_ICON_PATHS,
@@ -229,7 +250,7 @@ export function createRamadanRuntime(options = {}) {
             ? formatLocation(state.location)
             : "—",
           rangeLabel: contract.monthRangeLabel,
-        });
+        }), { hasData: true, showMore: true });
       }
 
       if (elements.headHijri) {
@@ -243,6 +264,7 @@ export function createRamadanRuntime(options = {}) {
     }
 
     clearDynamicValues(elements);
+    setTimetableState(elements, renderRamadanTimetableNoData());
     return renderRamadanOffSeasonState();
   }
 
@@ -275,6 +297,16 @@ export function createRamadanRuntime(options = {}) {
           : statusHtml,
       );
       return;
+    }
+
+    if (!state.location) {
+      setTimetableState(elements, renderRamadanTimetableNoLocation());
+    } else if (state.status === "loading" || state.status === "stale") {
+      setTimetableState(elements, renderRamadanTimetableLoading());
+    } else if (state.status === "error") {
+      setTimetableState(elements, renderRamadanTimetableError());
+    } else {
+      setTimetableState(elements, renderRamadanTimetableNoData());
     }
 
     clearDynamicValues(elements);
