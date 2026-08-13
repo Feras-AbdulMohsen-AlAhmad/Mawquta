@@ -63,7 +63,7 @@
   left: 0;
   width: 192px;
   height: 332px;
-  background-image: url("../../../../assets/icons/sections/ramadan/left-crescent-pattern.svg");
+  background-image: url("../../../../assets/illustrations/ramadan/ramadan-lanterns-left.svg");
 }
 
 .ramadan-section::after {
@@ -71,5 +71,5 @@
   right: 0;
   width: 132px;
   height: 372px;
-  background-image: url("../../../../assets/icons/sections/ramadan/right-crescent-pattern.svg");
+  background-image: url("../../../../assets/illustrations/ramadan/ramadan-lanterns-right.svg");
 }

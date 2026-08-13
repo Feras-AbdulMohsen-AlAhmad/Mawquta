@@ -217,7 +217,7 @@ await checkAsync("RR-01", async () => {
   assert.equal(ramadan.length, 1);
   assert.equal(ramadan.calls[0].city, "Damascus");
   assert.equal(hook(root, "[data-ramadan-city]"), "دمشق، سوريا");
-  assert.equal(hook(root, "[data-ramadan-month]"), "رمضان 1447");
+  assert.equal(hook(root, "[data-ramadan-month]"), "رمضان 2026");
   assert.equal(hook(root, "[data-ramadan-day]"), "26");
   assert.equal(hook(root, "[data-ramadan-day-label]"), "اليوم");
   assert.equal(hook(root, "[data-ramadan-imsak]"), "05:28");

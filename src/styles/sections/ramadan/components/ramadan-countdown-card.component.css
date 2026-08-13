@@ -34,14 +34,20 @@
   min-height: calc(var(--ui-control-h-lg) + var(--ui-space-8));
 }
 
+@media (min-width: 1200px) {
+  .ramadan-first-time {
+    min-height: 120px;
+  }
+}
+
 .ramadan-first-time::before {
   content: "";
   position: absolute;
   inset-block: 0;
   left: 0;
   width: min(42%, 184px);
-  background: url("../../../../assets/icons/sections/ramadan/suhoor-time-background.svg")
-    center/cover no-repeat;
+  background: url("../../../../assets/patterns/ramadan/ramadan-time-card-pattern.svg")
+    left center/cover no-repeat;
   pointer-events: none;
 }
 
@@ -101,11 +107,11 @@
 }
 
 .ramadan-first-time__icon--imsak {
-  background-image: url("../../../../assets/icons/sections/ramadan/imsak-time-icon.svg");
+  background-image: url("../../../../assets/icons/ramadan/ramadan-imsak.svg");
 }
 
 .ramadan-first-time__icon--iftar {
-  background-image: url("../../../../assets/icons/shared/theme-moon.svg");
+  background-image: url("../../../../assets/icons/ramadan/ramadan-iftar.svg");
 }
 
 .ramadan-first__countdown {
@@ -124,8 +130,8 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: url("../../../../assets/icons/sections/ramadan/suhoor-time-background.svg")
-    center/cover no-repeat;
+  background: url("../../../../assets/patterns/ramadan/ramadan-countdown-pattern.svg")
+    center center/cover no-repeat;
   pointer-events: none;
 }
 
@@ -160,7 +166,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: url("../../../../assets/icons/sections/ramadan/moon-and-stars.svg")
+  background: url("../../../../assets/icons/ramadan/ramadan-crescent-star.svg")
     center/contain no-repeat;
 }
 
@@ -258,11 +264,11 @@
 }
 
 .ramadan-first__progress-icon--start {
-  background-image: url("../../../../assets/icons/shared/theme-moon.svg");
+  background-image: url("../../../../assets/icons/ramadan/ramadan-iftar.svg");
 }
 
 .ramadan-first__progress-icon--end {
-  background-image: url("../../../../assets/icons/sections/ramadan/imsak-time-icon.svg");
+  background-image: url("../../../../assets/icons/ramadan/ramadan-imsak.svg");
 }
 
 .ramadan-first__progress-track {
@@ -276,7 +282,126 @@
 .ramadan-first__progress-fill {
   position: absolute;
   inset-block: 0;
-  inset-inline-end: 0;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
   border-radius: inherit;
   background: var(--Primary-700);
+}
+
+@media (min-width: 1200px) {
+  .ramadan-first-time__inner {
+    padding: 24px;
+  }
+
+  .ramadan-first-time__pill {
+    min-inline-size: 164px;
+    min-block-size: 64px;
+    font-size: 36px;
+  }
+
+  .ramadan-first__timer {
+    width: 348px;
+    min-height: 116px;
+  }
+
+  .ramadan-first__countdown {
+    padding: 24px 32px;
+    gap: 24px;
+  }
+
+  .ramadan-first__countdown-head {
+    margin-bottom: 0;
+  }
+
+  .ramadan-first__progress {
+    width: 688px;
+    max-width: 100%;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ramadan-first__progress-row {
+    margin-bottom: 0;
+  }
+
+  .ramadan-first__progress-track {
+    height: 16px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .ramadan-first-time {
+    min-height: 72px;
+  }
+
+  .ramadan-first-time__inner {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .ramadan-first-time__label {
+    font-size: var(--ui-font-sm);
+  }
+
+  .ramadan-first-time__pill {
+    min-inline-size: 96px;
+    min-block-size: 44px;
+    font-size: 24px;
+    padding: 4px 8px;
+  }
+
+  .ramadan-first-time__icon {
+    inline-size: 20px;
+    block-size: 20px;
+    flex-basis: 20px;
+  }
+
+  .ramadan-first-time::before {
+    inset-inline-start: 0;
+    width: min(42%, 150px);
+    background-position: left center;
+    background-size: cover;
+  }
+
+  .ramadan-first__countdown::before {
+    background-position: center center;
+    background-size: cover;
+  }
+
+  .ramadan-first__countdown-head {
+    gap: 6px;
+  }
+
+  .ramadan-first__countdown-title {
+    font-size: var(--ui-font-sm);
+  }
+
+  .ramadan-first__countdown-icon {
+    inline-size: 20px;
+    block-size: 20px;
+    flex-basis: 20px;
+  }
+
+  .ramadan-first__timer-value {
+    font-size: var(--ui-font-display-md);
+  }
+
+  .ramadan-first__timer-sep {
+    font-size: var(--ui-font-display-md);
+    margin-bottom: var(--ui-space-1);
+  }
+
+  .ramadan-first__timer-unit {
+    font-size: var(--ui-font-4xs);
+  }
+
+  .ramadan-first__progress {
+    margin-top: 0;
+  }
+
+  .ramadan-first__progress-row {
+    gap: var(--ui-space-1);
+  }
 }

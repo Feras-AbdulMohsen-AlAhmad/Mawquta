@@ -1,15 +1,15 @@
 const RAMADAN_DAY_TIME_CARDS = [
   {
-    modifierClass: "ramadan-first-time--iftar",
-    label: "وقت الإفطار اليوم",
-    iconClass: "ramadan-first-time__icon--iftar",
-    valueDataAttribute: "data-ramadan-iftar",
-  },
-  {
     modifierClass: "ramadan-first-time--imsak",
     label: "وقت الإمساك اليوم",
     iconClass: "ramadan-first-time__icon--imsak",
     valueDataAttribute: "data-ramadan-imsak",
+  },
+  {
+    modifierClass: "ramadan-first-time--iftar",
+    label: "وقت الإفطار اليوم",
+    iconClass: "ramadan-first-time__icon--iftar",
+    valueDataAttribute: "data-ramadan-iftar",
   },
 ];
 
@@ -42,6 +42,27 @@ function renderRamadanDayTimeCard(cardConfig) {
   `;
 }
 
+function renderRamadanProgress() {
+  return `
+    <div class="ramadan-first__progress" aria-label="نسبة مرور وقت الصيام">
+      <div class="ramadan-first__progress-row">
+        <span class="ramadan-first__progress-edge">
+          <span class="ramadan-first__progress-icon ramadan-first__progress-icon--start" aria-hidden="true"></span>
+          <span data-ramadan-progress-iftar>--:--</span>
+        </span>
+        <span class="ramadan-first__progress-value" data-ramadan-progress-label>--%</span>
+        <span class="ramadan-first__progress-edge">
+          <span data-ramadan-progress-imsak>--:--</span>
+          <span class="ramadan-first__progress-icon ramadan-first__progress-icon--end" aria-hidden="true"></span>
+        </span>
+      </div>
+      <div class="ramadan-first__progress-track" role="progressbar" aria-label="نسبة مرور وقت الصيام" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span class="ramadan-first__progress-fill" data-ramadan-progress-fill style="inline-size: 0%"></span>
+      </div>
+    </div>
+  `;
+}
+
 function renderRamadanCountdownPart(partConfig) {
   return `<div class="ramadan-first__timer-part"><span class="ramadan-first__timer-value" ${partConfig.dataAttribute}>--</span><span class="ramadan-first__timer-unit">${partConfig.unit}</span></div>`;
 }
@@ -70,6 +91,7 @@ export function renderRamadanCountdownCard() {
               return `${partMarkup}${separatorMarkup}`;
             }).join("\n")}
           </div>
+          ${renderRamadanProgress()}
         </div>
       </div>
     </section>

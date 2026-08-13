@@ -48,8 +48,8 @@
 
 @media (max-width: 767.98px) {
   .ramadan-section {
-    padding-block: var(--ui-space-8) var(--ui-space-6);
-    --ramadan-topbar-gap: var(--ui-space-3);
+    padding-block: var(--ui-space-4) var(--ui-space-3);
+    --ramadan-topbar-gap: var(--ui-space-2);
     --ramadan-chip-min-h: calc(
       var(--ui-btn-min-h-sm) + var(--ui-space-6) + var(--ui-space-1)
     );
@@ -58,6 +58,8 @@
     --ramadan-icon-size: var(--size-icon-md);
     --ramadan-title-size: var(--ui-font-title-sm);
     --ramadan-progress-edge-size: var(--ui-font-xs);
+    --ramadan-month-size: var(--ui-font-title-md);
+    --ramadan-summary-gap: var(--ui-space-2);
   }
 
   .ramadan-section::before {
@@ -77,7 +79,7 @@
       "date"
       "action";
     grid-template-columns: minmax(0, 1fr);
-    margin-bottom: var(--ui-space-3-5);
+    margin-bottom: var(--ui-space-2-5);
   }
 
   .ramadan-topbar__summary,
@@ -110,14 +112,14 @@
   .ramadan-topbar__action-shell {
     justify-self: start;
     border-radius: var(--ui-radius-control-sm);
-    padding: var(--ui-space-1);
+    padding: 2px;
   }
 
   .ramadan-topbar__action {
-    min-height: var(--ui-btn-min-h-sm);
+    min-height: 36px;
     min-inline-size: calc(var(--ui-space-12) * 2 + var(--ui-space-3));
     padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
-    font-size: var(--ui-btn-font-size-sm);
+    font-size: var(--ui-font-xs);
   }
 
   .ramadan-first__times {
@@ -126,15 +128,21 @@
 
   .ramadan-first__shell {
     width: 100%;
-    padding: var(--ui-space-3);
+    padding: var(--ui-space-2);
+    gap: var(--ui-space-2-5);
   }
 
   .ramadan-first__countdown {
     border-radius: var(--ui-radius-lg);
+    gap: var(--ui-space-3);
+    padding: var(--ui-space-4) var(--ui-space-3);
   }
 
   .ramadan-first__timer {
-    width: min(100%, 248px);
+    width: min(100%, 220px);
+    min-height: 72px;
+    padding: var(--ui-space-1-5) var(--ui-space-2);
+    gap: var(--ui-space-2);
   }
 
   .ramadan-first__progress-track {
@@ -252,25 +260,30 @@
 
 @media (min-width: 1200px) {
   .ramadan-section {
-    padding-block: 72px 48px;
+    padding-block: 48px 32px;
   }
 
   .ramadan-topbar {
-    margin-bottom: 40px;
+    margin-bottom: 24px;
   }
 
   .ramadan-first__shell {
-    width: 78%;
-    padding: 24px;
-    gap: 20px;
+    width: min(74.074%, 1280px);
+    padding: 48px;
+    gap: 24px;
   }
 
   .ramadan-first__times {
-    gap: 20px;
+    gap: 24px;
   }
 
   .ramadan-first__countdown {
-    padding: 40px 32px 32px;
+    padding: 24px 32px;
+    gap: 24px;
+  }
+
+  .ramadan-first__countdown-head {
+    margin-bottom: 0;
   }
 
   .ramadan-month-table-section {
