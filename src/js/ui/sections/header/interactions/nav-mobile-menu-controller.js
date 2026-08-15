@@ -129,7 +129,7 @@ export function createMobileMenuController(headerRoot) {
       return;
     }
 
-    if (!headerRoot.contains(eventTarget)) {
+    if (!headerRoot.contains(eventTarget) && isMenuOpen(menuContainer, bootstrapCollapse)) {
       closeMenu();
     }
   });
