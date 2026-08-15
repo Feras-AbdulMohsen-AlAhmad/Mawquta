@@ -208,9 +208,10 @@
 .ramadan-first__timer-unit {
   color: color-mix(in srgb, var(--Secondary-700) 72%, var(--Secondary-500));
   font-family: var(--font-body);
-  font-size: var(--ui-font-3xs);
+  font-size: clamp(11px, 0.68rem + 0.05vw, 13px);
   font-weight: var(--ui-weight-bold);
   line-height: 1;
+  white-space: nowrap;
 }
 
 .ramadan-first__timer-sep {
@@ -394,7 +395,7 @@
   }
 
   .ramadan-first__timer-unit {
-    font-size: var(--ui-font-4xs);
+    font-size: clamp(11px, 0.68rem + 0.05vw, 13px);
   }
 
   .ramadan-first__progress {
@@ -403,5 +404,12 @@
 
   .ramadan-first__progress-row {
     gap: var(--ui-space-1);
+  }
+}
+
+@media (max-width: 399.98px) {
+  .ramadan-first__timer {
+    min-height: 72px;
+    padding: 8px 10px;
   }
 }

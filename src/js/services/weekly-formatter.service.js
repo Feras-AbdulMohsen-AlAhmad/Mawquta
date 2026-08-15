@@ -5,7 +5,7 @@
 // tested directly in Node.
 
 import {
-  PRAYER_LABELS_AR,
+  PRAYER_LABELS_AR_BY_KEY,
   formatPrayerTimeForDisplay,
   normalizeTime,
 } from "../utils/prayer-format.util.js";
@@ -244,7 +244,7 @@ export function buildMobileCard({ rows, timeZone, now = new Date() }) {
     badge: "اليوم",
     prayers: PRAYER_COLUMN_KEYS.map((key) => ({
       key,
-      label: PRAYER_LABELS_AR[key] ?? key,
+      label: PRAYER_LABELS_AR_BY_KEY[key] ?? key,
       time: formatPrayerTimeForDisplay(todayRow[key]),
       isActive: key === activeKey,
     })),
