@@ -4,6 +4,8 @@ export function renderQiblaCityModal({ modalId, modalLabelId }) {
       class="modal fade qibla-city-modal"
       id="${modalId}"
       tabindex="-1"
+      role="dialog"
+      aria-modal="true"
       aria-labelledby="${modalLabelId}"
       aria-hidden="true"
     >

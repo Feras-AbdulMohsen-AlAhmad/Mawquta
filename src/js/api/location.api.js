@@ -5,11 +5,10 @@ import {
   requireLongitude,
 } from "../utils/validation.util.js";
 import { CONFIG } from "../config/app.config.js";
+import { createHttpClient } from "./http-client.js";
 
-// import axios from "axios";
-
-// Axios instance creation for BigDataCloud API
-const geoAxios = window.axios.create({
+// Axios is supported when supplied by the host; native fetch is the default.
+const geoAxios = createHttpClient({
   baseURL: CONFIG.BIG_DATA_CLOUD_API,
   timeout: 10000,
 });

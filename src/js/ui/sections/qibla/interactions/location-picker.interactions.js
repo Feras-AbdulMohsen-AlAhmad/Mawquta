@@ -21,13 +21,6 @@ function setStatus(statusElement, message, isError = false) {
   statusElement.classList.toggle("text-danger", isError);
 }
 
-function closePicker(modalElement) {
-  const bootstrapApi = globalThis.bootstrap;
-  if (!bootstrapApi?.Modal || !modalElement) return;
-
-  bootstrapApi.Modal.getOrCreateInstance(modalElement).hide();
-}
-
 export function bindLocationPickerInteractions(
   rootDocument,
   locationService,
@@ -47,6 +40,14 @@ export function bindLocationPickerInteractions(
   const geolocationButton = modalElement.querySelector(
     "[data-location-geolocation]",
   );
+  const modalTriggers = Array.from(
+    rootDocument.querySelectorAll('[data-bs-target="#qiblaCityModal"]'),
+  );
+  const modalCloseButtons = Array.from(
+    typeof modalElement.querySelectorAll === "function"
+      ? modalElement.querySelectorAll('[data-bs-dismiss="modal"]')
+      : [],
+  );
   const globalDisplays = Array.from(
     rootDocument.querySelectorAll("[data-global-location-display]"),
   );
@@ -58,6 +59,7 @@ export function bindLocationPickerInteractions(
   let searchTimer = null;
   let searchAbortController = null;
   let isActive = true;
+  let lastFocusedElement = null;
 
   function clearCandidate() {
     candidate = null;
@@ -284,6 +286,63 @@ export function bindLocationPickerInteractions(
     globalThis.setTimeout(() => queryInput?.focus(), 0);
   }
 
+  function openPicker(event) {
+    if (typeof event?.preventDefault === "function") event.preventDefault();
+    lastFocusedElement = event?.currentTarget || rootDocument.activeElement;
+    modalElement.classList.add("show");
+    modalElement.setAttribute("aria-hidden", "false");
+    rootDocument.body.classList.add("modal-open");
+    handleModalShown();
+  }
+
+  function closePicker(event) {
+    if (typeof event?.preventDefault === "function") event.preventDefault();
+    modalElement.classList.remove("show");
+    modalElement.setAttribute("aria-hidden", "true");
+    rootDocument.body.classList.remove("modal-open");
+    handleModalHidden();
+    lastFocusedElement?.focus?.({ preventScroll: true });
+    lastFocusedElement = null;
+  }
+
+  function handleModalKeydown(event) {
+    if (event.key === "Escape") {
+      event.stopPropagation();
+      closePicker(event);
+      return;
+    }
+
+    if (event.key !== "Tab" || !modalElement.classList.contains("show")) {
+      return;
+    }
+
+    const focusable = Array.from(
+      modalElement.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && rootDocument.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && rootDocument.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function handleModalBackdropClick(event) {
+    if (event.target === modalElement) closePicker(event);
+  }
+
+  modalTriggers.forEach((trigger) => trigger.addEventListener("click", openPicker));
+  modalCloseButtons.forEach((button) => button.addEventListener("click", closePicker));
+  modalElement.addEventListener("click", handleModalBackdropClick);
+  modalElement.addEventListener("keydown", handleModalKeydown);
+
   const unsubscribe = locationService.subscribe((state) => {
     if (state.location) {
       const label = formatLocation(state.location);
@@ -310,6 +369,10 @@ export function bindLocationPickerInteractions(
     queryInput?.removeEventListener("input", handleQueryInput);
     geolocationButton?.removeEventListener("click", handleGeolocation);
     confirmButton?.removeEventListener("click", handleConfirm);
+    modalTriggers.forEach((trigger) => trigger.removeEventListener("click", openPicker));
+    modalCloseButtons.forEach((button) => button.removeEventListener("click", closePicker));
+    modalElement.removeEventListener("click", handleModalBackdropClick);
+    modalElement.removeEventListener("keydown", handleModalKeydown);
     modalElement.removeEventListener("hidden.bs.modal", handleModalHidden);
     modalElement.removeEventListener("shown.bs.modal", handleModalShown);
   };
