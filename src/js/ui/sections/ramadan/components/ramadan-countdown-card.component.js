@@ -15,15 +15,15 @@ const RAMADAN_DAY_TIME_CARDS = [
 
 const RAMADAN_COUNTDOWN_PARTS = [
   {
-    unit: "Hr",
+    unit: "ساعة",
     dataAttribute: "data-ramadan-countdown-hours",
   },
   {
-    unit: "Min",
+    unit: "دقيقة",
     dataAttribute: "data-ramadan-countdown-minutes",
   },
   {
-    unit: "Sec",
+    unit: "ثانية",
     dataAttribute: "data-ramadan-countdown-seconds",
   },
 ];

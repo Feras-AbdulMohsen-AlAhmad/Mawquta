@@ -17,7 +17,10 @@ import {
   buildOccursAt,
   computeRemainingSeconds,
 } from "../utils/time.util.js";
-import { PRAYER_LABELS_AR, normalizeTime } from "../utils/prayer-format.util.js";
+import {
+  PRAYER_LABELS_AR_BY_KEY,
+  normalizeTime,
+} from "../utils/prayer-format.util.js";
 import { buildDateInfo } from "../utils/date-format.util.js";
 import {
   requireValue,
@@ -110,7 +113,7 @@ export function buildDailyContract({
     const time = normalizePrayerTime(rawTime, key, dateKey);
     return {
       key,
-      label: PRAYER_LABELS_AR[ALADHAN_TIMINGS_KEYS[key]] ?? key,
+      label: PRAYER_LABELS_AR_BY_KEY[key] ?? key,
       time,
       isNext: false,
       isPassed: false,

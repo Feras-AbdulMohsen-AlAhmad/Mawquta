@@ -4,7 +4,7 @@
   "description": "A comprehensive Islamic prayer times web application built with a layered architecture. Get accurate prayer times, qibla direction, Islamic calendar, and 99 Divine Names (Asma Al-Husna) for any location worldwide.",
   "main": "index.js",
   "scripts": {
-    "dev": "npx serve src -l 3000",
+    "dev": "node tests/browser/static-server.mjs src 4175",
     "vercel:dev": "vercel dev",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "node --test tests/unit/*.test.mjs",

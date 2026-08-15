@@ -1,4 +1,5 @@
 import { CONFIG } from "../config/app.config.js";
+import { createHttpClient } from "./http-client.js";
 import {
   requireValue,
   requireLatitude,
@@ -7,18 +8,9 @@ import {
   requireYear,
 } from "../utils/validation.util.js";
 
-// import axios from "axios";
-
-// Axios instance creation
-// Check if axios is available on window (loaded via CDN)
-if (!window.axios) {
-  throw new Error(
-    "Axios is not available on window. Make sure it is loaded before aladhan.api.js",
-  );
-}
-
-// Create an axios instance with base URL and default params
-const axiosInstance = window.axios.create({
+// Create an Axios-compatible client. The native-fetch fallback keeps the
+// static frontend independent from a third-party CDN at boot.
+const axiosInstance = createHttpClient({
   baseURL: CONFIG.BASE_URL,
   timeout: 10000,
   params: { method: CONFIG.METHOD },

@@ -283,8 +283,43 @@
 @media (max-width: 575.98px) {
   .ramadan-timetable-state,
   .ramadan-timetable-skeleton {
-    min-height: 280px;
-    padding: 24px 16px;
+    min-height: 204px;
+    padding: 20px 16px;
+    gap: 10px;
+  }
+
+  .ramadan-timetable-state__icon {
+    inline-size: 46px;
+    block-size: 46px;
+    background-size: 28px 28px;
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--Secondary-500) 5%, transparent);
+  }
+
+  .ramadan-timetable-state__icon::after {
+    inset: -7px;
+  }
+
+  .ramadan-timetable-state--empty.no-location .ramadan-timetable-state__icon,
+  .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__icon {
+    background-size: 28px 28px;
+  }
+
+  .ramadan-timetable-state h3 {
+    max-inline-size: 100%;
+    font-size: clamp(17px, 4.6vw, 19px);
+    line-height: 1.4;
+  }
+
+  .ramadan-timetable-state p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ramadan-timetable-state__action {
+    min-block-size: 44px;
+    margin-top: 4px;
+    padding: 8px 14px;
+    font-size: 14px;
   }
 
   .ramadan-timetable-skeleton__head,

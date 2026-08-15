@@ -12,6 +12,14 @@ export const PRAYER_LABELS_AR = {
   Isha: "العشاء",
 };
 
+export const PRAYER_LABELS_AR_BY_KEY = {
+  fajr: PRAYER_LABELS_AR.Fajr,
+  dhuhr: PRAYER_LABELS_AR.Dhuhr,
+  asr: PRAYER_LABELS_AR.Asr,
+  maghrib: PRAYER_LABELS_AR.Maghrib,
+  isha: PRAYER_LABELS_AR.Isha,
+};
+
 // Normalize time string to "HH:MM" format
 export function normalizeTime(timeStr) {
   if (typeof timeStr !== "string") return "";

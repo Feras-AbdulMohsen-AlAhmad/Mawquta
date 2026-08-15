@@ -4,84 +4,94 @@ export function renderQiblaCityModal({ modalId, modalLabelId }) {
       class="modal fade qibla-city-modal"
       id="${modalId}"
       tabindex="-1"
+      role="dialog"
+      aria-modal="true"
       aria-labelledby="${modalLabelId}"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-centered qibla-city-modal__dialog">
+      <div class="modal-dialog qibla-city-modal__dialog">
         <div class="modal-content qibla-city-modal__content">
           <div class="modal-header qibla-city-modal__header">
-            <h3 class="modal-title qibla-city-modal__title" id="${modalLabelId}">
-              اختيار المدينة
-            </h3>
+            <div class="qibla-city-modal__heading">
+              <h3 class="modal-title qibla-city-modal__title" id="${modalLabelId}">اختيار المدينة</h3>
+              <p class="qibla-city-modal__description">اختر المدينة التي تريد عرض المواقيت بناءً عليها</p>
+            </div>
             <button
               type="button"
               class="qibla-city-modal__close"
               data-bs-dismiss="modal"
               aria-label="إغلاق"
             >
-              إغلاق
+              <span aria-hidden="true">×</span>
             </button>
           </div>
 
           <div class="modal-body qibla-city-modal__body">
-            <p class="qibla-city-modal__note" data-location-current>
-              الموقع المختار: دمشق، سوريا
-            </p>
+            <div class="qibla-city-modal__current" aria-label="الموقع الحالي">
+              <span class="qibla-city-modal__eyebrow">الموقع الحالي</span>
+              <strong class="qibla-city-modal__current-value" data-location-current>لم يتم تحديد مدينة بعد</strong>
+            </div>
 
-            <label class="visually-hidden" for="locationSearchInput">
-              ابحث عن مدينة
-            </label>
-            <input
-              class="qibla-city-modal__fake-input form-control"
-              id="locationSearchInput"
-              type="search"
-              inputmode="search"
-              autocomplete="off"
-              placeholder="أدخل اسم المدينة..."
-              aria-describedby="locationPickerStatus"
-              data-location-query
-            />
+            <div class="qibla-city-modal__search-shell">
+              <label class="visually-hidden" for="locationSearchInput">ابحث عن مدينة</label>
+              <span class="qibla-city-modal__search-label">ابحث عن مدينة</span>
+              <div class="qibla-city-modal__search-control">
+                <span class="qibla-city-modal__search-icon" aria-hidden="true"></span>
+                <input
+                  class="qibla-city-modal__search-input"
+                  id="locationSearchInput"
+                  type="search"
+                  inputmode="search"
+                  autocomplete="off"
+                  placeholder="ابحث عن مدينة..."
+                  aria-describedby="locationPickerStatus"
+                  data-location-query
+                />
+                <button type="button" class="qibla-city-modal__clear" aria-label="مسح البحث" data-location-clear hidden>
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+            </div>
 
             <div
-              class="list-group"
+              class="qibla-city-modal__results"
               role="listbox"
               aria-label="نتائج البحث عن المدن"
               data-location-results
             ></div>
 
             <p
-              class="alert alert-info mb-0"
+              class="qibla-city-modal__candidate"
               role="status"
               hidden
               data-location-candidate
             ></p>
 
             <p
-              class="qibla-city-modal__note"
+              class="qibla-city-modal__status"
               id="locationPickerStatus"
               role="status"
               aria-live="polite"
               data-location-status
             >
-              ابحث عن مدينة أو استخدم موقع المتصفح بإذن صريح.
+              <span>ابحث عن مدينة للبدء</span>
+              <small>يمكنك البحث بالعربية أو الإنجليزية</small>
             </p>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="qibla-city-modal__location-option">
               <button
                 type="button"
-                class="btn btn-outline-secondary flex-grow-1"
+                class="qibla-city-modal__geolocation"
                 data-location-geolocation
               >
                 استخدام موقعي
               </button>
+            </div>
 
-              <button
-                type="button"
-                class="qibla-city-modal__confirm flex-grow-1"
-                disabled
-                data-location-confirm
-              >
-                تأكيد الموقع
+            <div class="qibla-city-modal__actions">
+              <button type="button" class="qibla-city-modal__cancel" data-location-cancel>إلغاء</button>
+              <button type="button" class="qibla-city-modal__confirm" disabled data-location-confirm>
+                تأكيد المدينة
               </button>
             </div>
           </div>

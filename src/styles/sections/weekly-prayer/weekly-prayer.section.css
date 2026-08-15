@@ -4,7 +4,7 @@
   overflow: hidden;
   isolation: isolate;
   background: #f8f7f4;
-  padding-block: 48px 196px;
+  padding-block: 48px 112px;
 }
 
 .weekly-prayer-section > .container-xl {
@@ -41,7 +41,7 @@
 }
 
 .weekly-prayer-section .weekly-prayer-section__head {
-  margin-bottom: 48px;
+  margin-bottom: 32px;
   align-items: flex-start;
 }
 
@@ -149,9 +149,9 @@
 }
 
 .weekly-prayer-section .schedule-table th {
-  padding: 16px 24px;
+  padding: 12px 24px;
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 24px;
   color: #64748b;
@@ -178,9 +178,9 @@
 }
 
 .weekly-prayer-section .schedule-table td {
-  height: 56px;
+  height: 52px;
   box-sizing: border-box;
-  padding: 16px 56px 16px 24px;
+  padding: 12px 56px 12px 24px;
   font-family: "Reem Kufi", sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -276,7 +276,7 @@
 }
 
 .weekly-prayer-section .schedule-table tbody tr {
-  height: 56px;
+  height: 52px;
   border-top: 1px solid rgba(15, 82, 51, 0.05);
   border-bottom: 0;
 }

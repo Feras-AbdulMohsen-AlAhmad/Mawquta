@@ -233,3 +233,23 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+@media (min-width: 360px) and (max-width: 767.98px) {
+  .ramadan-topbar.ramadan-topbar {
+    grid-template-areas:
+      "summary summary"
+      "city date"
+      "action action";
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .ramadan-topbar.ramadan-topbar .ramadan-topbar__chip--city,
+  .ramadan-topbar.ramadan-topbar .ramadan-topbar__chip--date {
+    inline-size: 100%;
+  }
+
+  .ramadan-topbar.ramadan-topbar .ramadan-topbar__action-shell {
+    justify-self: start;
+  }
+}
