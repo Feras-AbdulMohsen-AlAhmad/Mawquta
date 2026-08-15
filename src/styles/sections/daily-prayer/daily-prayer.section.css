@@ -7,7 +7,7 @@
   isolation: isolate;
   background: var(--Background-50);
   padding-block-start: 48px;
-  padding-block-end: clamp(96px, 10vw, 196px);
+  padding-block-end: clamp(88px, 7vw, 128px);
 }
 
 .daily-prayer-section > .container-xl {
@@ -174,11 +174,11 @@
 @media (min-width: 1200px) {
   .daily-prayer-section {
     padding-block-start: 64px;
-    padding-block-end: 188px;
+    padding-block-end: 112px;
   }
 
   .daily-prayer-section .daily-prayer-section__head {
-    margin-bottom: 40px;
+    margin-bottom: 32px;
   }
 
   .daily-prayer-section .daily-prayer-cards-track {
