@@ -28,7 +28,13 @@ export class FakeElement {
     this.listenerLog = [];
     this.attrs = new Map();
     this.classListToggles = [];
-    this.style = {};
+    const styleValues = new Map();
+    this.style = {
+      setProperty: (name, value) => styleValues.set(name, String(value)),
+      getPropertyValue: (name) => styleValues.get(name) || "",
+      removeProperty: (name) => styleValues.delete(name),
+    };
+    this._classNames = new Set();
   }
   querySelector(selector) {
     if (!this._selectors.has(selector)) {
@@ -63,7 +69,12 @@ export class FakeElement {
   }
   get classList() {
     return {
+      add: (...classes) => classes.forEach((cls) => this._classNames.add(cls)),
+      remove: (...classes) => classes.forEach((cls) => this._classNames.delete(cls)),
+      contains: (cls) => this._classNames.has(cls),
       toggle: (cls, on) => {
+        if (on) this._classNames.add(cls);
+        else this._classNames.delete(cls);
         this.classListToggles.push({ cls, on });
       },
     };
@@ -83,6 +94,11 @@ export function fire(element, type) {
 
 export function makeFakeDocument() {
   const modal = new FakeElement();
+  const viewport = new FakeElement();
+  viewport.height = 844;
+  const windowTarget = new FakeElement();
+  windowTarget.visualViewport = viewport;
+  windowTarget.innerHeight = 844;
   const input = modal.querySelector("[data-location-query]");
   const results = modal.querySelector("[data-location-results]");
   const candidate = modal.querySelector("[data-location-candidate]");
@@ -94,11 +110,25 @@ export function makeFakeDocument() {
   confirmBtn.disabled = true;
   candidate.hidden = true;
   const doc = {
+    body: new FakeElement(),
+    defaultView: windowTarget,
     getElementById: (id) => (id === "qiblaCityModal" ? modal : null),
     querySelectorAll: () => [],
     createElement: () => new FakeElement(),
   };
-  return { modal, input, results, candidate, status, current, confirmBtn, geoBtn, doc };
+  return {
+    modal,
+    input,
+    results,
+    candidate,
+    status,
+    current,
+    confirmBtn,
+    geoBtn,
+    viewport,
+    windowTarget,
+    doc,
+  };
 }
 
 export function createTimerMock() {

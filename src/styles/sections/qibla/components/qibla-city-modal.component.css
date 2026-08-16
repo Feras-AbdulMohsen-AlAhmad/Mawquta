@@ -27,7 +27,7 @@
   display: flex;
   flex-direction: column;
   width: min(680px, calc(100vw - 48px));
-  max-height: min(760px, calc(var(--qibla-modal-available-height, 100dvh) - 64px));
+  max-height: min(760px, calc(100dvh - 64px));
   margin: 0;
   transform: translateY(8px) scale(0.985);
   transition: transform 180ms ease;
@@ -116,7 +116,7 @@
 .qibla-city-modal__body {
   display: flex;
   min-height: 0;
-  flex: 1 1 0;
+  flex: 1;
   flex-direction: column;
   gap: 14px;
   padding: 20px 24px 24px;
@@ -533,16 +533,11 @@
 .qibla-city-modal__actions {
   display: grid;
   flex: 0 0 auto;
-  gap: 9px;
-  padding: 12px 24px calc(20px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid color-mix(in srgb, var(--Primary-700) 10%, transparent);
-  background: var(--Background-50);
-}
-
-.qibla-city-modal__actions-row {
-  display: grid;
   grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
   gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--Primary-700) 10%, transparent);
 }
 
 .qibla-city-modal__cancel,
@@ -598,16 +593,7 @@
 
   .qibla-city-modal__dialog {
     width: 100%;
-    max-height: min(
-      calc(var(--qibla-modal-available-height, 100dvh) - 8px),
-      92dvh,
-      760px
-    );
-    height: min(
-      calc(var(--qibla-modal-available-height, 100dvh) - 8px),
-      92dvh,
-      760px
-    );
+    max-height: min(92dvh, 760px);
     transform: translateY(100%);
   }
 
@@ -639,42 +625,14 @@
   }
 
   .qibla-city-modal__body {
-    gap: 12px;
-    padding: 14px 18px 12px;
-    overflow: hidden;
-  }
-
-  .qibla-city-modal__current {
-    padding: 10px 12px;
-  }
-
-  .qibla-city-modal__current-icon {
-    flex-basis: 32px;
-    width: 32px;
-    height: 32px;
-  }
-
-  .qibla-city-modal__current-icon::before {
-    top: 7px;
-    left: 9px;
-  }
-
-  .qibla-city-modal__current-icon::after {
-    top: 11px;
-    left: 13px;
-  }
-
-  .qibla-city-modal__results-shell {
-    min-height: 76px;
-    gap: 6px;
+    gap: 13px;
+    padding: 14px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
   }
 
   .qibla-city-modal__results {
-    max-height: none;
-  }
-
-  .qibla-city-modal__actions {
-    padding: 10px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+    flex: 0 1 min(34dvh, 300px);
+    max-height: min(34dvh, 300px);
   }
 }
 
@@ -693,7 +651,6 @@
   }
 
   .qibla-city-modal__body {
-    gap: 9px;
     padding-inline: 14px;
   }
 
@@ -708,6 +665,7 @@
 
   .qibla-city-modal__actions-row {
     gap: 8px;
+    padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px));
   }
 
   .qibla-city-modal__cancel,
@@ -715,170 +673,6 @@
     min-height: 46px;
     padding-inline: 10px;
     font-size: 13px;
-  }
-}
-
-@media (max-height: 520px) {
-  .qibla-city-modal__dialog {
-    height: min(760px, calc(var(--qibla-modal-available-height, 100dvh) - 64px));
-    max-height: min(760px, calc(var(--qibla-modal-available-height, 100dvh) - 64px));
-  }
-
-  .qibla-city-modal__description,
-  .qibla-city-modal__results-heading,
-  .qibla-city-modal__location-option {
-    display: none;
-  }
-
-  .qibla-city-modal__header {
-    padding-block: 10px 8px;
-  }
-
-  .qibla-city-modal__body {
-    gap: 3px;
-    padding-block: 3px;
-  }
-
-  .qibla-city-modal__current {
-    gap: 8px;
-    padding-block: 3px;
-  }
-
-  .qibla-city-modal__current-copy {
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-    flex-direction: row;
-  }
-
-  .qibla-city-modal__eyebrow {
-    flex: 0 0 auto;
-    font-size: 11px;
-    line-height: 1.2;
-  }
-
-  .qibla-city-modal__current-value {
-    font-size: 13px;
-    line-height: 1.25;
-    text-align: end;
-  }
-
-  .qibla-city-modal__current-icon {
-    flex-basis: 28px;
-    width: 28px;
-    height: 28px;
-  }
-
-  .qibla-city-modal__current-icon::before {
-    top: 6px;
-    left: 7px;
-    width: 10px;
-    height: 13px;
-  }
-
-  .qibla-city-modal__current-icon::after {
-    top: 10px;
-    left: 11px;
-  }
-
-  .qibla-city-modal__search-shell {
-    gap: 2px;
-  }
-
-  .qibla-city-modal__search-label {
-    font-size: 11px;
-    line-height: 1.1;
-  }
-
-  .qibla-city-modal__search-control {
-    min-height: 44px;
-  }
-
-  .qibla-city-modal__search-input {
-    height: 40px;
-  }
-
-  .qibla-city-modal__results-shell {
-    min-height: 52px;
-    gap: 0;
-  }
-
-  .qibla-city-modal__result {
-    min-height: 52px;
-    padding-block: 8px;
-  }
-
-  .qibla-city-modal__status {
-    min-height: 18px;
-    font-size: 12px;
-    line-height: 1.35;
-  }
-
-  .qibla-city-modal__status small {
-    display: none;
-  }
-
-  .qibla-city-modal__status[data-status="error"] {
-    min-height: 18px;
-    padding: 3px 7px;
-    font-size: 11px;
-    line-height: 1.3;
-    overflow: auto;
-  }
-
-  .qibla-city-modal__actions {
-    padding-block: 8px calc(10px + env(safe-area-inset-bottom, 0px));
-  }
-}
-
-@media (max-width: 399.98px) and (max-height: 390px) {
-  .qibla-city-modal__current-icon {
-    display: none;
-  }
-
-  .qibla-city-modal__current {
-    gap: 3px;
-    padding-block: 2px;
-  }
-
-  .qibla-city-modal__eyebrow {
-    font-size: 11px;
-    line-height: 1.2;
-  }
-
-  .qibla-city-modal__current-value {
-    font-size: 12px;
-    line-height: 1.25;
-  }
-
-  .qibla-city-modal__search-label {
-    font-size: 11px;
-    line-height: 1.1;
-  }
-
-  .qibla-city-modal__search-control {
-    min-height: 44px;
-  }
-
-  .qibla-city-modal__search-input {
-    height: 40px;
-  }
-
-  .qibla-city-modal__results-shell {
-    min-height: 44px;
-  }
-
-  .qibla-city-modal__result {
-    min-height: 48px;
-  }
-
-  .qibla-city-modal__status {
-    min-height: 16px;
-  }
-
-  .qibla-city-modal__candidate {
-    padding-block: 7px;
-    font-size: 12px;
   }
 }
 

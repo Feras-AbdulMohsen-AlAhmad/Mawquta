@@ -793,5 +793,77 @@ await checkAsync("LS-18", async () => {
   }
 });
 
-await finish("S6T3_LOCATION_SEARCH");
+// ---------------------------------------------------------------------------
+// S8-T9D-01 VisualViewport height sync and listener lifecycle
+// ---------------------------------------------------------------------------
+await checkAsync("S8-T9D-01", async () => {
+  const p = freshPicker();
+  try {
+    p.dom.modal.classList.add("show");
+    fire(p.dom.modal, "shown.bs.modal");
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      "844px",
+      "initial available height is synced on open",
+    );
+    assert.equal(listenerCount(p.dom.viewport, "resize"), 1);
+    assert.equal(listenerCount(p.dom.viewport, "scroll"), 1);
+    assert.equal(listenerCount(p.dom.windowTarget, "resize"), 1);
+    assert.equal(listenerCount(p.dom.windowTarget, "orientationchange"), 1);
+
+    p.dom.viewport.height = 390;
+    fire(p.dom.viewport, "resize");
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      "390px",
+      "keyboard-reduced VisualViewport height is applied",
+    );
+
+    p.dom.viewport.height = 844;
+    fire(p.dom.windowTarget, "orientationchange");
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      "844px",
+      "orientation recalculates the height",
+    );
+
+    fire(p.dom.modal, "hidden.bs.modal");
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      "",
+      "height variable clears on close",
+    );
+    assert.equal(listenerCount(p.dom.viewport, "resize"), 0);
+    assert.equal(listenerCount(p.dom.viewport, "scroll"), 0);
+    assert.equal(listenerCount(p.dom.windowTarget, "resize"), 0);
+    assert.equal(listenerCount(p.dom.windowTarget, "orientationchange"), 0);
+  } finally {
+    p.timers.restore();
+    p.fetchMock.restore();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// S8-T9D-02 sheet structure keeps the footer outside the scroll region
+// ---------------------------------------------------------------------------
+await checkAsync("S8-T9D-02", async () => {
+  const componentSource = await fs.readFile(
+    `${SRC}/ui/sections/qibla/components/qibla-city-modal.component.js`,
+    "utf8",
+  );
+  const styleSource = await fs.readFile(
+    `${SRC}/../styles/sections/qibla/components/qibla-city-modal.component.css`,
+    "utf8",
+  );
+  const bodyEnd = componentSource.indexOf("</div>", componentSource.indexOf("qibla-city-modal__body"));
+  const actionsStart = componentSource.indexOf('class="qibla-city-modal__actions"');
+  assert.ok(actionsStart > bodyEnd, "footer is a sibling after the body scroll region");
+  assert.match(styleSource, /\.qibla-city-modal__dialog\s*\{[\s\S]*display:\s*flex/);
+  assert.match(styleSource, /\.qibla-city-modal__results\s*\{[\s\S]*min-height:\s*0[\s\S]*flex:\s*1 1 auto[\s\S]*overflow-y:\s*auto/);
+  assert.match(styleSource, /\.qibla-city-modal__actions\s*\{[\s\S]*position:\s*sticky[\s\S]*flex:\s*0 0 auto/);
+  assert.match(styleSource, /--modal-available-height/);
+  assert.match(styleSource, /safe-area-inset-bottom/);
+});
+
+await finish("S8T9D_LOCATION_MODAL");
 
