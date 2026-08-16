@@ -21,6 +21,9 @@ const gridUrl = pathToFileURL(
 const constantsUrl = pathToFileURL(
   new URL("../../src/js", import.meta.url).pathname.replace(/^\/+([A-Za-z]):/, "$1:").replaceAll("\\", "/") + "/ui/sections/ramadan/components/ramadan-month-table.constants.js",
 ).href;
+const ramadanYearUrl = pathToFileURL(
+  new URL("../../src/js", import.meta.url).pathname.replace(/^\/+([A-Za-z]):/, "$1:").replaceAll("\\", "/") + "/utils/ramadan-year.util.js",
+).href;
 
 const { renderRamadanSection } = await import(sectionUrl);
 const { renderRamadanTopbar } = await import(topbarUrl);
@@ -34,6 +37,7 @@ const {
 } = await import(gridUrl);
 const { MONTH_TABLE_ICON_PATHS, RAMADAN_MONTH_TABLE_COLUMNS } =
   await import(constantsUrl);
+const { getNextRamadanGregorianYear } = await import(ramadanYearUrl);
 
 const results = [];
 function record(id, pass, detail) {
@@ -199,9 +203,34 @@ await checkAsync("UI-05", async () => {
 await checkAsync("UI-06", async () => {
   assert.ok(renderRamadanTimetableLoading().includes("ramadan-timetable-skeleton"));
   assert.ok(renderRamadanTimetableNoLocation().includes("اختر مدينة لعرض إمساكية رمضان"));
-  assert.ok(renderRamadanTimetableNoData().includes("إمساكية رمضان غير متاحة"));
+  assert.ok(renderRamadanTimetableNoData().includes("لا توجد إمساكية رمضان متاحة حاليًا"));
   assert.ok(renderRamadanTimetableError().includes("data-ramadan-retry"));
   assert.ok(!renderRamadanTimetableLoading().includes("05:42"));
+});
+
+await checkAsync("UI-07", async () => {
+  const yearCopy = renderRamadanTimetableNoData({ nextRamadanGregorianYear: 2027 });
+  assert.ok(yearCopy.includes("لا توجد إمساكية رمضان متاحة حاليًا"), "refined headline");
+  assert.ok(yearCopy.includes("ستتوفر المواقيت عند بدء شهر رمضان القادم في عام 2027."), "year explanation");
+  assert.ok(yearCopy.includes("ramadan-timetable-state__illustration"), "Ramadan illustration composition");
+  assert.ok(yearCopy.includes("ramadan-crescent-star.svg"), "existing Ramadan illustration asset");
+  assert.ok(!yearCopy.includes("illustration-mark"), "single illustration only");
+  assert.ok(yearCopy.includes("data-global-location-control"), "city CTA preserved");
+
+  const fallbackCopy = renderRamadanTimetableNoData();
+  assert.ok(fallbackCopy.includes("ستتوفر المواقيت عند بدء شهر رمضان القادم."), "year fallback copy");
+  assert.ok(!fallbackCopy.includes("في عام undefined"), "fallback avoids undefined year");
+
+  assert.equal(
+    getNextRamadanGregorianYear({ timeZone: "Asia/Damascus", nowDate: new Date("2026-03-15T12:00:00+03:00") }),
+    2027,
+    "next Ramadan year derived from runtime date",
+  );
+  assert.equal(
+    getNextRamadanGregorianYear({ timeZone: "Invalid/Timezone", nowDate: new Date("2026-03-15T12:00:00+03:00") }),
+    null,
+    "unsupported timezone falls back cleanly",
+  );
 });
 
 const passed = results.filter((r) => r.pass).length;

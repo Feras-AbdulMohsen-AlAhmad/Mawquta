@@ -457,8 +457,11 @@ await checkAsync("RR-08", async () => {
   assert.equal(hook(root, "[data-ramadan-iftar]"), "--:--");
   assert.equal(hook(root, "[data-ramadan-countdown-hours]"), "--");
   assert.equal(hook(root, "[data-ramadan-countdown-title]"), "—");
-  assert.ok(tableHtml(root).includes("إمساكية رمضان غير متاحة"), "no-data state off-season");
-  assert.ok(dataHtml(root).includes("لا يوجد رمضان ضمن الشهر الحالي."), "off-season message");
+  assert.ok(tableHtml(root).includes("لا توجد إمساكية رمضان متاحة حاليًا"), "refined no-data state off-season");
+  assert.ok(tableHtml(root).includes("ستتوفر المواقيت عند بدء شهر رمضان القادم في عام 2027."), "upcoming year in no-data state");
+  assert.ok(tableHtml(root).includes("ramadan-timetable-state__illustration"), "Ramadan empty-state illustration");
+  assert.ok(dataHtml(root).includes("لا توجد إمساكية متاحة حاليًا."), "refined off-season status");
+  assert.ok(dataHtml(root).includes("عند بدء رمضان القادم في عام 2027."), "upcoming year in status");
   runtime.destroy();
 });
 

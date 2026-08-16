@@ -19,6 +19,7 @@ import {
   computeRemainingSeconds,
   formatRemaining,
 } from "../../../utils/time.util.js";
+import { getNextRamadanGregorianYear } from "../../../utils/ramadan-year.util.js";
 import { renderRamadanMonthTableGrid } from "./components/ramadan-month-table-grid.component.js";
 import {
   renderRamadanTimetableLoading,
@@ -95,7 +96,16 @@ const renderRamadanLoadingState = () => renderFeedbackState({ type: "loading", c
 const renderRamadanRevalidatingState = () => renderFeedbackState({ type: "loading", className: "ramadan-prayer-stale", message: "جارٍ التحديث…" });
 const renderRamadanEmptyDataState = () => renderFeedbackState({ type: "empty", className: "ramadan-prayer-empty", message: "لا تتوفر بيانات رمضان حالياً." });
 
-const renderRamadanOffSeasonState = () => renderFeedbackState({ type: "empty", className: "ramadan-prayer-empty", message: "لا يوجد رمضان ضمن الشهر الحالي." });
+const renderRamadanOffSeasonState = ({ nextRamadanGregorianYear } = {}) => {
+  const year = Number.isInteger(Number(nextRamadanGregorianYear))
+    ? ` في عام ${Number(nextRamadanGregorianYear)}`
+    : "";
+  return renderFeedbackState({
+    type: "empty",
+    className: "ramadan-prayer-empty",
+    message: `لا توجد إمساكية متاحة حاليًا. ستظهر تلقائيًا عند بدء رمضان القادم${year}.`,
+  });
+};
 const renderRamadanErrorState = () => renderFeedbackState({ type: "error", className: "ramadan-prayer-error", message: "تعذر تحميل بيانات رمضان.", retryAttribute: "ramadan-retry" });
 
 export function createRamadanRuntime(options = {}) {
@@ -264,8 +274,16 @@ export function createRamadanRuntime(options = {}) {
     }
 
     clearDynamicValues(elements);
-    setTimetableState(elements, renderRamadanTimetableNoData());
-    return renderRamadanOffSeasonState();
+    const nextRamadanGregorianYear = getNextRamadanGregorianYear({
+      contract,
+      timeZone: contract.timezone,
+      nowDate: now(),
+    });
+    setTimetableState(
+      elements,
+      renderRamadanTimetableNoData({ nextRamadanGregorianYear }),
+    );
+    return renderRamadanOffSeasonState({ nextRamadanGregorianYear });
   }
 
   function isCurrentContractData() {

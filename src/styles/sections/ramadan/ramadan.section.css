@@ -203,18 +203,18 @@
 
   .ramadan-month-table-section .ramadan-table-action {
     inline-size: 128px;
-    min-block-size: 44px;
-    padding: 8px 12px;
+    min-block-size: var(--ui-btn-min-h-sm);
+    padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
     border-radius: var(--ui-radius-md);
-    font-size: 14px;
+    font-size: var(--ui-btn-font-size-sm);
   }
 
   .ramadan-month-table-section .ramadan-table-action:disabled {
-    border: 1px solid color-mix(in srgb, var(--Secondary-500) 38%, var(--white));
-    background: color-mix(in srgb, var(--Secondary-500) 18%, var(--white));
-    color: var(--Secondary-700);
-    opacity: 1;
-    filter: none;
+    border: none;
+    background: var(--Secondary-500);
+    color: var(--white);
+    opacity: 0.48;
+    filter: grayscale(0.2);
   }
 
   .ramadan-month-table-section .ramadan-table-action img {
@@ -327,7 +327,7 @@
 /* Reference timetable composition: centered heading, compact flat table, and
    the same quiet Ramadan palette as the supplied visual reference. */
 .ramadan-month-table-section {
-  background: #faf9f6;
+  background: var(--Background-50);
   padding-block: 26px 18px;
 }
 
@@ -370,7 +370,7 @@
 
 .ramadan-month-table-section .ramadan-table-title {
   order: -1;
-  color: #17654e;
+  color: var(--Primary-700);
   font-size: clamp(18px, 1.6vw, 26px);
   line-height: 1.25;
   text-align: center;
@@ -380,11 +380,11 @@
   align-self: center;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #fff;
-  color: #c47b2b;
+  background: var(--white);
+  color: var(--Secondary-700);
   font-size: clamp(8px, 0.65vw, 11px);
   line-height: 1.3;
-  box-shadow: 0 1px 4px rgb(18 66 53 / 8%);
+  box-shadow: var(--shadow-soft);
 }
 
 .ramadan-month-table-section .ramadan-table-head__chip .section-head-chip__icon {
@@ -401,11 +401,11 @@
 
 .ramadan-month-table-section .ramadan-table-action {
   inline-size: 136px;
-  min-block-size: 34px;
-  border-radius: 7px;
-  padding: 6px 14px;
-  background: #e29a28;
-  font-size: 12px;
+  min-block-size: var(--ui-btn-min-h-sm);
+  border-radius: var(--ui-radius-md);
+  padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
+  background: var(--Secondary-500);
+  font-size: var(--ui-btn-font-size-sm);
   box-shadow: none;
 }
 
@@ -415,34 +415,34 @@
 }
 
 .ramadan-month-table-section .schedule-table-card {
-  border: 1px solid rgb(18 66 53 / 8%);
+  border: 1px solid var(--Primary-100);
   border-radius: 12px;
-  background: #d9e1dc;
-  box-shadow: 0 3px 12px rgb(18 66 53 / 8%);
+  background: var(--Background-Hover);
+  box-shadow: var(--shadow-soft);
 }
 
 .ramadan-month-table-section .schedule-table-card__top {
   min-block-size: 38px;
   padding: 8px 14px;
-  border-bottom: 1px solid rgb(18 66 53 / 8%);
-  background: rgb(248 250 248 / 78%);
+  border-bottom: 1px solid var(--Primary-100);
+  background: var(--Background-0);
 }
 
 .ramadan-month-table-section .ramadan-month-table-location-line {
   gap: 4px;
-  color: #17654e;
+  color: var(--Primary-700);
   font-size: clamp(11px, 0.85vw, 14px);
   line-height: 1.3;
 }
 
 .ramadan-month-table-section .ramadan-month-table-location-line strong {
-  color: #d68f22;
+  color: var(--Secondary-500);
 }
 
 .ramadan-month-table-section .schedule-table-range {
   padding: 3px 9px;
-  background: #eef4f0;
-  color: #687f86;
+  background: var(--Primary-50);
+  color: var(--Text-600);
   font-size: 10px;
 }
 
@@ -460,32 +460,32 @@
 
 .ramadan-month-table-section .schedule-table th {
   block-size: 40px;
-  color: #66768a;
-  background: #f7faf8;
+  color: var(--Text-600);
+  background: var(--Background-0);
 }
 
 .ramadan-month-table-section .schedule-table td {
   block-size: 32px;
-  color: #657887;
+  color: var(--Text-600);
   font-weight: 600;
 }
 
 .ramadan-month-table-section .schedule-table tbody tr {
-  background: rgb(211 222 216 / 72%);
-  border-bottom-color: rgb(18 66 53 / 7%);
+  background: var(--Background-Hover);
+  border-bottom-color: var(--Primary-100);
 }
 
 .ramadan-month-table-section .schedule-table tbody tr:nth-child(even) {
-  background: rgb(218 227 221 / 78%);
+  background: var(--Background-100);
 }
 
 .ramadan-month-table-section .schedule-table tbody tr.table-row--today {
-  background: #b9d2c3;
-  box-shadow: inset -3px 0 0 #17654e;
+  background: var(--Primary-100);
+  box-shadow: inset -3px 0 0 var(--Primary-700);
 }
 
 .ramadan-month-table-section .schedule-table tbody tr.table-row--today td {
-  color: #315f52;
+  color: var(--Primary-700);
   font-weight: 700;
 }
 
@@ -500,10 +500,10 @@
   min-width: 82px;
   padding: 5px 10px;
   border-radius: 5px;
-  background-color: #e29a28;
+  background-color: var(--Secondary-500);
   background-size: 160px 32px;
   box-shadow: none;
-  color: #fff;
+  color: var(--white);
 }
 
 .ramadan-month-table-section .ramadan-month-table__more {
@@ -513,11 +513,11 @@
 
 .ramadan-month-table-section .section-more-button--filled {
   min-inline-size: 132px;
-  min-block-size: 34px;
-  border-radius: 7px;
-  padding: 6px 14px;
-  background: #e29a28;
-  font-size: 12px;
+  min-block-size: var(--ui-btn-min-h-sm);
+  border-radius: var(--ui-radius-md);
+  padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
+  background: var(--Secondary-500);
+  font-size: var(--ui-btn-font-size-sm);
 }
 
 @media (max-width: 575.98px) {
@@ -531,9 +531,9 @@
 
   .ramadan-month-table-section .ramadan-table-action {
     inline-size: 128px;
-    min-block-size: 44px;
-    padding: 8px 12px;
-    font-size: 14px;
+    min-block-size: var(--ui-btn-min-h-sm);
+    padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
+    font-size: var(--ui-btn-font-size-sm);
   }
 
   .ramadan-month-table-section .ramadan-table-head__actions {
@@ -546,11 +546,11 @@
   }
 
   .ramadan-month-table-section .ramadan-table-action:disabled {
-    border: 1px solid color-mix(in srgb, var(--Secondary-500) 38%, var(--white));
-    background: color-mix(in srgb, var(--Secondary-500) 18%, var(--white));
-    color: var(--Secondary-700);
-    opacity: 1;
-    filter: none;
+    border: none;
+    background: var(--Secondary-500);
+    color: var(--white);
+    opacity: 0.48;
+    filter: grayscale(0.2);
   }
 
   .ramadan-month-table-section .ramadan-table-action img {
