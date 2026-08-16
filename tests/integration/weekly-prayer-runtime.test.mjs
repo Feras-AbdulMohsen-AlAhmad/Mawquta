@@ -34,6 +34,10 @@ class FakeElement {
   addEventListener(type, handler) {
     this.listeners.set(type, handler);
   }
+
+  removeEventListener(type) {
+    this.listeners.delete(type);
+  }
 }
 
 function createLocationService(initialLocation) {
@@ -58,9 +62,10 @@ const flush = async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
-function eventTarget(selector, value) {
+function eventTarget(selector, value, dataset = {}) {
   return {
     value,
+    dataset,
     closest(value) {
       return value === selector ? this : null;
     },
@@ -84,14 +89,16 @@ test("local weekly day selection updates content without another provider reques
   await flush();
 
   const dataElement = root.querySelector("[data-weekly-data]");
-  assert.match(dataElement.innerHTML, /value="2026-03-15" selected/);
+  assert.match(dataElement.innerHTML, /data-selected-day-key="2026-03-15"/);
 
-  root.listeners.get("change")({
-    target: eventTarget("[data-weekly-day-select]", "2026-03-16"),
+  root.listeners.get("click")({
+    target: eventTarget("[data-weekly-day-option]", undefined, {
+      dayKey: "2026-03-16",
+    }),
   });
 
   assert.equal(requests, 1);
-  assert.match(dataElement.innerHTML, /value="2026-03-16" selected/);
+  assert.match(dataElement.innerHTML, /data-selected-day-key="2026-03-16"/);
   assert.doesNotMatch(dataElement.innerHTML, /<span class="weekly-table-mobile-pill">اليوم<\/span>/);
   runtime.destroy();
 });
@@ -108,15 +115,17 @@ test("location changes reconcile the selected day against the new week", async (
   });
   await flush();
 
-  root.listeners.get("change")({
-    target: eventTarget("[data-weekly-day-select]", "2026-03-16"),
+  root.listeners.get("click")({
+    target: eventTarget("[data-weekly-day-option]", undefined, {
+      dayKey: "2026-03-16",
+    }),
   });
   locationService.setLocation(LOCATION_B);
   await flush();
 
   const dataElement = root.querySelector("[data-weekly-data]");
-  assert.match(dataElement.innerHTML, /value="2026-03-17" selected/);
-  assert.doesNotMatch(dataElement.innerHTML, /value="2026-03-16" selected/);
+  assert.match(dataElement.innerHTML, /data-selected-day-key="2026-03-17"/);
+  assert.doesNotMatch(dataElement.innerHTML, /data-selected-day-key="2026-03-16"/);
   runtime.destroy();
 });
 
@@ -145,6 +154,27 @@ test("retry success restores today's safe selection", async () => {
   await flush();
 
   assert.equal(requests, 2);
-  assert.match(dataElement.innerHTML, /value="2026-03-15" selected/);
+  assert.match(dataElement.innerHTML, /data-selected-day-key="2026-03-15"/);
   runtime.destroy();
+});
+
+test("destroy removes delegated selector listeners", () => {
+  const root = new FakeElement();
+  const locationService = createLocationService(LOCATION_A);
+  const runtime = createWeeklyPrayerRuntime({
+    rootElement: root,
+    locationService,
+    now: () => NOW,
+    setIntervalFn: () => 1,
+    clearIntervalFn: () => {},
+    getCurrentWeekByCity: async () => makeWeekSlice({ year: 2026, month: 3, startDay: 15 }),
+  });
+
+  assert.equal(root.listeners.has("click"), true);
+  assert.equal(root.listeners.has("keydown"), true);
+  assert.equal(root.listeners.has("focusout"), true);
+  runtime.destroy();
+  assert.equal(root.listeners.has("click"), false);
+  assert.equal(root.listeners.has("keydown"), false);
+  assert.equal(root.listeners.has("focusout"), false);
 });

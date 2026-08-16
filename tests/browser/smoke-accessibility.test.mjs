@@ -80,8 +80,10 @@ export async function runBrowserCoverage(browser, baseUrl) {
       const weeklySelector = document.querySelector(".weekly-table-mobile-selector");
       const weeklySelectorDisplay = getComputedStyle(weeklySelector).display;
       const weeklyMobileCardCount = document.querySelectorAll(".weekly-prayer-section .weekly-table-mobile-card").length;
-      const weeklyTimeCount = document.querySelectorAll(".weekly-prayer-section .weekly-table-mobile-card time[dir='ltr']").length;
+      const weeklyTimeCount = document.querySelectorAll(".weekly-prayer-section .weekly-table-mobile-card time.weekly-table-mobile-item__time[dir='ltr']").length;
       const weeklyGridColumns = getComputedStyle(document.querySelector(".weekly-prayer-section .weekly-table-mobile-grid")).gridTemplateColumns.split(" ").filter(Boolean).length;
+      const weeklyLastItem = document.querySelector(".weekly-prayer-section .weekly-table-mobile-item:last-child");
+      const weeklyLastItemSpansGrid = innerWidth <= 335 || getComputedStyle(weeklyLastItem).gridColumn === "1 / -1";
       const ramadanTable = getComputedStyle(document.querySelector(".ramadan-month-table-section .schedule-table-wrap")).display;
       const ramadanMobile = getComputedStyle(document.querySelector(".ramadan-month-table-section .weekly-table-mobile-list")).display;
       const countdown = document.querySelector("[data-hero-countdown]");
@@ -94,8 +96,8 @@ export async function runBrowserCoverage(browser, baseUrl) {
         sectionsReady: document.querySelectorAll("[data-weekly-data] tbody tr").length >= 7 && document.querySelectorAll("[data-daily-data] .daily-prayer-card").length >= 5,
         noOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth,
         responsive: innerWidth <= 575 ? weeklyTable === "none" && weeklyMobile !== "none" && weeklySelectorDisplay !== "none" && weeklyMobileCardCount === 1 && ramadanTable === "none" && ramadanMobile !== "none" : weeklyTable !== "none" && weeklyMobile === "none" && weeklySelectorDisplay === "none" && ramadanTable !== "none" && ramadanMobile === "none",
-        mobileContent: innerWidth <= 575 ? weeklyTimeCount === 5 && (innerWidth <= 335 ? weeklyGridColumns === 1 : weeklyGridColumns === 2) : true,
-        accessible: !liveAncestor && Boolean(document.querySelector("[data-hero-live-status]")) && document.querySelector("label[for='weekly-day-select']")?.textContent === "اختيار اليوم" && document.querySelector("[data-weekly-day-select]")?.getAttribute("aria-label") === "اختيار اليوم" && document.querySelectorAll(".daily-prayer-card[aria-current='true']").length === 1 && /^اتجاه القبلة بزاوية \d+°$/.test(document.querySelector("[data-qibla-compass]")?.getAttribute("aria-label") || ""),
+        mobileContent: innerWidth <= 575 ? weeklyTimeCount === 5 && weeklyLastItemSpansGrid && (innerWidth <= 335 ? weeklyGridColumns === 1 : weeklyGridColumns === 2) : true,
+        accessible: !liveAncestor && Boolean(document.querySelector("[data-hero-live-status]")) && document.querySelector("label[for='weekly-day-select']")?.textContent === "اختيار اليوم" && document.querySelector("[data-weekly-day-select]")?.getAttribute("aria-label") === "اختيار اليوم" && document.querySelector("[data-weekly-day-select]")?.getAttribute("aria-haspopup") === "listbox" && document.querySelector("[data-weekly-day-options]")?.getAttribute("role") === "listbox" && document.querySelectorAll("[data-weekly-day-option][aria-selected='true']").length === 1 && document.querySelectorAll(".daily-prayer-card[aria-current='true']").length === 1 && /^اتجاه القبلة بزاوية \d+°$/.test(document.querySelector("[data-qibla-compass]")?.getAttribute("aria-label") || ""),
       };
     });
 
@@ -108,17 +110,41 @@ export async function runBrowserCoverage(browser, baseUrl) {
 
     if (viewport.width <= 575) {
       const requestsBeforeSelection = calendarRequests;
-      const selectedBefore = await page.locator("[data-weekly-day-select]").inputValue();
-      await page.locator("[data-weekly-day-select]").selectOption({ index: 1 });
+      const trigger = page.locator("[data-weekly-day-select]");
+      const selectedBefore = await trigger.getAttribute("data-selected-day-key");
+      await trigger.click();
+      check(`${prefix}-OPEN-CUSTOM`, await trigger.getAttribute("aria-expanded") === "true" && await page.locator("[data-weekly-day-options]").isVisible() && await page.locator("[data-weekly-day-option]").count() === 7);
+      await page.locator("[data-weekly-day-option]").nth(1).evaluate((option) => option.dispatchEvent(new MouseEvent("click", { bubbles: true })));
       await page.waitForFunction((previous) => {
         const select = document.querySelector("[data-weekly-day-select]");
-        return select?.value !== previous && document.querySelector(".weekly-table-mobile-card")?.textContent.includes("اليوم") === false;
+        return select?.getAttribute("data-selected-day-key") !== previous && document.querySelector(".weekly-table-mobile-card")?.textContent.includes("اليوم") === false;
       }, selectedBefore);
       check(`${prefix}-LOCAL-DAY`, calendarRequests === requestsBeforeSelection);
 
-      await page.locator("[data-weekly-day-select]").selectOption({ index: 0 });
+      await trigger.click();
+      await page.locator("[data-weekly-day-option]").first().evaluate((option) => option.dispatchEvent(new MouseEvent("click", { bubbles: true })));
       await page.waitForFunction(() => document.querySelector(".weekly-table-mobile-pill")?.textContent === "اليوم");
       check(`${prefix}-TODAY-SEMANTICS`, calendarRequests === requestsBeforeSelection);
+
+      await trigger.click();
+      await page.keyboard.press("Escape");
+      check(`${prefix}-ESCAPE-CLOSE`, await trigger.getAttribute("aria-expanded") === "false");
+
+      await trigger.press("ArrowDown");
+      check(`${prefix}-KEYBOARD-NAV`, await page.locator("[data-weekly-day-option]").first().evaluate((option) => option === document.activeElement));
+      await page.keyboard.press("End");
+      check(`${prefix}-END-NAV`, await page.locator("[data-weekly-day-option]").last().evaluate((option) => option === document.activeElement));
+      await page.keyboard.press("Home");
+      check(`${prefix}-HOME-NAV`, await page.locator("[data-weekly-day-option]").first().evaluate((option) => option === document.activeElement));
+      await page.keyboard.press("Escape");
+
+      await trigger.click();
+      await page.evaluate(() => document.body.dispatchEvent(new MouseEvent("click", { bubbles: true })));
+      check(`${prefix}-OUTSIDE-CLOSE`, await trigger.getAttribute("aria-expanded") === "false");
+
+      await trigger.click();
+      await page.keyboard.press("Tab");
+      check(`${prefix}-TAB-CLOSE`, await trigger.getAttribute("aria-expanded") === "false");
     }
   }
 

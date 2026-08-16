@@ -78,6 +78,10 @@ export function createWeeklyPrayerRuntime(options = {}) {
   let retryBound = false;
   let rolloverTimer = null;
   let lastDateKey = null;
+  let documentClickBound = false;
+  let selectorClickHandler = null;
+  let selectorKeydownHandler = null;
+  let selectorFocusoutHandler = null;
 
   const state = {
     status: "idle",
@@ -282,30 +286,180 @@ export function createWeeklyPrayerRuntime(options = {}) {
     rolloverTimer = setIntervalFn(checkRollover, rolloverIntervalMs);
   }
 
+  function getSelectorElements() {
+    return {
+      selector: rootElement?.querySelector("[data-weekly-selector]"),
+      trigger: rootElement?.querySelector("[data-weekly-day-select]"),
+      options: rootElement?.querySelector("[data-weekly-day-options]"),
+      optionElements:
+        rootElement?.querySelectorAll?.("[data-weekly-day-option]") ?? [],
+    };
+  }
+
+  function isSelectorOpen() {
+    return (
+      rootElement?.querySelector("[data-weekly-selector]")?.dataset?.open ===
+      "true"
+    );
+  }
+
+  function setSelectorOpen(
+    open,
+    { focusTrigger = false, focusOption = null } = {},
+  ) {
+    const { selector, trigger, options, optionElements } =
+      getSelectorElements();
+    if (!selector || !trigger || !options || trigger.disabled) return;
+
+    selector.dataset.open = open ? "true" : "false";
+    trigger.setAttribute("aria-expanded", String(open));
+    options.hidden = !open;
+
+    if (open) {
+      const controlRect = trigger.getBoundingClientRect?.();
+      const viewportHeight = globalThis.innerHeight;
+      const panelHeight = Math.min(options.scrollHeight || 280, 280);
+      const spaceBelow =
+        typeof viewportHeight === "number" && controlRect
+          ? viewportHeight - controlRect.bottom
+          : Number.POSITIVE_INFINITY;
+      const spaceAbove = controlRect?.top ?? 0;
+      selector.dataset.placement =
+        spaceBelow < panelHeight && spaceAbove > spaceBelow ? "top" : "bottom";
+    } else {
+      delete selector.dataset.placement;
+    }
+
+    if (focusOption !== null) {
+      const optionIndex =
+        focusOption === "last" ? optionElements.length - 1 : focusOption;
+      optionElements[optionIndex]?.focus?.();
+    } else if (focusTrigger) {
+      trigger.focus?.();
+    }
+  }
+
+  function selectWeeklyDay(dateKey, { returnFocus = true } = {}) {
+    if (!state.sectionData || typeof dateKey !== "string") return;
+    const selectedRow = findWeeklyRowByKey(state.sectionData.rows, dateKey);
+    if (!selectedRow) return;
+
+    state.selectedDayKey = selectedRow.dateKey;
+    applyState();
+    if (returnFocus) getSelectorElements().trigger?.focus?.();
+  }
+
+  function moveSelectorFocus(currentOption, direction) {
+    const optionElements = [
+      ...(getSelectorElements().optionElements ?? []),
+    ];
+    if (optionElements.length === 0) return;
+
+    const currentIndex = Math.max(0, optionElements.indexOf(currentOption));
+    const nextIndex =
+      direction === "first"
+        ? 0
+        : direction === "last"
+          ? optionElements.length - 1
+          : (currentIndex + direction + optionElements.length) %
+            optionElements.length;
+    optionElements[nextIndex]?.focus?.();
+  }
+
+  function closeSelectorIfOutside(event) {
+    const selector = rootElement?.querySelector("[data-weekly-selector]");
+    if (!selector || !isSelectorOpen()) return;
+    if (!event.target?.closest?.("[data-weekly-selector]")) {
+      setSelectorOpen(false);
+    }
+  }
+
   function bindRetry() {
     if (retryBound || !rootElement) return;
     retryBound = true;
 
-    rootElement.addEventListener("click", (event) => {
-      if (!event.target?.closest?.("[data-weekly-retry]")) return;
-      if (state.location) void load(state.location, { force: true });
-    });
-
-    rootElement.addEventListener("change", (event) => {
-      const select = event.target?.closest?.("[data-weekly-day-select]");
-      if (!select || !state.sectionData) return;
-
-      const selectedRow = findWeeklyRowByKey(
-        state.sectionData.rows,
-        select.value,
-      );
-      if (!selectedRow) {
-        state.selectedDayKey = getDefaultWeeklyDayKey(state.sectionData.rows);
-      } else {
-        state.selectedDayKey = selectedRow.dateKey;
+    selectorClickHandler = (event) => {
+      const target = event.target;
+      if (target?.closest?.("[data-weekly-retry]")) {
+        if (state.location) void load(state.location, { force: true });
+        return;
       }
-      applyState();
-    });
+
+      const trigger = target?.closest?.("[data-weekly-day-select]");
+      if (trigger) {
+        setSelectorOpen(!isSelectorOpen());
+        return;
+      }
+
+      const option = target?.closest?.("[data-weekly-day-option]");
+      if (option) {
+        selectWeeklyDay(option.dataset?.dayKey);
+        return;
+      }
+
+      closeSelectorIfOutside(event);
+    };
+    rootElement.addEventListener("click", selectorClickHandler);
+
+    selectorKeydownHandler = (event) => {
+      const target = event.target;
+      const trigger = target?.closest?.("[data-weekly-day-select]");
+      const option = target?.closest?.("[data-weekly-day-option]");
+
+      if (trigger) {
+        if (["Enter", " "].includes(event.key)) {
+          event.preventDefault();
+          setSelectorOpen(!isSelectorOpen(), {
+            focusOption: isSelectorOpen() ? null : 0,
+          });
+        } else if (event.key === "ArrowDown" || event.key === "Home") {
+          event.preventDefault();
+          setSelectorOpen(true, { focusOption: 0 });
+        } else if (event.key === "ArrowUp" || event.key === "End") {
+          event.preventDefault();
+          setSelectorOpen(true, { focusOption: "last" });
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          setSelectorOpen(false, { focusTrigger: true });
+        }
+        return;
+      }
+
+      if (!option || !isSelectorOpen()) return;
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        moveSelectorFocus(option, 1);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        moveSelectorFocus(option, -1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        moveSelectorFocus(option, "first");
+      } else if (event.key === "End") {
+        event.preventDefault();
+        moveSelectorFocus(option, "last");
+      } else if (["Enter", " "].includes(event.key)) {
+        event.preventDefault();
+        selectWeeklyDay(option.dataset?.dayKey);
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        setSelectorOpen(false, { focusTrigger: true });
+      }
+    };
+    rootElement.addEventListener("keydown", selectorKeydownHandler);
+
+    selectorFocusoutHandler = (event) => {
+      if (!isSelectorOpen()) return;
+      if (event.relatedTarget?.closest?.("[data-weekly-selector]")) return;
+      setSelectorOpen(false);
+    };
+    rootElement.addEventListener("focusout", selectorFocusoutHandler);
+
+    const ownerDocument = rootElement.ownerDocument;
+    if (ownerDocument?.addEventListener) {
+      ownerDocument.addEventListener("click", closeSelectorIfOutside);
+      documentClickBound = true;
+    }
   }
 
   function destroy() {
@@ -318,6 +472,22 @@ export function createWeeklyPrayerRuntime(options = {}) {
     if (unsubscribe) {
       unsubscribe();
       unsubscribe = null;
+    }
+    if (selectorClickHandler && rootElement?.removeEventListener) {
+      rootElement.removeEventListener("click", selectorClickHandler);
+      selectorClickHandler = null;
+    }
+    if (selectorKeydownHandler && rootElement?.removeEventListener) {
+      rootElement.removeEventListener("keydown", selectorKeydownHandler);
+      selectorKeydownHandler = null;
+    }
+    if (selectorFocusoutHandler && rootElement?.removeEventListener) {
+      rootElement.removeEventListener("focusout", selectorFocusoutHandler);
+      selectorFocusoutHandler = null;
+    }
+    if (documentClickBound && rootElement.ownerDocument?.removeEventListener) {
+      rootElement.ownerDocument.removeEventListener("click", closeSelectorIfOutside);
+      documentClickBound = false;
     }
   }
 

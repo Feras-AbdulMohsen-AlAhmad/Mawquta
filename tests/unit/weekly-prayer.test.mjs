@@ -6,6 +6,7 @@ import {
   getTodayDateKey,
 } from "../../src/js/services/weekly-formatter.service.js";
 import { renderWeeklyPrayerMobileList } from "../../src/js/ui/sections/weekly-prayer/components/weekly-prayer-mobile-list.component.js";
+import { renderWeeklyPrayerTableCard } from "../../src/js/ui/sections/weekly-prayer/components/prayer-week-table.component.js";
 import {
   findWeeklyRowByKey,
   getDefaultWeeklyDayKey,
@@ -58,5 +59,24 @@ test("Weekly Prayer renders a locally selected day without today's semantics", (
   assert.match(html, /16 مارس/);
   assert.doesNotMatch(html, />اليوم<\/span>/);
   assert.doesNotMatch(html, /weekly-table-mobile-item--active/);
-  assert.equal((html.match(/<time dir="ltr">/g) || []).length, 5);
+  assert.equal((html.match(/<time class="weekly-table-mobile-item__time" dir="ltr">/g) || []).length, 5);
+  assert.equal((html.match(/class="weekly-table-mobile-item[^\"]*" dir="rtl"/g) || []).length, 5);
+});
+
+test("Weekly Prayer renders a custom accessible mobile listbox with Today semantics", () => {
+  const rows = buildRows();
+  const html = renderWeeklyPrayerTableCard({
+    rangeText: "15 مارس — 21 مارس",
+    rows,
+    selectedDayKey: rows[0].dateKey,
+  });
+
+  assert.match(html, /data-weekly-day-select/);
+  assert.match(html, /aria-haspopup="listbox"/);
+  assert.match(html, /aria-expanded="false"/);
+  assert.match(html, /role="listbox"/);
+  assert.equal((html.match(/role="option"/g) || []).length, 7);
+  assert.equal((html.match(/aria-selected="true"/g) || []).length, 1);
+  assert.equal((html.match(/weekly-table-mobile-selector__today/g) || []).length, 1);
+  assert.match(html, /weekly-table-mobile-selector__check/);
 });

@@ -49,7 +49,7 @@ export function renderScheduleTableMobilePrayerItem({
 }) {
   const activeClass = isActive ? " weekly-table-mobile-item--active" : "";
 
-  return `<div class="weekly-table-mobile-item${activeClass}"><dt><span class="weekly-table-mobile-item-icon" aria-hidden="true"><img src="${iconPath}" alt="" loading="lazy" decoding="async" /></span>${label}</dt><dd><time dir="ltr">${time}</time></dd></div>`;
+  return `<div class="weekly-table-mobile-item${activeClass}" dir="rtl"><dt class="weekly-table-mobile-item__label"><span class="weekly-table-mobile-item-icon" aria-hidden="true"><img src="${iconPath}" alt="" loading="lazy" decoding="async" /></span><span>${label}</span></dt><dd class="weekly-table-mobile-item__time-row"><time class="weekly-table-mobile-item__time" dir="ltr">${time}</time></dd></div>`;
 }
 
 export function renderScheduleTableMobileCard({
