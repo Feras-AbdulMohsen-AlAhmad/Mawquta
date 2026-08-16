@@ -44,10 +44,10 @@
   content: "";
   position: absolute;
   inset-block: 0;
-  left: 0;
+  inset-inline-end: 0;
   width: min(42%, 184px);
   background: url("../../../../assets/patterns/ramadan/ramadan-time-card-pattern.svg")
-    left center/cover no-repeat;
+    right center/cover no-repeat;
   pointer-events: none;
 }
 
@@ -360,9 +360,9 @@
   }
 
   .ramadan-first-time::before {
-    inset-inline-start: 0;
+    inset-inline-end: 0;
     width: min(42%, 150px);
-    background-position: left center;
+    background-position: right center;
     background-size: cover;
   }
 

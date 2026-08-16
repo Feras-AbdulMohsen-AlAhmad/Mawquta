@@ -332,3 +332,159 @@
     align-items: stretch;
   }
 }
+
+/* Upcoming Ramadan empty state: centered and deliberately quiet so it reads
+   like the existing Mawquta section cards. */
+.ramadan-timetable-state--empty.no-data {
+  position: relative;
+  min-block-size: 276px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(24px, 4vw, 40px) 24px;
+  border-color: var(--Primary-100);
+  background: var(--Background-50);
+  box-shadow: var(--shadow-card);
+  direction: rtl;
+  text-align: center;
+}
+
+.ramadan-timetable-state--empty.no-data > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ramadan-timetable-state__illustration {
+  display: grid;
+  place-items: center;
+  inline-size: 88px;
+  block-size: 88px;
+  flex: 0 0 auto;
+  background: var(--Secondary-50);
+  border: 1px solid var(--Secondary-100);
+  border-radius: 50%;
+  box-shadow: var(--shadow-soft);
+}
+
+.ramadan-timetable-state__illustration-art {
+  inline-size: 56px;
+  block-size: 56px;
+  object-fit: contain;
+  opacity: 1;
+}
+
+.ramadan-timetable-state__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-inline-size: 720px;
+  padding: 0;
+  color: var(--Primary-900);
+  font-family: var(--font-body);
+  direction: rtl;
+  text-align: center;
+}
+
+.ramadan-timetable-state--empty.no-data .ramadan-timetable-state__eyebrow {
+  padding-inline: 8px;
+  border-block-end: 2px solid var(--Secondary-500);
+  color: var(--Secondary-700);
+  font-size: var(--ui-font-2xs);
+  font-weight: var(--ui-weight-bold);
+  line-height: var(--ui-lh-ui);
+}
+
+.ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content h3 {
+  max-inline-size: 100%;
+  margin: 0;
+  color: var(--Primary-700);
+  font-family: var(--font-body);
+  font-size: var(--ui-font-title-md);
+  font-weight: var(--ui-weight-bold);
+  line-height: var(--ui-lh-compact);
+}
+
+.ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content p {
+  max-inline-size: 620px;
+  margin: 0;
+  color: var(--Text-600);
+  font-size: var(--ui-font-sm);
+  font-weight: var(--ui-weight-regular);
+  line-height: var(--ui-lh-body);
+}
+
+.ramadan-timetable-state--empty.no-data .ramadan-timetable-state__action {
+  margin-block-start: 4px;
+  min-inline-size: 224px;
+  min-block-size: var(--ui-btn-min-h-lg);
+  border: none;
+  border-radius: var(--ui-radius-lg);
+  padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x);
+  background: var(--Secondary-500);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: var(--ui-btn-font-size);
+  font-weight: var(--ui-weight-bold);
+  line-height: var(--ui-btn-line-height);
+}
+
+.ramadan-timetable-state--empty.no-data .ramadan-timetable-state__action:hover {
+  background: var(--Secondary-700);
+}
+
+@media (max-width: 575.98px) {
+  .ramadan-timetable-state--empty.no-data {
+    min-block-size: 250px;
+    gap: 10px;
+    padding: 22px 16px 24px;
+  }
+
+  .ramadan-timetable-state__illustration {
+    inline-size: 68px;
+    block-size: 68px;
+  }
+
+  .ramadan-timetable-state__illustration-art {
+    inline-size: 44px;
+    block-size: 44px;
+  }
+
+  .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content {
+    align-items: center;
+    gap: 7px;
+    padding: 0;
+    text-align: center;
+  }
+
+  .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content h3,
+  .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content p {
+    max-inline-size: 100%;
+  }
+
+  .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content h3 {
+    font-size: clamp(20px, 5.7vw, 24px);
+  }
+
+  .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__content p {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__action {
+    min-inline-size: min(224px, 100%);
+    min-block-size: var(--ui-btn-min-h-sm);
+    margin-block-start: 2px;
+    padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
+    font-size: var(--ui-btn-font-size-sm);
+  }
+}

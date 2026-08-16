@@ -693,3 +693,63 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Keep the date column on the same center axis as the prayer-time columns. */
+.weekly-prayer-section .schedule-table th.table-head--date,
+.weekly-prayer-section .schedule-table td.table-cell--date {
+  text-align: center !important;
+}
+
+.weekly-prayer-section .schedule-table td.table-cell--date {
+  padding-inline: var(--ui-space-4-5);
+}
+
+.weekly-prayer-section
+  .schedule-table
+  th.table-head--date
+  .schedule-table-head-label {
+  justify-content: center;
+  text-align: center;
+}
+
+.weekly-prayer-section
+  .schedule-table
+  td.table-cell--date
+  .weekly-table-cell-value {
+  margin-inline: auto;
+  text-align: center;
+}
+
+@media (max-width: 575.98px) {
+  /* Make the currently active prayer unmistakable in the mobile card grid. */
+  .weekly-prayer-section .weekly-table-mobile-item--active {
+    position: relative;
+    overflow: hidden;
+    border-color: var(--Secondary-500);
+    background-color: var(--Secondary-500);
+    background-image: url("../../../assets/patterns/weekly-prayer/weekly-current-prayer-cell-pattern.svg");
+    background-repeat: repeat;
+    background-position: center;
+    background-size: 246px 48px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-item--active::before {
+    display: none;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-item--active dt,
+  .weekly-prayer-section .weekly-table-mobile-item--active dd,
+  .weekly-prayer-section .weekly-table-mobile-item--active .weekly-table-mobile-item__time {
+    color: var(--white);
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-item--active dt {
+    font-weight: var(--ui-weight-extrabold);
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-item--active .weekly-table-mobile-item-icon {
+    border-radius: var(--ui-radius-xs);
+    background: var(--white);
+  }
+}

@@ -20,13 +20,28 @@ const ROW_FIELD_BY_COLUMN = {
   date: "gregorianDate",
 };
 
+function renderRamadanEmptyIllustration() {
+  return `
+    <div class="ramadan-timetable-state__illustration" aria-hidden="true">
+      <img class="ramadan-timetable-state__illustration-art" src="assets/icons/ramadan/ramadan-crescent-star.svg" alt="" />
+    </div>
+  `;
+}
+
 function renderTimetableState({ title, message, actionLabel, actionAttribute = "" , type }) {
+  const visual = type === "empty no-data"
+    ? renderRamadanEmptyIllustration()
+    : '<div class="ramadan-timetable-state__icon" aria-hidden="true"></div>';
+
   return `
     <div class="ramadan-timetable-state ramadan-timetable-state--${type}" role="status">
-      <div class="ramadan-timetable-state__icon" aria-hidden="true"></div>
-      <h3>${title}</h3>
-      ${message ? `<p>${message}</p>` : ""}
-      ${actionLabel ? `<button type="button" class="ramadan-timetable-state__action" ${actionAttribute}>${actionLabel}</button>` : ""}
+      ${visual}
+      <div class="ramadan-timetable-state__content">
+        ${type === "empty no-data" ? '<span class="ramadan-timetable-state__eyebrow">رمضان القادم</span>' : ""}
+        <h3>${title}</h3>
+        ${message ? `<p>${message}</p>` : ""}
+        ${actionLabel ? `<button type="button" class="ramadan-timetable-state__action" ${actionAttribute}>${actionLabel}</button>` : ""}
+      </div>
     </div>
   `;
 }
@@ -51,10 +66,15 @@ export function renderRamadanTimetableNoLocation() {
   });
 }
 
-export function renderRamadanTimetableNoData() {
+export function renderRamadanTimetableNoData({ nextRamadanGregorianYear } = {}) {
+  const year = Number.isInteger(Number(nextRamadanGregorianYear))
+    ? ` في عام ${Number(nextRamadanGregorianYear)}`
+    : "";
+
   return renderTimetableState({
     type: "empty no-data",
-    title: "إمساكية رمضان غير متاحة لهذه المدينة حاليًا",
+    title: "لا توجد إمساكية رمضان متاحة حاليًا",
+    message: `ستتوفر المواقيت عند بدء شهر رمضان القادم${year}.`,
     actionLabel: "اختيار مدينة أخرى",
     actionAttribute: "data-global-location-control",
   });
