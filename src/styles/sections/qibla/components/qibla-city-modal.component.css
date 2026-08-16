@@ -24,8 +24,10 @@
 }
 
 .qibla-city-modal__dialog {
+  display: flex;
+  flex-direction: column;
   width: min(680px, calc(100vw - 48px));
-  max-height: min(760px, calc(100dvh - 64px));
+  max-height: min(760px, calc(var(--qibla-modal-available-height, 100dvh) - 64px));
   margin: 0;
   transform: translateY(8px) scale(0.985);
   transition: transform 180ms ease;
@@ -38,6 +40,8 @@
 .qibla-city-modal__content {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  height: 100%;
   max-height: inherit;
   overflow: hidden;
   background: var(--Background-50);
@@ -112,21 +116,62 @@
 .qibla-city-modal__body {
   display: flex;
   min-height: 0;
-  flex: 1;
+  flex: 1 1 0;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   padding: 20px 24px 24px;
   overflow: hidden;
 }
 
 .qibla-city-modal__current {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 13px 15px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
   border: 1px solid color-mix(in srgb, var(--Primary-700) 10%, transparent);
-  border-radius: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--white), var(--Primary-50));
+}
+
+.qibla-city-modal__current-icon {
+  position: relative;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--Primary-700);
+  box-shadow: 0 6px 14px -10px rgba(18, 66, 53, 0.8);
+}
+
+.qibla-city-modal__current-icon::before {
+  position: absolute;
+  top: 8px;
+  left: 11px;
+  width: 12px;
+  height: 15px;
+  border: 2px solid var(--white);
+  border-radius: 50% 50% 50% 0;
+  content: "";
+  transform: rotate(-45deg);
+}
+
+.qibla-city-modal__current-icon::after {
+  position: absolute;
+  top: 13px;
+  left: 15px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
   background: var(--white);
+  content: "";
+}
+
+.qibla-city-modal__current-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .qibla-city-modal__eyebrow,
@@ -252,13 +297,37 @@
   display: flex;
   min-height: 0;
   max-height: min(320px, 34dvh);
-  flex: 1;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 8px;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 1px 2px 2px;
   scrollbar-color: color-mix(in srgb, var(--Primary-700) 30%, transparent) transparent;
+}
+
+.qibla-city-modal__results-shell {
+  display: flex;
+  min-height: 92px;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qibla-city-modal__results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--Primary-900);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.qibla-city-modal__results-hint {
+  color: var(--Text-600);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .qibla-city-modal__result {
@@ -361,8 +430,9 @@
 }
 
 .qibla-city-modal__candidate {
+  grid-column: 1 / -1;
   margin: 0;
-  padding: 11px 13px;
+  padding: 9px 12px;
   border: 1px solid color-mix(in srgb, var(--Primary-500) 35%, transparent);
   border-radius: 12px;
   background: var(--Primary-50);
@@ -462,11 +532,17 @@
 
 .qibla-city-modal__actions {
   display: grid;
+  flex: 0 0 auto;
+  gap: 9px;
+  padding: 12px 24px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid color-mix(in srgb, var(--Primary-700) 10%, transparent);
+  background: var(--Background-50);
+}
+
+.qibla-city-modal__actions-row {
+  display: grid;
   grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
   gap: 10px;
-  margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid color-mix(in srgb, var(--Primary-700) 10%, transparent);
 }
 
 .qibla-city-modal__cancel,
@@ -522,7 +598,16 @@
 
   .qibla-city-modal__dialog {
     width: 100%;
-    max-height: min(92dvh, 760px);
+    max-height: min(
+      calc(var(--qibla-modal-available-height, 100dvh) - 8px),
+      92dvh,
+      760px
+    );
+    height: min(
+      calc(var(--qibla-modal-available-height, 100dvh) - 8px),
+      92dvh,
+      760px
+    );
     transform: translateY(100%);
   }
 
@@ -554,14 +639,42 @@
   }
 
   .qibla-city-modal__body {
-    gap: 13px;
-    padding: 14px 18px calc(16px + env(safe-area-inset-bottom, 0px));
-    overflow-y: auto;
+    gap: 12px;
+    padding: 14px 18px 12px;
+    overflow: hidden;
+  }
+
+  .qibla-city-modal__current {
+    padding: 10px 12px;
+  }
+
+  .qibla-city-modal__current-icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .qibla-city-modal__current-icon::before {
+    top: 7px;
+    left: 9px;
+  }
+
+  .qibla-city-modal__current-icon::after {
+    top: 11px;
+    left: 13px;
+  }
+
+  .qibla-city-modal__results-shell {
+    min-height: 76px;
+    gap: 6px;
   }
 
   .qibla-city-modal__results {
-    flex: 0 1 min(34dvh, 300px);
-    max-height: min(34dvh, 300px);
+    max-height: none;
+  }
+
+  .qibla-city-modal__actions {
+    padding: 10px 18px calc(14px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -580,6 +693,7 @@
   }
 
   .qibla-city-modal__body {
+    gap: 9px;
     padding-inline: 14px;
   }
 
@@ -589,6 +703,11 @@
 
   .qibla-city-modal__actions {
     gap: 8px;
+    padding-inline: 14px;
+  }
+
+  .qibla-city-modal__actions-row {
+    gap: 8px;
   }
 
   .qibla-city-modal__cancel,
@@ -596,6 +715,170 @@
     min-height: 46px;
     padding-inline: 10px;
     font-size: 13px;
+  }
+}
+
+@media (max-height: 520px) {
+  .qibla-city-modal__dialog {
+    height: min(760px, calc(var(--qibla-modal-available-height, 100dvh) - 64px));
+    max-height: min(760px, calc(var(--qibla-modal-available-height, 100dvh) - 64px));
+  }
+
+  .qibla-city-modal__description,
+  .qibla-city-modal__results-heading,
+  .qibla-city-modal__location-option {
+    display: none;
+  }
+
+  .qibla-city-modal__header {
+    padding-block: 10px 8px;
+  }
+
+  .qibla-city-modal__body {
+    gap: 3px;
+    padding-block: 3px;
+  }
+
+  .qibla-city-modal__current {
+    gap: 8px;
+    padding-block: 3px;
+  }
+
+  .qibla-city-modal__current-copy {
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    flex-direction: row;
+  }
+
+  .qibla-city-modal__eyebrow {
+    flex: 0 0 auto;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .qibla-city-modal__current-value {
+    font-size: 13px;
+    line-height: 1.25;
+    text-align: end;
+  }
+
+  .qibla-city-modal__current-icon {
+    flex-basis: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .qibla-city-modal__current-icon::before {
+    top: 6px;
+    left: 7px;
+    width: 10px;
+    height: 13px;
+  }
+
+  .qibla-city-modal__current-icon::after {
+    top: 10px;
+    left: 11px;
+  }
+
+  .qibla-city-modal__search-shell {
+    gap: 2px;
+  }
+
+  .qibla-city-modal__search-label {
+    font-size: 11px;
+    line-height: 1.1;
+  }
+
+  .qibla-city-modal__search-control {
+    min-height: 44px;
+  }
+
+  .qibla-city-modal__search-input {
+    height: 40px;
+  }
+
+  .qibla-city-modal__results-shell {
+    min-height: 52px;
+    gap: 0;
+  }
+
+  .qibla-city-modal__result {
+    min-height: 52px;
+    padding-block: 8px;
+  }
+
+  .qibla-city-modal__status {
+    min-height: 18px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .qibla-city-modal__status small {
+    display: none;
+  }
+
+  .qibla-city-modal__status[data-status="error"] {
+    min-height: 18px;
+    padding: 3px 7px;
+    font-size: 11px;
+    line-height: 1.3;
+    overflow: auto;
+  }
+
+  .qibla-city-modal__actions {
+    padding-block: 8px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 399.98px) and (max-height: 390px) {
+  .qibla-city-modal__current-icon {
+    display: none;
+  }
+
+  .qibla-city-modal__current {
+    gap: 3px;
+    padding-block: 2px;
+  }
+
+  .qibla-city-modal__eyebrow {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .qibla-city-modal__current-value {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .qibla-city-modal__search-label {
+    font-size: 11px;
+    line-height: 1.1;
+  }
+
+  .qibla-city-modal__search-control {
+    min-height: 44px;
+  }
+
+  .qibla-city-modal__search-input {
+    height: 40px;
+  }
+
+  .qibla-city-modal__results-shell {
+    min-height: 44px;
+  }
+
+  .qibla-city-modal__result {
+    min-height: 48px;
+  }
+
+  .qibla-city-modal__status {
+    min-height: 16px;
+  }
+
+  .qibla-city-modal__candidate {
+    padding-block: 7px;
+    font-size: 12px;
   }
 }
 
