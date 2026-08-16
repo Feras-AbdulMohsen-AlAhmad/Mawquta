@@ -49,7 +49,7 @@ export function renderScheduleTableMobilePrayerItem({
 }) {
   const activeClass = isActive ? " weekly-table-mobile-item--active" : "";
 
-  return `<div class="weekly-table-mobile-item${activeClass}"><dt><span class="weekly-table-mobile-item-icon" aria-hidden="true"><img src="${iconPath}" alt="" loading="lazy" decoding="async" /></span>${label}</dt><dd>${time}</dd></div>`;
+  return `<div class="weekly-table-mobile-item${activeClass}" dir="rtl"><dt class="weekly-table-mobile-item__label"><span class="weekly-table-mobile-item-icon" aria-hidden="true"><img src="${iconPath}" alt="" loading="lazy" decoding="async" /></span><span>${label}</span></dt><dd class="weekly-table-mobile-item__time-row"><time class="weekly-table-mobile-item__time" dir="ltr">${time}</time></dd></div>`;
 }
 
 export function renderScheduleTableMobileCard({
@@ -68,7 +68,7 @@ export function renderScheduleTableMobileCard({
           <h3 class="weekly-table-mobile-title"><span class="weekly-table-mobile-head-icon" aria-hidden="true"><img src="${titleIconPath}" alt="" loading="lazy" decoding="async" /></span>${title}</h3>
           <span class="weekly-table-mobile-date"><span class="weekly-table-mobile-meta-icon" aria-hidden="true"><img src="${dateIconPath}" alt="" loading="lazy" decoding="async" /></span>${date}</span>
         </div>
-        <span class="weekly-table-mobile-pill">${pillText}</span>
+        ${pillText ? `<span class="weekly-table-mobile-pill">${pillText}</span>` : ""}
       </div>
 
       <dl class="weekly-table-mobile-grid">
