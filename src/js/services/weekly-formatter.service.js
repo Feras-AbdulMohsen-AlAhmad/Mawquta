@@ -147,6 +147,7 @@ function buildRow(dayObject, index, todayDateKey) {
     dateKey,
     day: getArabicDayName(dayObject),
     date: `${ARABIC_MONTH_NAMES[month] ?? month} ${day}`,
+    dateLabel: `${day} ${ARABIC_MONTH_NAMES[month] ?? month}`,
     fajr: normalizePrayerTime(timings.Fajr, "fajr", dateKey),
     dhuhr: normalizePrayerTime(timings.Dhuhr, "dhuhr", dateKey),
     asr: normalizePrayerTime(timings.Asr, "asr", dateKey),
@@ -235,18 +236,20 @@ export function buildMobileCard({ rows, timeZone, now = new Date() }) {
 
   const todayDateKey = getTodayDateKey(timeZone, now);
   const todayRow = rows.find((row) => row.dateKey === todayDateKey) || rows[0];
-  const activeKey =
-    todayRow.activePrayer ?? computeActivePrayerKey({ rows, timeZone, now });
+  const hasToday = todayRow?.dateKey === todayDateKey;
+  const activeKey = hasToday
+    ? todayRow.activePrayer ?? computeActivePrayerKey({ rows, timeZone, now })
+    : null;
 
   return {
     day: todayRow.day,
-    date: todayRow.date,
-    badge: "اليوم",
+    date: todayRow.dateLabel ?? todayRow.date,
+    badge: hasToday ? "اليوم" : "",
     prayers: PRAYER_COLUMN_KEYS.map((key) => ({
       key,
       label: PRAYER_LABELS_AR_BY_KEY[key] ?? key,
       time: formatPrayerTimeForDisplay(todayRow[key]),
-      isActive: key === activeKey,
+      isActive: hasToday && key === activeKey,
     })),
   };
 }

@@ -102,6 +102,10 @@
   width: 100%;
 }
 
+.weekly-prayer-section .weekly-table-mobile-selector {
+  display: none;
+}
+
 /* Figma parity: Weekly Prayer owns these schedule dimensions; Ramadan keeps its shared treatment. */
 .weekly-prayer-section .schedule-table-card {
   width: 100%;
@@ -406,5 +410,136 @@
   .weekly-prayer-section::after {
     width: 135px;
     height: 135px;
+  }
+
+  .weekly-prayer-section .schedule-table-card {
+    border-radius: 16px;
+  }
+
+  .weekly-prayer-section .schedule-table-card__top {
+    display: grid;
+    align-items: start;
+    gap: 10px;
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .weekly-prayer-section .schedule-table-subtitle {
+    font-size: 18px;
+    line-height: 24px;
+    text-align: start;
+  }
+
+  .weekly-prayer-section .schedule-table-range {
+    justify-self: start;
+    max-inline-size: 100%;
+  }
+
+  .weekly-prayer-section .schedule-table-range__text {
+    overflow-wrap: anywhere;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-selector {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px 16px;
+    border-bottom: 1px solid rgba(15, 82, 51, 0.1);
+    direction: rtl;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-selector__label {
+    color: #124235;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: start;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-selector__control {
+    width: 100%;
+    min-height: 46px;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid rgba(15, 82, 51, 0.2);
+    border-radius: 11px;
+    background: #fbfcfb;
+    color: #124235;
+    font: 500 14px/22px var(--font-body);
+    direction: rtl;
+    text-align: start;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-selector__control:focus-visible {
+    outline: 3px solid rgba(221, 151, 48, 0.35);
+    outline-offset: 2px;
+    border-color: #dd9730;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-list {
+    padding: 16px;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-card {
+    min-inline-size: 0;
+    padding: 14px;
+    direction: rtl;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-head {
+    align-items: flex-start;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-title-wrap {
+    min-inline-size: 0;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-title {
+    font-size: 17px;
+    line-height: 24px;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-date {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-pill {
+    min-height: 28px;
+    box-sizing: border-box;
+    padding: 4px 9px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-grid {
+    gap: 8px;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-item {
+    min-block-size: 68px;
+    box-sizing: border-box;
+    padding: 9px 10px;
+    gap: 6px;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-item dt {
+    font-size: 13px;
+    line-height: 20px;
+    text-align: start;
+  }
+
+  .weekly-prayer-section .weekly-table-mobile-item dd {
+    font-size: 15px;
+    line-height: 22px;
+    text-align: start;
+  }
+}
+
+@media (max-width: 335px) {
+  .weekly-prayer-section .weekly-table-mobile-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -19,6 +19,10 @@ import {
   getTodayDateKey,
 } from "../../../services/weekly-formatter.service.js";
 import { renderWeeklyPrayerTableCard } from "./components/prayer-week-table.component.js";
+import {
+  findWeeklyRowByKey,
+  getDefaultWeeklyDayKey,
+} from "./components/weekly-prayer-selection.util.js";
 import { CONFIG } from "../../../config/app.config.js";
 import { renderFeedbackState } from "../../shared/feedback/feedback.js";
 
@@ -79,6 +83,7 @@ export function createWeeklyPrayerRuntime(options = {}) {
     status: "idle",
     sectionData: null,
     location: null,
+    selectedDayKey: null,
   };
 
   function getHeadElements() {
@@ -118,7 +123,8 @@ export function createWeeklyPrayerRuntime(options = {}) {
       dataElement.innerHTML = renderWeeklyPrayerTableCard({
         rangeText: state.sectionData.rangeText,
         rows: state.sectionData.rows,
-        mobileCard: state.sectionData.mobileCard,
+        selectedDayKey: state.selectedDayKey,
+        selectorDisabled: state.status !== "success",
       });
       return;
     }
@@ -165,6 +171,7 @@ export function createWeeklyPrayerRuntime(options = {}) {
     }
 
     const token = ++sequence;
+    if (key !== loadKey) state.selectedDayKey = null;
     attemptKey = key;
     pendingKey = key;
     state.location = location;
@@ -211,6 +218,7 @@ export function createWeeklyPrayerRuntime(options = {}) {
       state.sectionData = sectionData;
       state.location = location;
       loadKey = key;
+      state.selectedDayKey = getDefaultWeeklyDayKey(sectionData.rows);
       applyState();
     } catch (error) {
       if (token !== sequence) return;
@@ -281,6 +289,22 @@ export function createWeeklyPrayerRuntime(options = {}) {
     rootElement.addEventListener("click", (event) => {
       if (!event.target?.closest?.("[data-weekly-retry]")) return;
       if (state.location) void load(state.location, { force: true });
+    });
+
+    rootElement.addEventListener("change", (event) => {
+      const select = event.target?.closest?.("[data-weekly-day-select]");
+      if (!select || !state.sectionData) return;
+
+      const selectedRow = findWeeklyRowByKey(
+        state.sectionData.rows,
+        select.value,
+      );
+      if (!selectedRow) {
+        state.selectedDayKey = getDefaultWeeklyDayKey(state.sectionData.rows);
+      } else {
+        state.selectedDayKey = selectedRow.dateKey;
+      }
+      applyState();
     });
   }
 
