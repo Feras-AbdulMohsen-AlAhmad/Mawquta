@@ -63,6 +63,53 @@ export function bindLocationPickerInteractions(
   let searchAbortController = null;
   let isActive = true;
   let lastFocusedElement = null;
+  let viewportListenersBound = false;
+  let viewportTarget = null;
+
+  const windowTarget = rootDocument?.defaultView || globalThis;
+
+  function isModalOpen() {
+    return typeof modalElement.classList?.contains === "function"
+      ? modalElement.classList.contains("show")
+      : true;
+  }
+
+  function syncModalViewport() {
+    if (!isModalOpen()) return;
+
+    const viewport = viewportTarget || windowTarget.visualViewport;
+    const height = Number(viewport?.height) || Number(windowTarget.innerHeight);
+    if (height > 0) {
+      modalElement.style?.setProperty?.("--modal-available-height", `${height}px`);
+    }
+  }
+
+  function bindModalViewport() {
+    if (viewportListenersBound) {
+      syncModalViewport();
+      return;
+    }
+
+    viewportTarget = windowTarget.visualViewport || null;
+    viewportTarget?.addEventListener("resize", syncModalViewport);
+    viewportTarget?.addEventListener("scroll", syncModalViewport);
+    windowTarget.addEventListener?.("resize", syncModalViewport);
+    windowTarget.addEventListener?.("orientationchange", syncModalViewport);
+    viewportListenersBound = true;
+    syncModalViewport();
+  }
+
+  function unbindModalViewport() {
+    if (!viewportListenersBound) return;
+
+    viewportTarget?.removeEventListener("resize", syncModalViewport);
+    viewportTarget?.removeEventListener("scroll", syncModalViewport);
+    windowTarget.removeEventListener?.("resize", syncModalViewport);
+    windowTarget.removeEventListener?.("orientationchange", syncModalViewport);
+    viewportTarget = null;
+    viewportListenersBound = false;
+    modalElement.style?.removeProperty?.("--modal-available-height");
+  }
 
   function clearCandidate() {
     candidate = null;
@@ -325,6 +372,7 @@ export function bindLocationPickerInteractions(
   }
 
   function handleModalHidden() {
+    unbindModalViewport();
     searchSequence += 1;
     searchAbortController?.abort();
     if (searchTimer) globalThis.clearTimeout(searchTimer);
@@ -336,14 +384,11 @@ export function bindLocationPickerInteractions(
     setStatus(statusElement, "ابحث عن مدينة للبدء\nيمكنك البحث بالعربية أو الإنجليزية", false, "idle");
   }
 
-    function handleModalShown() {
-      const focusSearch = () => {
-        const isOpen =
-          typeof modalElement.classList?.contains === "function"
-            ? modalElement.classList.contains("show")
-            : true;
-        if (isOpen) queryInput?.focus({ preventScroll: true });
-      };
+  function handleModalShown() {
+    bindModalViewport();
+    const focusSearch = () => {
+      if (isModalOpen()) queryInput?.focus({ preventScroll: true });
+    };
     focusSearch();
     globalThis.setTimeout(focusSearch, 0);
     globalThis.setTimeout(focusSearch, 50);
@@ -426,6 +471,7 @@ export function bindLocationPickerInteractions(
 
   return () => {
     isActive = false;
+    unbindModalViewport();
     unsubscribe();
     searchSequence += 1;
     searchAbortController?.abort();

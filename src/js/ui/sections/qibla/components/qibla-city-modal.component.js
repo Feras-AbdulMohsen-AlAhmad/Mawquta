@@ -88,12 +88,13 @@ export function renderQiblaCityModal({ modalId, modalLabelId }) {
               </button>
             </div>
 
-            <div class="qibla-city-modal__actions">
-              <button type="button" class="qibla-city-modal__cancel" data-location-cancel>إلغاء</button>
-              <button type="button" class="qibla-city-modal__confirm" disabled data-location-confirm>
-                تأكيد المدينة
-              </button>
-            </div>
+          </div>
+
+          <div class="qibla-city-modal__actions">
+            <button type="button" class="qibla-city-modal__cancel" data-location-cancel>إلغاء</button>
+            <button type="button" class="qibla-city-modal__confirm" disabled data-location-confirm>
+              تأكيد المدينة
+            </button>
           </div>
         </div>
       </div>
