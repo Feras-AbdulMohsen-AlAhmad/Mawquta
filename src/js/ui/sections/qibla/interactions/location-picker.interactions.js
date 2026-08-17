@@ -30,6 +30,9 @@ export function bindLocationPickerInteractions(
   const modalElement = rootDocument?.getElementById("qiblaCityModal");
   if (!modalElement || !locationService) return () => {};
 
+  const dialogElement = modalElement.querySelector("[data-location-dialog]");
+  const mobileInitialFocusTarget =
+    modalElement.querySelector(".qibla-city-modal__close") || dialogElement;
   const queryInput = modalElement.querySelector("[data-location-query]");
   const resultsElement = modalElement.querySelector("[data-location-results]");
   const candidateElement = modalElement.querySelector(
@@ -433,7 +436,31 @@ export function bindLocationPickerInteractions(
   function handleModalShown() {
     bindModalViewport();
     syncModalViewport();
-    if (!isMobileViewport()) {
+    if (isMobileViewport()) {
+      // A sheet/dialog target keeps focus inside the modal without focusing the
+      // search control. The user must explicitly tap the field to enter search
+      // mode and allow the browser to open the keyboard.
+      const focusMobileDialog = () => {
+        if (isModalOpen() && isMobileViewport()) {
+          mobileInitialFocusTarget?.focus?.({ preventScroll: true });
+        }
+      };
+      focusMobileDialog();
+      if (typeof windowTarget?.requestAnimationFrame === "function") {
+        windowTarget.requestAnimationFrame(() => {
+          if (typeof windowTarget?.setTimeout === "function") {
+            windowTarget.setTimeout(focusMobileDialog, 0);
+          } else {
+            focusMobileDialog();
+          }
+        });
+        if (typeof windowTarget?.setTimeout === "function") {
+          windowTarget.setTimeout(focusMobileDialog, 220);
+        }
+      } else {
+        focusMobileDialog();
+      }
+    } else {
       const focusDesktopSearch = () => {
         if (isModalOpen() && !isMobileViewport()) {
           queryInput?.focus({ preventScroll: true });
@@ -480,10 +507,20 @@ export function bindLocationPickerInteractions(
     modalElement.setAttribute("aria-hidden", "false");
     rootDocument.body.classList.add("modal-open");
     handleModalShown();
+    if (isMobileViewport()) {
+      event?.currentTarget?.blur?.();
+      mobileInitialFocusTarget?.focus?.({ preventScroll: true });
+    }
   }
 
   function closePicker(event) {
     if (typeof event?.preventDefault === "function") event.preventDefault();
+    if (
+      isMobileViewport() &&
+      modalElement.classList.contains("qibla-city-modal--keyboard-open")
+    ) {
+      queryInput?.blur?.();
+    }
     modalElement.classList.remove("show");
     modalElement.setAttribute("aria-hidden", "true");
     rootDocument.body.classList.remove("modal-open");

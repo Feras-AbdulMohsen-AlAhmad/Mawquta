@@ -746,6 +746,7 @@ await checkAsync("LS-18", async () => {
     'aria-describedby="locationPickerStatus"',
     'role="listbox"',
     'aria-label="نتائج البحث عن المدن"',
+    'data-location-candidate',
     'data-bs-dismiss="modal"',
     'aria-label="إغلاق"',
   ]) {
@@ -755,11 +756,21 @@ await checkAsync("LS-18", async () => {
 
   const p = freshPicker();
   try {
-    // Initial semantics: input focused on open, confirm disabled, no results.
+    // Mobile initial semantics: no autofocus/keyboard, confirm disabled, no results.
+    p.dom.modal.classList.add("show");
     fire(p.dom.modal, "shown.bs.modal");
     p.timers.runAll();
+    assert.equal(p.dom.input.focusCount, 0, "mobile open does not autofocus search");
+    assert.ok(p.dom.closeButton.focusCount > 0, "mobile open focuses the safe close target");
     assert.equal(p.dom.confirmBtn.disabled, true, "confirm starts disabled");
     assert.equal(p.dom.results._children.length, 0);
+
+    fire(p.dom.input, "focus");
+    assert.equal(
+      p.dom.modal.classList.contains("qibla-city-modal--keyboard-open"),
+      true,
+      "manual search focus enters mobile search mode",
+    );
 
     // After a successful search + keyboard-accessible selection the status is a
     // polite candidate hint (required by S5-T6 AX-05).
@@ -781,6 +792,12 @@ await checkAsync("LS-18", async () => {
     assert.equal(p.dom.results._children.length, 1);
     fire(p.dom.results._children[0], "click");
     assert.equal(p.dom.confirmBtn.disabled, false);
+    assert.equal(p.dom.input.blurCount, 1, "selecting a city blurs mobile search");
+    assert.equal(
+      p.dom.modal.classList.contains("qibla-city-modal--selected"),
+      true,
+      "selecting a city enters compact confirmation state",
+    );
     assert.match(p.dom.status.textContent, /راجع الموقع المقترح/);
     assert.equal(
       p.dom.results._children[0].getAttribute("role"),
@@ -802,9 +819,19 @@ await checkAsync("S8-T9D-01", async () => {
     p.dom.modal.classList.add("show");
     fire(p.dom.modal, "shown.bs.modal");
     assert.equal(
-      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      p.dom.modal.style.getPropertyValue("--qibla-modal-available-height"),
       "844px",
       "initial available height is synced on open",
+    );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-top"),
+      "0px",
+      "initial visual viewport top is synced on open",
+    );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-height"),
+      "844px",
+      "initial visual viewport height is synced on open",
     );
     assert.equal(listenerCount(p.dom.viewport, "resize"), 1);
     assert.equal(listenerCount(p.dom.viewport, "scroll"), 1);
@@ -812,26 +839,68 @@ await checkAsync("S8-T9D-01", async () => {
     assert.equal(listenerCount(p.dom.windowTarget, "orientationchange"), 1);
 
     p.dom.viewport.height = 390;
+    p.dom.viewport.offsetTop = 24;
     fire(p.dom.viewport, "resize");
     assert.equal(
-      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      p.dom.modal.style.getPropertyValue("--qibla-modal-available-height"),
       "390px",
       "keyboard-reduced VisualViewport height is applied",
     );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-top"),
+      "24px",
+      "modal root follows the visual viewport top offset",
+    );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-height"),
+      "390px",
+      "modal root follows the reduced visual viewport height",
+    );
+    assert.equal(
+      p.dom.modal.classList.contains("qibla-city-modal--keyboard-open"),
+      true,
+      "a materially reduced VisualViewport enters keyboard mode",
+    );
 
     p.dom.viewport.height = 844;
+    p.dom.viewport.offsetTop = 0;
     fire(p.dom.windowTarget, "orientationchange");
     assert.equal(
-      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      p.dom.modal.style.getPropertyValue("--qibla-modal-available-height"),
       "844px",
       "orientation recalculates the height",
+    );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-top"),
+      "0px",
+      "orientation resets the visual viewport top",
+    );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-height"),
+      "844px",
+      "orientation recalculates the visual viewport height",
+    );
+    assert.equal(
+      p.dom.modal.classList.contains("qibla-city-modal--keyboard-open"),
+      false,
+      "restoring the VisualViewport exits keyboard mode when search is not focused",
     );
 
     fire(p.dom.modal, "hidden.bs.modal");
     assert.equal(
-      p.dom.modal.style.getPropertyValue("--modal-available-height"),
+      p.dom.modal.style.getPropertyValue("--qibla-modal-available-height"),
       "",
       "height variable clears on close",
+    );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-top"),
+      "",
+      "visual viewport top clears on close",
+    );
+    assert.equal(
+      p.dom.modal.style.getPropertyValue("--qibla-modal-viewport-height"),
+      "",
+      "visual viewport height clears on close",
     );
     assert.equal(listenerCount(p.dom.viewport, "resize"), 0);
     assert.equal(listenerCount(p.dom.viewport, "scroll"), 0);
@@ -844,9 +913,10 @@ await checkAsync("S8-T9D-01", async () => {
 });
 
 // ---------------------------------------------------------------------------
-// S8-T9D-02 sheet structure keeps the footer outside the scroll region
+// S8-T9G-01 mobile sheet structure keeps the footer visible and the results
+// region as the only scroll container.
 // ---------------------------------------------------------------------------
-await checkAsync("S8-T9D-02", async () => {
+await checkAsync("S8-T9G-01", async () => {
   const componentSource = await fs.readFile(
     `${SRC}/ui/sections/qibla/components/qibla-city-modal.component.js`,
     "utf8",
@@ -860,10 +930,18 @@ await checkAsync("S8-T9D-02", async () => {
   assert.ok(actionsStart > bodyEnd, "footer is a sibling after the body scroll region");
   assert.match(styleSource, /\.qibla-city-modal__dialog\s*\{[\s\S]*display:\s*flex/);
   assert.match(styleSource, /\.qibla-city-modal__results\s*\{[\s\S]*min-height:\s*0[\s\S]*flex:\s*1 1 auto[\s\S]*overflow-y:\s*auto/);
-  assert.match(styleSource, /\.qibla-city-modal__actions\s*\{[\s\S]*position:\s*sticky[\s\S]*flex:\s*0 0 auto/);
-  assert.match(styleSource, /--modal-available-height/);
+  assert.match(styleSource, /\.qibla-city-modal__actions\s*\{[\s\S]*display:\s*grid[\s\S]*flex:\s*0 0 auto/);
+  assert.match(styleSource, /--qibla-modal-available-height/);
+  assert.match(styleSource, /top:\s*var\(--qibla-modal-viewport-top/);
+  assert.match(styleSource, /height:\s*var\(--qibla-modal-viewport-height/);
+  assert.match(styleSource, /\.qibla-city-modal__dialog\s*\{[\s\S]*position:\s*absolute[\s\S]*bottom:\s*0/);
+  assert.match(styleSource, /\.qibla-city-modal\.show\s*\{[\s\S]*display:\s*flex/);
   assert.match(styleSource, /safe-area-inset-bottom/);
+  assert.match(styleSource, /height:\s*min\(88dvh, 100%\)/);
+  assert.match(styleSource, /\.qibla-city-modal__actions\s*\{[\s\S]*display:\s*grid/);
+  assert.match(styleSource, /\.qibla-city-modal--keyboard-open \.qibla-city-modal__dialog\s*\{[\s\S]*height:\s*100%/);
+  assert.doesNotMatch(styleSource, /\.qibla-city-modal--selected \.qibla-city-modal__body\s*\{[\s\S]*display:\s*none/);
 });
 
-await finish("S8T9D_LOCATION_MODAL");
+await finish("S8T9G_LOCATION_MODAL");
 

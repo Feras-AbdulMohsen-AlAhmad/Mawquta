@@ -45,7 +45,17 @@ export async function runBrowserCoverage(browser, baseUrl) {
   await context.route("**/api/geocode*", (route) => route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ ok: true, results: [] }),
+      body: JSON.stringify({
+        ok: true,
+        results: [{
+          label: "Damascus, Syria",
+          city: "Damascus",
+          country: "Syria",
+          lat: 33.5138,
+          lon: 36.2765,
+          timezone: "Asia/Damascus",
+        }],
+      }),
   }));
 
   const page = await context.newPage();
@@ -145,6 +155,58 @@ export async function runBrowserCoverage(browser, baseUrl) {
       await trigger.click();
       await page.keyboard.press("Tab");
       check(`${prefix}-TAB-CLOSE`, await trigger.getAttribute("aria-expanded") === "false");
+
+      const locationTrigger = page.locator('[data-bs-target="#qiblaCityModal"]:visible').first();
+      await locationTrigger.click();
+      await page.waitForFunction(() => document.querySelector("#qiblaCityModal")?.classList.contains("show"));
+      await page.waitForTimeout(260);
+      const initialModal = await page.evaluate(() => {
+        const modal = document.querySelector("#qiblaCityModal");
+        const dialog = modal?.querySelector("[data-location-dialog]");
+        const close = modal?.querySelector(".qibla-city-modal__close");
+        const input = modal?.querySelector("[data-location-query]");
+        const cancel = modal?.querySelector("[data-location-cancel]");
+        const confirm = modal?.querySelector("[data-location-confirm]");
+        const rect = dialog?.getBoundingClientRect();
+        const visible = (element) => element && getComputedStyle(element).display !== "none" && element.getBoundingClientRect().height > 0;
+        return {
+          inputFocused: document.activeElement === input,
+          safeFocus: document.activeElement === dialog || document.activeElement === close,
+          fullyVisible: Boolean(rect && rect.top >= 0 && rect.bottom <= innerHeight + 1),
+          footerVisible: visible(cancel) && visible(confirm),
+          pageLocked: document.body.classList.contains("modal-open") && getComputedStyle(document.body).overflow === "hidden",
+          activeElement: document.activeElement?.className || document.activeElement?.tagName,
+          dialogTabIndex: dialog?.getAttribute("tabindex"),
+          dialogTransform: dialog ? getComputedStyle(dialog).transform : "",
+          dialogRect: rect ? { top: rect.top, bottom: rect.bottom, height: rect.height } : null,
+        };
+      });
+      check(`${prefix}-LOCATION-OPEN`, !initialModal.inputFocused && initialModal.safeFocus && initialModal.fullyVisible && initialModal.footerVisible && initialModal.pageLocked, JSON.stringify(initialModal));
+
+      const locationInput = page.locator("[data-location-query]");
+      await locationInput.click();
+      await page.waitForFunction(() => document.querySelector("#qiblaCityModal")?.classList.contains("qibla-city-modal--keyboard-open"));
+      await locationInput.fill("Dam");
+      await page.waitForSelector("[data-location-results] .qibla-city-modal__result");
+      const searchModal = await page.evaluate(() => {
+        const modal = document.querySelector("#qiblaCityModal");
+        const input = modal?.querySelector("[data-location-query]");
+        const results = modal?.querySelector("[data-location-results]");
+        const cancel = modal?.querySelector("[data-location-cancel]");
+        const confirm = modal?.querySelector("[data-location-confirm]");
+        return {
+          inputFocused: document.activeElement === input,
+          resultsVisible: Boolean(results && getComputedStyle(results).display !== "none"),
+          resultsScrollable: Boolean(results && getComputedStyle(results).overflowY === "auto"),
+          footerVisible: [cancel, confirm].every((element) => element && getComputedStyle(element).display !== "none"),
+        };
+      });
+      check(`${prefix}-LOCATION-SEARCH-MODE`, searchModal.inputFocused && searchModal.resultsVisible && searchModal.resultsScrollable && searchModal.footerVisible);
+
+      await page.locator("[data-location-results] .qibla-city-modal__result").click();
+      check(`${prefix}-LOCATION-CONFIRM-REACHABLE`, await page.locator("[data-location-confirm]").isVisible() && await page.locator("[data-location-confirm]").isEnabled() && await page.locator("[data-location-cancel]").isVisible());
+      await page.locator("[data-location-confirm]").click();
+      await page.waitForFunction(() => !document.querySelector("#qiblaCityModal")?.classList.contains("show"));
     }
   }
 

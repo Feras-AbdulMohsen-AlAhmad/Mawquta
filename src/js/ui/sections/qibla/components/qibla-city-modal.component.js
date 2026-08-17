@@ -9,7 +9,11 @@ export function renderQiblaCityModal({ modalId, modalLabelId }) {
       aria-labelledby="${modalLabelId}"
       aria-hidden="true"
     >
-      <div class="modal-dialog qibla-city-modal__dialog">
+      <div
+        class="modal-dialog qibla-city-modal__dialog"
+        tabindex="-1"
+        data-location-dialog
+      >
         <div class="modal-content qibla-city-modal__content">
           <div class="modal-header qibla-city-modal__header">
             <div class="qibla-city-modal__heading">
@@ -61,6 +65,16 @@ export function renderQiblaCityModal({ modalId, modalLabelId }) {
                 <span>نتائج البحث</span>
                 <span class="qibla-city-modal__results-hint">اختر مدينة للمتابعة</span>
               </div>
+              <p
+                class="qibla-city-modal__status"
+                id="locationPickerStatus"
+                role="status"
+                aria-live="polite"
+                data-location-status
+              >
+                <span>ابحث عن مدينة للبدء</span>
+                <small>يمكنك البحث بالعربية أو الإنجليزية</small>
+              </p>
               <div
                 class="qibla-city-modal__results"
                 role="listbox"
@@ -68,17 +82,6 @@ export function renderQiblaCityModal({ modalId, modalLabelId }) {
                 data-location-results
               ></div>
             </div>
-
-            <p
-              class="qibla-city-modal__status"
-              id="locationPickerStatus"
-              role="status"
-              aria-live="polite"
-              data-location-status
-            >
-              <span>ابحث عن مدينة للبدء</span>
-              <small>يمكنك البحث بالعربية أو الإنجليزية</small>
-            </p>
 
             <div class="qibla-city-modal__location-option">
               <button

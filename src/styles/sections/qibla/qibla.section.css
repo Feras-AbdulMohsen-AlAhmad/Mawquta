@@ -175,7 +175,7 @@
   }
 
   .qibla-city-modal__dialog {
-    max-width: min(100% - 16px, 520px);
+    max-width: 100%;
   }
 }
 
