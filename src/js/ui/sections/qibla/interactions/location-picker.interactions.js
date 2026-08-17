@@ -63,11 +63,97 @@ export function bindLocationPickerInteractions(
   let searchAbortController = null;
   let isActive = true;
   let lastFocusedElement = null;
+  let viewportListenersBound = false;
+  const viewportTarget = rootDocument?.defaultView?.visualViewport || null;
+  const windowTarget = rootDocument?.defaultView || globalThis;
+
+  function isMobileViewport() {
+    const width = Number(windowTarget?.innerWidth || 1024);
+    return width <= 767.98;
+  }
+
+  function isModalOpen() {
+    return modalElement.classList.contains("show");
+  }
+
+  function syncModalViewport() {
+    if (!isModalOpen()) return;
+    const top = Math.max(0, Number(viewportTarget?.offsetTop || 0));
+    const height = Number(viewportTarget?.height || windowTarget?.innerHeight || 0);
+    if (height > 0) {
+      modalElement.style.setProperty(
+        "--qibla-modal-viewport-top",
+        `${top}px`,
+      );
+      modalElement.style.setProperty(
+        "--qibla-modal-viewport-height",
+        `${height}px`,
+      );
+      modalElement.style.setProperty(
+        "--qibla-modal-available-height",
+        `${height}px`,
+      );
+
+      if (isMobileViewport()) {
+        modalElement.style.setProperty("top", `${top}px`);
+        modalElement.style.setProperty("height", `${height}px`);
+        modalElement.style.setProperty("bottom", "auto");
+
+        const layoutHeight = Number(windowTarget?.innerHeight || height);
+        const keyboardInset = Math.max(0, layoutHeight - (top + height));
+        const keyboardThreshold = Math.min(120, layoutHeight * 0.15);
+        const searchFocused = rootDocument.activeElement === queryInput;
+        const hasSelection = modalElement.classList.contains(
+          "qibla-city-modal--selected",
+        );
+
+        if (!hasSelection && (searchFocused || keyboardInset >= keyboardThreshold)) {
+          modalElement.classList.add("qibla-city-modal--keyboard-open");
+        } else if (!hasSelection && !searchFocused) {
+          modalElement.classList.remove("qibla-city-modal--keyboard-open");
+        }
+      } else {
+        modalElement.style.removeProperty("top");
+        modalElement.style.removeProperty("height");
+        modalElement.style.removeProperty("bottom");
+        modalElement.classList.remove("qibla-city-modal--keyboard-open");
+      }
+    }
+  }
+
+  function bindModalViewport() {
+    if (viewportListenersBound) {
+      syncModalViewport();
+      return;
+    }
+    viewportListenersBound = true;
+    viewportTarget?.addEventListener?.("resize", syncModalViewport);
+    viewportTarget?.addEventListener?.("scroll", syncModalViewport);
+    windowTarget?.addEventListener?.("resize", syncModalViewport);
+    windowTarget?.addEventListener?.("orientationchange", syncModalViewport);
+    syncModalViewport();
+  }
+
+  function unbindModalViewport() {
+    if (!viewportListenersBound) return;
+    viewportListenersBound = false;
+    viewportTarget?.removeEventListener?.("resize", syncModalViewport);
+    viewportTarget?.removeEventListener?.("scroll", syncModalViewport);
+    windowTarget?.removeEventListener?.("resize", syncModalViewport);
+    windowTarget?.removeEventListener?.("orientationchange", syncModalViewport);
+    modalElement.style.removeProperty("--qibla-modal-viewport-top");
+    modalElement.style.removeProperty("--qibla-modal-viewport-height");
+    modalElement.style.removeProperty("--qibla-modal-available-height");
+    modalElement.style.removeProperty("top");
+    modalElement.style.removeProperty("height");
+    modalElement.style.removeProperty("bottom");
+  }
 
   function clearCandidate() {
     candidate = null;
     candidateSource = null;
     candidateRequestToken = null;
+    modalElement.classList.remove("qibla-city-modal--selected");
     if (candidateElement) {
       candidateElement.hidden = true;
       candidateElement.textContent = "";
@@ -83,6 +169,9 @@ export function bindLocationPickerInteractions(
     candidate = normalizeLocation(nextCandidate, source);
     candidateSource = source;
     candidateRequestToken = requestToken;
+    modalElement.classList.add("qibla-city-modal--selected");
+    modalElement.classList.remove("qibla-city-modal--keyboard-open");
+    if (isMobileViewport()) queryInput?.blur?.();
 
     if (candidateElement) {
       candidateElement.textContent = `الموقع المقترح: ${formatLocation(candidate)}`;
@@ -326,6 +415,10 @@ export function bindLocationPickerInteractions(
 
   function handleModalHidden() {
     unbindModalViewport();
+    modalElement.classList.remove(
+      "qibla-city-modal--keyboard-open",
+      "qibla-city-modal--selected",
+    );
     searchSequence += 1;
     searchAbortController?.abort();
     if (searchTimer) globalThis.clearTimeout(searchTimer);
@@ -339,12 +432,45 @@ export function bindLocationPickerInteractions(
 
   function handleModalShown() {
     bindModalViewport();
-    const focusSearch = () => {
-      if (isModalOpen()) queryInput?.focus({ preventScroll: true });
-    };
-    focusSearch();
-    globalThis.setTimeout(focusSearch, 0);
-    globalThis.setTimeout(focusSearch, 50);
+    syncModalViewport();
+    if (!isMobileViewport()) {
+      const focusDesktopSearch = () => {
+        if (isModalOpen() && !isMobileViewport()) {
+          queryInput?.focus({ preventScroll: true });
+        }
+      };
+      if (typeof windowTarget?.requestAnimationFrame === "function") {
+        windowTarget.requestAnimationFrame(focusDesktopSearch);
+      } else {
+        focusDesktopSearch();
+      }
+    }
+  }
+
+  function handleQueryFocus() {
+    if (!isModalOpen() || !isMobileViewport()) return;
+    syncModalViewport();
+    modalElement.classList.add("qibla-city-modal--keyboard-open");
+  }
+
+  function handleQueryBlur() {
+    if (!isMobileViewport() || modalElement.classList.contains("qibla-city-modal--selected")) return;
+    if (typeof windowTarget?.requestAnimationFrame === "function") {
+      windowTarget.requestAnimationFrame(syncModalViewport);
+    } else {
+      syncModalViewport();
+    }
+  }
+
+  function handleModalTransitionEnd(event) {
+    if (
+      event.target === modalElement &&
+      event.propertyName === "opacity" &&
+      isModalOpen() &&
+      !isMobileViewport()
+    ) {
+      queryInput?.focus({ preventScroll: true });
+    }
   }
 
   function openPicker(event) {
@@ -403,6 +529,7 @@ export function bindLocationPickerInteractions(
   modalCloseButtons.forEach((button) => button.addEventListener("click", closePicker));
   modalElement.addEventListener("click", handleModalBackdropClick);
   modalElement.addEventListener("keydown", handleModalKeydown);
+  modalElement.addEventListener("transitionend", handleModalTransitionEnd);
 
   const unsubscribe = locationService.subscribe((state) => {
     if (state.location) {
@@ -415,6 +542,8 @@ export function bindLocationPickerInteractions(
   });
 
   queryInput?.addEventListener("input", handleQueryInput);
+  queryInput?.addEventListener("focus", handleQueryFocus);
+  queryInput?.addEventListener("blur", handleQueryBlur);
   clearButton?.addEventListener("click", handleClear);
   cancelButton?.addEventListener("click", closePicker);
   geolocationButton?.addEventListener("click", handleGeolocation);
@@ -431,6 +560,8 @@ export function bindLocationPickerInteractions(
     if (searchTimer) globalThis.clearTimeout(searchTimer);
     locationService.cancelPendingRequest();
     queryInput?.removeEventListener("input", handleQueryInput);
+    queryInput?.removeEventListener("focus", handleQueryFocus);
+    queryInput?.removeEventListener("blur", handleQueryBlur);
     clearButton?.removeEventListener("click", handleClear);
     cancelButton?.removeEventListener("click", closePicker);
     geolocationButton?.removeEventListener("click", handleGeolocation);
@@ -439,6 +570,7 @@ export function bindLocationPickerInteractions(
     modalCloseButtons.forEach((button) => button.removeEventListener("click", closePicker));
     modalElement.removeEventListener("click", handleModalBackdropClick);
     modalElement.removeEventListener("keydown", handleModalKeydown);
+    modalElement.removeEventListener("transitionend", handleModalTransitionEnd);
     modalElement.removeEventListener("hidden.bs.modal", handleModalHidden);
     modalElement.removeEventListener("shown.bs.modal", handleModalShown);
   };

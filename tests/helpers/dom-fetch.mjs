@@ -28,6 +28,8 @@ export class FakeElement {
     this.listenerLog = [];
     this.attrs = new Map();
     this.classListToggles = [];
+    this.focusCount = 0;
+    this.blurCount = 0;
     const styleValues = new Map();
     this.style = {
       setProperty: (name, value) => styleValues.set(name, String(value)),
@@ -79,7 +81,8 @@ export class FakeElement {
       },
     };
   }
-  focus() {}
+  focus() { this.focusCount += 1; }
+  blur() { this.blurCount += 1; }
 }
 
 export function listenerCount(element, type) {
@@ -96,9 +99,11 @@ export function makeFakeDocument() {
   const modal = new FakeElement();
   const viewport = new FakeElement();
   viewport.height = 844;
+  viewport.offsetTop = 0;
   const windowTarget = new FakeElement();
   windowTarget.visualViewport = viewport;
   windowTarget.innerHeight = 844;
+  windowTarget.innerWidth = 390;
   const input = modal.querySelector("[data-location-query]");
   const results = modal.querySelector("[data-location-results]");
   const candidate = modal.querySelector("[data-location-candidate]");

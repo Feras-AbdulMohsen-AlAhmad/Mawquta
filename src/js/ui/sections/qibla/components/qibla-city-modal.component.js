@@ -91,7 +91,9 @@ export function renderQiblaCityModal({ modalId, modalLabelId }) {
             </div>
           </div>
 
-            <div class="qibla-city-modal__actions">
+          <div class="qibla-city-modal__actions">
+            <p class="qibla-city-modal__candidate" data-location-candidate hidden aria-live="polite"></p>
+            <div class="qibla-city-modal__actions-row">
               <button type="button" class="qibla-city-modal__cancel" data-location-cancel>إلغاء</button>
               <button type="button" class="qibla-city-modal__confirm" disabled data-location-confirm>
                 تأكيد المدينة
