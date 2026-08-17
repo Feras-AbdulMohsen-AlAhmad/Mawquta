@@ -105,6 +105,8 @@ export function makeFakeDocument() {
   windowTarget.innerHeight = 844;
   windowTarget.innerWidth = 390;
   const input = modal.querySelector("[data-location-query]");
+  const dialog = modal.querySelector("[data-location-dialog]");
+  const closeButton = modal.querySelector(".qibla-city-modal__close");
   const results = modal.querySelector("[data-location-results]");
   const candidate = modal.querySelector("[data-location-candidate]");
   const status = modal.querySelector("[data-location-status]");
@@ -123,6 +125,8 @@ export function makeFakeDocument() {
   };
   return {
     modal,
+    dialog,
+    closeButton,
     input,
     results,
     candidate,
