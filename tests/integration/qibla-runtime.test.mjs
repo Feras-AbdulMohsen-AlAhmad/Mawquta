@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { createQiblaRuntime, isPortableQiblaDevice } from "../../src/js/ui/sections/qibla/qibla.runtime.js";
 import { renderQiblaVisual } from "../../src/js/ui/sections/qibla/components/qibla-visual.component.js";
+import { renderQiblaCardHead } from "../../src/js/ui/sections/qibla/components/qibla-card-head.component.js";
 import { FakeElement, createFakeLocationService, DAMASCUS, ALEPPO, tick } from "../helpers/runtime.mjs";
 
 const ANDROID_PHONE = { userAgent: "Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Mobile", platform: "Linux armv8l", maxTouchPoints: 5 };
@@ -76,7 +77,7 @@ const desktopRuntime = createQiblaRuntime({
 await tick();
 assert.equal(desktopRoot.querySelector("[data-qibla-unsupported]").hidden, false);
 assert.equal(desktopRoot.querySelector("[data-qibla-heading-enable]").hidden, true);
-assert.equal(desktopRoot.querySelector("[data-qibla-deg]").textContent, "165°");
+assert.equal(desktopRoot.querySelector("[data-qibla-guidance]").textContent, "اتجاه القبلة 165° من الشمال");
 assert.equal(desktopRoot.querySelector("[data-qibla-city]").textContent, "دمشق، سوريا");
 desktopRoot.listeners.get("click")({ target: { closest: (selector) => selector === "[data-qibla-heading-enable]" } });
 await tick();
@@ -128,4 +129,13 @@ assert.match(visualMarkup, /البوصلة غير متاحة على هذا ال�
 assert.match(visualMarkup, /ميزة البوصلة تعمل على الهواتف والأجهزة اللوحية/);
 assert.doesNotMatch(visualMarkup, /alert\(/);
 
-console.log("QIBLA_RUNTIME_SUMMARY pass=10 fail=0");
+const headerMarkup = renderQiblaCardHead("qiblaCityModal", {
+  cityName: "دمشق، سوريا",
+  statusLabel: "اتجاه القبلة محسوب من موقعك الحالي",
+  displayDegrees: "165°",
+});
+assert.match(headerMarkup, /<span>اتجاه القبلة<\/span>/);
+assert.match(headerMarkup, /دمشق، سوريا/);
+assert.doesNotMatch(headerMarkup, /data-qibla-deg|data-qibla-status|165°|محسوب من موقعك الحالي/);
+
+console.log("QIBLA_RUNTIME_SUMMARY pass=11 fail=0");

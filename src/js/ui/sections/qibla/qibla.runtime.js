@@ -43,8 +43,7 @@ export function createQiblaRuntime(options = {}) {
   const toastController = options.toastController ?? createToastController();
   const portableDevice = isPortableQiblaDevice(options.navigatorObject ?? globalThis.navigator);
   const elements = {
-    city: rootElement.querySelector("[data-qibla-city]"), status: rootElement.querySelector("[data-qibla-status]"),
-    degree: rootElement.querySelector("[data-qibla-deg]"), data: rootElement.querySelector("[data-qibla-data]"),
+    city: rootElement.querySelector("[data-qibla-city]"), data: rootElement.querySelector("[data-qibla-data]"),
     compass: rootElement.querySelector("[data-qibla-compass]"), arrow: rootElement.querySelector("[data-qibla-arrow]"),
     dial: rootElement.querySelector("[data-qibla-dial]"), enable: rootElement.querySelector("[data-qibla-heading-enable]"),
     guidance: rootElement.querySelector("[data-qibla-guidance]"), sensorStatus: rootElement.querySelector("[data-qibla-heading-status]"),
@@ -132,18 +131,11 @@ export function createQiblaRuntime(options = {}) {
     if (headingState === "available") { startHeading(); setText(elements.sensorStatus, "بوصلة الجهاز مفعلة — حرّك الهاتف للتوجيه"); }
     else if (headingState === "permission-denied") { setText(elements.sensorStatus, "تعذر تفعيل البوصلة. يمكنك استخدام الاتجاه الثابت."); staticVisual(state.contract); }
   }
-  function getStatusText() {
-    if (state.status === "success") return "اتجاه القبلة محسوب من موقعك الحالي";
-    if (state.status === "empty") return "لا توجد بيانات";
-    if (state.status === "error") return state.contract ? "تعذر التحديث" : "تعذر الحساب";
-    return state.contract ? "جارٍ التحديث…" : "جارٍ الحساب…";
-  }
   function applyState() {
     setText(elements.city, state.location ? formatLocation(state.location) : "دمشق، سوريا");
-    setText(elements.status, getStatusText());
-    if (state.status === "success" && state.contract) { setText(elements.degree, state.contract.displayDegrees); elements.data.innerHTML = ""; headingState === "live" && Number.isFinite(smoothedHeading) ? renderHeading({ heading: smoothedHeading, isReliable: true, accuracy: null }) : staticVisual(state.contract); return; }
+    if (state.status === "success" && state.contract) { elements.data.innerHTML = ""; headingState === "live" && Number.isFinite(smoothedHeading) ? renderHeading({ heading: smoothedHeading, isReliable: true, accuracy: null }) : staticVisual(state.contract); return; }
     if (state.contract) return;
-    setText(elements.degree, "--°"); elements.data.innerHTML = state.status === "empty" ? renderQiblaEmptyState() : state.status === "error" ? renderQiblaErrorState() : renderQiblaLoadingState();
+    elements.data.innerHTML = state.status === "empty" ? renderQiblaEmptyState() : state.status === "error" ? renderQiblaErrorState() : renderQiblaLoadingState();
   }
   async function load(location, { force = false } = {}) {
     const key = buildQiblaLocationKey(location);

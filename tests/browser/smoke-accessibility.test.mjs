@@ -73,7 +73,7 @@ export async function runBrowserCoverage(browser, baseUrl) {
   await page.goto(`${baseUrl}/index.html`, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("[data-weekly-data] .schedule-table-card", { timeout: 30_000 });
   await page.waitForSelector("[data-daily-data] .daily-prayer-card", { timeout: 30_000 });
-  await page.waitForFunction(() => /[0-9]/.test(document.querySelector("[data-qibla-deg]")?.textContent || ""));
+  await page.waitForFunction(() => /[0-9]/.test(document.querySelector("[data-qibla-guidance]")?.textContent || ""));
   await page.waitForFunction(() => /[0-9]/.test(document.querySelector("[data-ramadan-day]")?.textContent || ""));
   await page.waitForTimeout(300);
 

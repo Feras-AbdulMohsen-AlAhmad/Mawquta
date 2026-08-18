@@ -22,15 +22,12 @@
     flex-basis: 1.25rem;
   }
 
-  .qibla-section .qibla-card__degree {
-    font-size: clamp(1.625rem, 7vw, 2rem);
-  }
 }
 
 @media (max-width: 575.98px) {
   .qibla-section .qibla-card__head {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "heading degree";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "heading";
     align-items: start;
   }
 
@@ -38,8 +35,7 @@
     gap: 0.1875rem 0.375rem;
   }
 
-  .qibla-section .qibla-card__location,
-  .qibla-section .qibla-card__status {
+  .qibla-section .qibla-card__location {
     font-size: 0.75rem;
   }
 }

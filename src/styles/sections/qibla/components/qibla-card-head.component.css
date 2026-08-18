@@ -2,8 +2,8 @@
   position: relative;
   direction: rtl;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "heading degree";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "heading";
   align-items: center;
   gap: clamp(0.75rem, 2vw, 1.5rem);
   min-height: 0;
@@ -54,8 +54,7 @@
   gap: 0.25rem 0.5rem;
 }
 
-.qibla-section .qibla-card__location,
-.qibla-section .qibla-card__status {
+.qibla-section .qibla-card__location {
   margin: 0;
   color: #64748b;
   font-size: 0.8125rem;
@@ -66,20 +65,4 @@
 .qibla-section .qibla-card__location {
   color: var(--Secondary-500);
   font-weight: var(--ui-weight-bold);
-}
-
-.qibla-section .qibla-card__degree {
-  grid-area: degree;
-  justify-self: center;
-  align-self: center;
-  position: static;
-  transform: none;
-  margin: 0;
-  padding: 0;
-  color: var(--Secondary-500);
-  font-family: "Reem Kufi", var(--font-heading);
-  font-size: clamp(1.75rem, 1.45rem + 0.8vw, 2.25rem);
-  font-weight: 600;
-  line-height: 1;
-  z-index: 2;
 }
