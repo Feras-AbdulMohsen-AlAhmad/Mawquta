@@ -25,6 +25,13 @@
 .qibla-section .qibla-compass__controls { display:flex; flex:0 1 15rem; min-inline-size:13rem; flex-direction:column; align-items:center; gap:.375rem; text-align:center; z-index:2; }
 .qibla-section .qibla-compass__guidance { margin:0; padding:.5rem .875rem; border:1px solid rgba(221,151,48,.28); border-radius:999px; background:#fff; color:#124235; font-size:clamp(.8125rem,.78rem + .12vw,.9375rem); font-weight:700; line-height:1.4; }
 .qibla-section .qibla-compass__sensor-status, .qibla-section .qibla-compass__accuracy { margin:0; color:#64748b; font-size:.75rem; line-height:1.4; }
+.qibla-section .qibla-compass__unsupported { display:grid; grid-template-columns:auto minmax(0,1fr); gap:.625rem; inline-size:min(100%,20rem); margin:.125rem 0; padding:.75rem; border:1px solid rgba(23,101,78,.2); border-radius:.875rem; background:rgba(23,101,78,.07); color:#124235; text-align:start; }
+.qibla-section .qibla-compass__unsupported[hidden] { display:none; }
+.qibla-section .qibla-compass__unsupported-icon { display:grid; place-items:center; inline-size:1.625rem; block-size:1.625rem; border-radius:50%; background:#17654e; color:#fff; font-family:serif; font-size:.875rem; font-weight:700; line-height:1; }
+.qibla-section .qibla-compass__unsupported-title { margin:0 0 .25rem; color:#124235; font-size:.875rem; font-weight:800; line-height:1.4; }
+.qibla-section .qibla-compass__unsupported-description { margin:0; color:#526861; font-size:.75rem; line-height:1.65; }
+.qibla-section .qibla-compass__controls[data-qibla-device-class="unsupported"] { flex-basis:20rem; align-items:stretch; }
+.qibla-section .qibla-compass__controls[data-qibla-device-class="unsupported"] .qibla-compass__guidance { align-self:center; }
 .qibla-section .qibla-compass__enable { order:4; min-block-size:2.5rem; border:1px solid #dd9730; border-radius:999px; padding:.45rem .875rem; background:#dd9730; color:#fff; font-family:var(--font-body); font-size:.8125rem; line-height:1.2; font-weight:700; cursor:pointer; }
 .qibla-section .qibla-compass__enable:focus-visible { outline:3px solid rgba(221,151,48,.35); outline-offset:3px; }
 .qibla-section .qibla-compass__enable:disabled { opacity:.65; cursor:wait; }

@@ -1,11 +1,12 @@
 import { buildQiblaLocationKey } from "../../../services/qibla.service.js";
 import { createDeviceHeadingService } from "../../../services/device-heading.service.js";
 import { normalize360, shortestSignedAngle, smoothCircularAngle } from "../../../utils/qibla.util.js";
-import { renderFeedbackState } from "../../shared/feedback/feedback.js";
+import { createToastController, renderFeedbackState } from "../../shared/feedback/feedback.js";
 
 const ALIGNMENT_TOLERANCE = 3;
 const NEAR_TOLERANCE = 10;
 const SMOOTHING_FACTOR = 0.24;
+const UNSUPPORTED_DEVICE_MESSAGE = "البوصلة غير مدعومة على هذا الجهاز. استخدم هاتفًا أو جهازًا لوحيًا يدعم مستشعرات الاتجاه لتفعيلها.";
 
 const renderQiblaLoadingState = () => renderFeedbackState({ type: "loading", className: "qibla-loading", message: "جارٍ حساب اتجاه القبلة…", ariaLabel: "جارٍ حساب اتجاه القبلة" });
 const renderQiblaEmptyState = () => renderFeedbackState({ type: "empty", className: "qibla-empty", message: "لا تتوفر بيانات لحساب اتجاه القبلة حالياً." });
@@ -24,18 +25,31 @@ function accuracyLabel(accuracy) {
   return "دقة البوصلة منخفضة";
 }
 
+export function isPortableQiblaDevice(navigatorObject = globalThis.navigator) {
+  const userAgent = String(navigatorObject?.userAgent ?? "");
+  const platform = String(navigatorObject?.platform ?? "");
+  const maxTouchPoints = Number(navigatorObject?.maxTouchPoints ?? 0);
+  const reportsMobile = navigatorObject?.userAgentData?.mobile === true;
+  const portableUserAgent = /Android|iPhone|iPad|iPod/i.test(userAgent);
+  const iPadOSDesktopMode = platform === "MacIntel" && maxTouchPoints > 1;
+  return reportsMobile || portableUserAgent || iPadOSDesktopMode;
+}
+
 export function createQiblaRuntime(options = {}) {
   const { rootElement, locationService, qiblaService, formatLocation = defaultFormatLocation } = options;
   if (!rootElement || !locationService || !qiblaService) return Object.freeze({ destroy() {} });
 
   const headingService = options.headingService ?? createDeviceHeadingService();
+  const toastController = options.toastController ?? createToastController();
+  const portableDevice = isPortableQiblaDevice(options.navigatorObject ?? globalThis.navigator);
   const elements = {
     city: rootElement.querySelector("[data-qibla-city]"), status: rootElement.querySelector("[data-qibla-status]"),
     degree: rootElement.querySelector("[data-qibla-deg]"), data: rootElement.querySelector("[data-qibla-data]"),
     compass: rootElement.querySelector("[data-qibla-compass]"), arrow: rootElement.querySelector("[data-qibla-arrow]"),
     dial: rootElement.querySelector("[data-qibla-dial]"), enable: rootElement.querySelector("[data-qibla-heading-enable]"),
     guidance: rootElement.querySelector("[data-qibla-guidance]"), sensorStatus: rootElement.querySelector("[data-qibla-heading-status]"),
-    accuracy: rootElement.querySelector("[data-qibla-accuracy]"),
+    accuracy: rootElement.querySelector("[data-qibla-accuracy]"), controls: rootElement.querySelector("[data-qibla-controls]"),
+    unsupported: rootElement.querySelector("[data-qibla-unsupported]"),
   };
   let sequence = 0, loadKey = null, attemptKey = null, pendingKey = null, unsubscribe = null, destroyed = false;
   let headingState = headingService.getSupport?.().state ?? "unsupported";
@@ -49,6 +63,22 @@ export function createQiblaRuntime(options = {}) {
     rootElement.setAttribute?.("aria-label", value);
   }
   function updateSensorUI() {
+    if (!portableDevice) {
+      headingState = "unsupported-device";
+      elements.controls?.setAttribute("data-qibla-device-class", "unsupported");
+      if (elements.unsupported) elements.unsupported.hidden = false;
+      if (elements.sensorStatus) elements.sensorStatus.hidden = true;
+      if (elements.accuracy) elements.accuracy.hidden = true;
+      if (elements.enable) {
+        elements.enable.hidden = true;
+        elements.enable.disabled = false;
+        elements.enable.setAttribute("aria-busy", "false");
+      }
+      return;
+    }
+    elements.controls?.setAttribute("data-qibla-device-class", "portable");
+    if (elements.unsupported) elements.unsupported.hidden = true;
+    if (elements.sensorStatus) elements.sensorStatus.hidden = false;
     const support = headingService.getSupport?.() ?? { state: headingState };
     headingState = support.state;
     const unavailable = ["unsupported", "unavailable", "unreliable", "error"].includes(headingState);
@@ -92,6 +122,10 @@ export function createQiblaRuntime(options = {}) {
   }
   async function enableHeading() {
     if (requesting || destroyed) return;
+    if (!portableDevice) {
+      toastController.show("info", UNSUPPORTED_DEVICE_MESSAGE, { key: "qibla-unsupported-device" });
+      return;
+    }
     requesting = true; headingState = "requesting"; updateSensorUI();
     const result = await headingService.requestAccess();
     requesting = false; headingState = result?.state ?? headingService.getSupport?.().state ?? "error"; updateSensorUI();
