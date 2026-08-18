@@ -20,6 +20,7 @@
 .qibla-section .qibla-kaaba-center__detail { fill:none; stroke:#f2b24e; stroke-width:2; opacity:.8; }
 .qibla-section .qibla-kaaba-center__pivot { fill:#f2b24e; stroke:#fff; stroke-width:2; }
 .qibla-section .qibla-compass__phone-guide { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; max-inline-size:100%; padding:.4375rem .6875rem; border:1px solid rgba(221,151,48,.32); border-radius:.75rem; background:#fff; box-shadow:0 5px 14px rgba(18,66,53,.09); color:#124235; direction:rtl; text-align:start; }
+.qibla-section .qibla-compass__phone-guide[hidden] { display:none; }
 .qibla-section .qibla-compass__phone-guide-icon { display:grid; place-items:center; inline-size:1.75rem; block-size:1.75rem; flex:0 0 1.75rem; border-radius:50%; background:#dd9730; color:#fff; font-family:Arial,sans-serif; font-size:1.125rem; font-weight:700; line-height:1; }
 .qibla-section .qibla-compass__phone-guide-copy { display:flex; min-inline-size:0; flex-direction:column; gap:.0625rem; line-height:1.35; }
 .qibla-section .qibla-compass__phone-guide-copy strong { color:#124235; font-size:.75rem; font-weight:800; }
@@ -33,7 +34,6 @@
 .qibla-section .qibla-compass__unsupported-title { margin:0 0 .25rem; color:#124235; font-size:.875rem; font-weight:800; line-height:1.4; }
 .qibla-section .qibla-compass__unsupported-description { margin:0; color:#526861; font-size:.75rem; line-height:1.65; }
 .qibla-section .qibla-compass__controls[data-qibla-device-class="unsupported"] { flex-basis:20rem; align-items:stretch; }
-.qibla-section .qibla-compass__controls[data-qibla-device-class="unsupported"] .qibla-compass__guidance { align-self:center; }
 .qibla-section .qibla-compass__enable { order:4; min-block-size:2.5rem; border:1px solid #dd9730; border-radius:999px; padding:.45rem .875rem; background:#dd9730; color:#fff; font-family:var(--font-body); font-size:.8125rem; line-height:1.2; font-weight:700; cursor:pointer; }
 .qibla-section .qibla-compass__enable:focus-visible { outline:3px solid rgba(221,151,48,.35); outline-offset:3px; }
 .qibla-section .qibla-compass__enable:disabled { opacity:.65; cursor:wait; }

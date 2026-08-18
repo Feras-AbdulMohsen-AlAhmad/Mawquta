@@ -48,7 +48,7 @@ export function createQiblaRuntime(options = {}) {
     dial: rootElement.querySelector("[data-qibla-dial]"), enable: rootElement.querySelector("[data-qibla-heading-enable]"),
     guidance: rootElement.querySelector("[data-qibla-guidance]"), sensorStatus: rootElement.querySelector("[data-qibla-heading-status]"),
     accuracy: rootElement.querySelector("[data-qibla-accuracy]"), controls: rootElement.querySelector("[data-qibla-controls]"),
-    unsupported: rootElement.querySelector("[data-qibla-unsupported]"),
+    unsupported: rootElement.querySelector("[data-qibla-unsupported]"), phoneGuide: rootElement.querySelector("[data-qibla-phone-guide]"),
   };
   let sequence = 0, loadKey = null, attemptKey = null, pendingKey = null, unsubscribe = null, destroyed = false;
   let headingState = headingService.getSupport?.().state ?? "unsupported";
@@ -66,6 +66,8 @@ export function createQiblaRuntime(options = {}) {
       headingState = "unsupported-device";
       elements.controls?.setAttribute("data-qibla-device-class", "unsupported");
       if (elements.unsupported) elements.unsupported.hidden = false;
+      if (elements.phoneGuide) elements.phoneGuide.hidden = true;
+      if (elements.guidance) elements.guidance.hidden = true;
       if (elements.sensorStatus) elements.sensorStatus.hidden = true;
       if (elements.accuracy) elements.accuracy.hidden = true;
       if (elements.enable) {
@@ -77,6 +79,8 @@ export function createQiblaRuntime(options = {}) {
     }
     elements.controls?.setAttribute("data-qibla-device-class", "portable");
     if (elements.unsupported) elements.unsupported.hidden = true;
+    if (elements.phoneGuide) elements.phoneGuide.hidden = false;
+    if (elements.guidance) elements.guidance.hidden = false;
     if (elements.sensorStatus) elements.sensorStatus.hidden = false;
     const support = headingService.getSupport?.() ?? { state: headingState };
     headingState = support.state;

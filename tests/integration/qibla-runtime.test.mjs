@@ -77,6 +77,8 @@ const desktopRuntime = createQiblaRuntime({
 await tick();
 assert.equal(desktopRoot.querySelector("[data-qibla-unsupported]").hidden, false);
 assert.equal(desktopRoot.querySelector("[data-qibla-heading-enable]").hidden, true);
+assert.equal(desktopRoot.querySelector("[data-qibla-guidance]").hidden, true);
+assert.equal(desktopRoot.querySelector("[data-qibla-phone-guide]").hidden, true);
 assert.equal(desktopRoot.querySelector("[data-qibla-guidance]").textContent, "اتجاه القبلة 165° من الشمال");
 assert.equal(desktopRoot.querySelector("[data-qibla-city]").textContent, "دمشق، سوريا");
 desktopRoot.listeners.get("click")({ target: { closest: (selector) => selector === "[data-qibla-heading-enable]" } });
@@ -100,6 +102,8 @@ const unavailableRuntime = createQiblaRuntime({
 await tick();
 assert.equal(unavailableRoot.querySelector("[data-qibla-unsupported]").hidden, true);
 assert.equal(unavailableRoot.querySelector("[data-qibla-heading-enable]").hidden, true);
+assert.equal(unavailableRoot.querySelector("[data-qibla-guidance]").hidden, false);
+assert.equal(unavailableRoot.querySelector("[data-qibla-phone-guide]").hidden, false);
 assert.equal(unavailableRoot.querySelector("[data-qibla-heading-status]").textContent, "البوصلة الحية غير متاحة على هذا الجهاز");
 unavailableRuntime.destroy();
 

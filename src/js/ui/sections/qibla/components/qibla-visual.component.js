@@ -26,6 +26,13 @@ export function renderQiblaVisual() {
       <img class="qibla-visual__decor qibla-visual__decor--left" src="${QIBLA_ASSETS.decorLeft}" alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
       <div class="qibla-compass-stage" data-qibla-compass-stage>
+        <div class="qibla-compass__phone-guide" data-qibla-phone-guide role="note">
+          <span class="qibla-compass__phone-guide-icon" aria-hidden="true">↑</span>
+          <span class="qibla-compass__phone-guide-copy">
+            <strong>اتجاه أعلى الهاتف</strong>
+            <small>اجعل أعلى هاتفك نحو هذا المؤشر</small>
+          </span>
+        </div>
         <div class="qibla-compass" role="img" data-qibla-compass aria-label="اتجاه القبلة">
           <svg class="qibla-compass__svg" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
             <defs>
@@ -57,7 +64,6 @@ export function renderQiblaVisual() {
               <circle cx="200" cy="200" r="7" class="qibla-kaaba-center__pivot" />
             </g>
           </svg>
-          <span class="qibla-compass__forward-marker" aria-hidden="true"><span></span><small>أعلى الهاتف</small></span>
         </div>
       </div>
 
