@@ -116,13 +116,34 @@
   pointer-events: none;
 }
 
-.daily-prayer-section .daily-prayer-card--active {
+.daily-prayer-section .daily-prayer-card--current {
   transform: none;
   outline: none;
   box-shadow:
-    inset 0 0 0 6px var(--Primary-500),
-    0 4px 8px -4px rgba(18, 66, 53, 0.16),
-    0 0 8px 0 rgba(108, 53, 27, 0.32);
+    inset 0 0 0 3px var(--Secondary-500),
+    inset 0 0 0 6px color-mix(in srgb, var(--Primary-500) 72%, transparent),
+    0 10px 24px -14px rgba(18, 66, 53, 0.72),
+    0 0 12px -4px rgba(221, 151, 48, 0.5);
+}
+
+.daily-prayer-section .daily-prayer-card__current-badge {
+  position: absolute;
+  inset-block-start: 24px;
+  inset-inline-end: 24px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 24px;
+  border: 1px solid color-mix(in srgb, var(--Secondary-500) 72%, var(--white));
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: color-mix(in srgb, var(--Primary-900) 88%, transparent);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--ui-weight-semibold);
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .daily-prayer-section .daily-prayer-card__inner {
@@ -189,6 +210,11 @@
     padding: 28px;
     border-radius: 16px;
   }
+
+  .daily-prayer-section .daily-prayer-card__current-badge {
+    inset-block-start: 28px;
+    inset-inline-end: 28px;
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
@@ -199,6 +225,11 @@
 
   .daily-prayer-section .daily-prayer-card {
     padding: 20px;
+  }
+
+  .daily-prayer-section .daily-prayer-card__current-badge {
+    inset-block-start: 20px;
+    inset-inline-end: 20px;
   }
 
   .daily-prayer-section .daily-prayer-card__name {
@@ -228,6 +259,11 @@
 
   .daily-prayer-section .daily-prayer-card {
     padding: 18px;
+  }
+
+  .daily-prayer-section .daily-prayer-card__current-badge {
+    inset-block-start: 18px;
+    inset-inline-end: 18px;
   }
 
   .daily-prayer-section .daily-prayer-card__name {
@@ -311,6 +347,11 @@
     scroll-snap-stop: always;
   }
 
+  .daily-prayer-section .daily-prayer-card__current-badge {
+    inset-block-start: 16px;
+    inset-inline-end: 16px;
+  }
+
   .daily-prayer-section .daily-prayer-card__name {
     font-size: 20px;
     line-height: 20px;
@@ -345,6 +386,11 @@
     flex-basis: min(var(--daily-prayer-card-max-width), calc(100vw - 32px));
     border-radius: 10px;
     padding: 14px;
+  }
+
+  .daily-prayer-section .daily-prayer-card__current-badge {
+    inset-block-start: 14px;
+    inset-inline-end: 14px;
   }
 
   .daily-prayer-section .daily-prayer-card__name {

@@ -18,7 +18,10 @@ import {
   computeRemainingSeconds,
   formatRemaining,
 } from "../../../utils/time.util.js";
-import { renderDailyPrayerCards } from "./components/prayer-cards.component.js";
+import {
+  getCurrentPrayerKey,
+  renderDailyPrayerCards,
+} from "./components/prayer-cards.component.js";
 import { updateHeroSectionLiveState } from "../hero/hero.section.js";
 import { renderFeedbackState } from "../../shared/feedback/feedback.js";
 
@@ -94,7 +97,7 @@ export function createDailyPrayerRuntime(options = {}) {
     if (state.status === "success" && state.contract) {
       dataElement.innerHTML = renderDailyPrayerCards(
         state.contract.prayers,
-        state.contract.nextPrayer?.key ?? null,
+        getCurrentPrayerKey(state.contract.prayers),
       );
     }
   }

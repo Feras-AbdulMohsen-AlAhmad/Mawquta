@@ -21,7 +21,7 @@
   flex: 1;
 }
 
-.daily-prayer-card--active {
+.daily-prayer-card--current {
   outline: 3px solid var(--Primary-500);
   outline-offset: 2px;
   transform: scale(1.03);
