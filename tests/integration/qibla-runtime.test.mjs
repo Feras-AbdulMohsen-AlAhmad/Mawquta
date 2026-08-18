@@ -127,6 +127,9 @@ deniedRuntime.destroy();
 const visualMarkup = renderQiblaVisual();
 assert.match(visualMarkup, /البوصلة غير متاحة على هذا الجهاز/);
 assert.match(visualMarkup, /ميزة البوصلة تعمل على الهواتف والأجهزة اللوحية/);
+assert.match(visualMarkup, /اتجاه أعلى الهاتف/);
+assert.match(visualMarkup, /اجعل أعلى هاتفك نحو هذا المؤشر/);
+assert.doesNotMatch(visualMarkup, /qibla-compass__forward-marker/);
 assert.doesNotMatch(visualMarkup, /alert\(/);
 
 const headerMarkup = renderQiblaCardHead("qiblaCityModal", {
