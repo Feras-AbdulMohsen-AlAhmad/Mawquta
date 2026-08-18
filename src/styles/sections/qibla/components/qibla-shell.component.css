@@ -1,7 +1,6 @@
-/* Qibla Section (Figma parity: node 2229:8094) */
 .qibla-section {
   background: var(--Background-50);
-  padding-block: 48px;
+  padding-block: clamp(1.25rem, 3vw, 2rem);
 }
 
 .qibla-section > .container-xl {
@@ -14,30 +13,10 @@
   overflow: hidden;
   background: #d3dad5;
   border: none;
-  border-radius: 16px;
+  border-radius: 1rem;
   box-shadow: 0 4px 8px -4px rgba(18, 66, 53, 0.16);
-  padding: 24px;
+  padding: clamp(0.625rem, 1.4vw, 1rem);
   display: flex;
   flex-direction: column;
-  gap: 48px;
-}
-
-@media (min-width: 1200px) {
-  .qibla-section {
-    padding-block: 48px;
-  }
-
-  .qibla-section .qibla-card {
-    padding: 24px;
-    gap: 24px;
-    border-radius: 16px;
-  }
-
-  .qibla-section .qibla-visual {
-    min-height: 448px;
-  }
-
-  .qibla-section .qibla-compass {
-    --qibla-compass-size: min(100%, 400px);
-  }
+  gap: clamp(0.75rem, 1.3vw, 1rem);
 }

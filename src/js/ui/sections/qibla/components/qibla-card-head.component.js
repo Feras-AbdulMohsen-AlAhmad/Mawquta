@@ -13,20 +13,17 @@ export function renderQiblaCardHead(
           <span class="qibla-card__title-icon section-head__icon" aria-hidden="true"></span>
           <span>اتجاه القبلة من موقعك الحالي</span>
         </h2>
-        <p class="qibla-card__note section-head__meta" data-qibla-city>${cityName}</p>
-        <p class="qibla-card__note section-head__meta" data-qibla-status>${statusLabel}</p>
+        <div class="qibla-card__location-row">
+          <p
+            class="qibla-card__location section-head__meta"
+            data-qibla-city
+            data-global-location-display
+          >${cityName}</p>
+        </div>
+        <p class="qibla-card__status section-head__meta" data-qibla-status>${statusLabel}</p>
       </div>
 
       <p class="qibla-card__degree section-head__aux" data-qibla-deg>${displayDegrees}</p>
-
-      <button
-        type="button"
-        class="qibla-city-btn section-head__action"
-        data-bs-toggle="modal"
-        data-bs-target="#${modalId}"
-      >
-        اختيار المدينة
-      </button>
     </div>
   `;
 }
