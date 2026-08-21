@@ -27,6 +27,9 @@ import { CONFIG } from "../../../config/app.config.js";
 import { renderFeedbackState } from "../../shared/feedback/feedback.js";
 
 const DEFAULT_ROLLOVER_INTERVAL_MS = 30000;
+const MOBILE_SELECTOR_MAX_HEIGHT = 280;
+const MOBILE_SELECTOR_VIEWPORT_GAP = 12;
+const MOBILE_SELECTOR_SCROLL_TOLERANCE = 6;
 
 // Resolves the authoritative timezone for a location. Normalized locations
 // always carry `location.timezone`; when it is absent the project fallback
@@ -82,6 +85,7 @@ export function createWeeklyPrayerRuntime(options = {}) {
   let selectorClickHandler = null;
   let selectorKeydownHandler = null;
   let selectorFocusoutHandler = null;
+  let selectorPositionFrame = null;
 
   const state = {
     status: "idle",
@@ -303,6 +307,100 @@ export function createWeeklyPrayerRuntime(options = {}) {
     );
   }
 
+  function getSelectorViewport() {
+    const ownerWindow = rootElement?.ownerDocument?.defaultView ?? globalThis;
+    const visualViewport = ownerWindow?.visualViewport;
+    const height = visualViewport?.height ?? ownerWindow?.innerHeight;
+    const top = visualViewport?.offsetTop ?? 0;
+
+    return {
+      ownerWindow,
+      top,
+      bottom:
+        typeof height === "number"
+          ? top + height - MOBILE_SELECTOR_VIEWPORT_GAP
+          : Number.POSITIVE_INFINITY,
+    };
+  }
+
+  function keepSelectedOptionVisible(options) {
+    const selectedOption = options.querySelector?.(
+      '[data-weekly-day-option][aria-selected="true"]',
+    );
+    if (!selectedOption) return;
+
+    const optionTop = selectedOption.offsetTop;
+    const optionBottom = optionTop + selectedOption.offsetHeight;
+    const visibleTop = options.scrollTop;
+    const visibleBottom = visibleTop + options.clientHeight;
+
+    if (optionTop < visibleTop) {
+      options.scrollTop = optionTop;
+    } else if (optionBottom > visibleBottom) {
+      options.scrollTop = optionBottom - options.clientHeight;
+    }
+  }
+
+  function positionMobileSelector() {
+    selectorPositionFrame = null;
+    if (!isSelectorOpen()) return;
+
+    const { selector, options } = getSelectorElements();
+    if (!selector || !options) return;
+
+    const { ownerWindow, bottom: viewportBottom } = getSelectorViewport();
+    const optionsRect = options.getBoundingClientRect?.();
+    if (!optionsRect || !Number.isFinite(viewportBottom)) return;
+
+    const contentHeight = Math.min(
+      options.scrollHeight || MOBILE_SELECTOR_MAX_HEIGHT,
+      MOBILE_SELECTOR_MAX_HEIGHT,
+    );
+    const availableHeight = viewportBottom - optionsRect.top;
+    const overflow = Math.max(0, contentHeight - availableHeight);
+    const requiredScroll =
+      overflow > MOBILE_SELECTOR_SCROLL_TOLERANCE ? overflow : 0;
+    const documentElement = rootElement?.ownerDocument?.documentElement;
+    const currentScroll = ownerWindow?.scrollY ?? documentElement?.scrollTop ?? 0;
+    const layoutViewportHeight =
+      documentElement?.clientHeight ?? ownerWindow?.innerHeight ?? 0;
+    const maxScroll = Math.max(
+      0,
+      (documentElement?.scrollHeight ?? 0) - layoutViewportHeight,
+    );
+    const scrollAmount = Math.min(requiredScroll, Math.max(0, maxScroll - currentScroll));
+    const usableHeight = Math.min(
+      contentHeight,
+      Math.max(0, availableHeight + scrollAmount),
+    );
+
+    selector.style?.setProperty?.(
+      "--weekly-selector-max-height",
+      `${Math.round(usableHeight)}px`,
+    );
+    keepSelectedOptionVisible(options);
+
+    if (scrollAmount > 0 && typeof ownerWindow?.scrollBy === "function") {
+      ownerWindow.scrollBy({ top: Math.ceil(scrollAmount), behavior: "smooth" });
+    }
+  }
+
+  function scheduleMobileSelectorPosition() {
+    const { ownerWindow } = getSelectorViewport();
+    if (selectorPositionFrame !== null) {
+      ownerWindow?.cancelAnimationFrame?.(selectorPositionFrame);
+    }
+
+    if (typeof ownerWindow?.requestAnimationFrame === "function") {
+      selectorPositionFrame = ownerWindow.requestAnimationFrame(
+        positionMobileSelector,
+      );
+      return;
+    }
+
+    positionMobileSelector();
+  }
+
   function setSelectorOpen(
     open,
     { focusTrigger = false, focusOption = null } = {},
@@ -316,18 +414,11 @@ export function createWeeklyPrayerRuntime(options = {}) {
     options.hidden = !open;
 
     if (open) {
-      const controlRect = trigger.getBoundingClientRect?.();
-      const viewportHeight = globalThis.innerHeight;
-      const panelHeight = Math.min(options.scrollHeight || 280, 280);
-      const spaceBelow =
-        typeof viewportHeight === "number" && controlRect
-          ? viewportHeight - controlRect.bottom
-          : Number.POSITIVE_INFINITY;
-      const spaceAbove = controlRect?.top ?? 0;
-      selector.dataset.placement =
-        spaceBelow < panelHeight && spaceAbove > spaceBelow ? "top" : "bottom";
+      selector.dataset.placement = "bottom";
+      scheduleMobileSelectorPosition();
     } else {
       delete selector.dataset.placement;
+      selector.style?.removeProperty?.("--weekly-selector-max-height");
     }
 
     if (focusOption !== null) {
@@ -484,6 +575,11 @@ export function createWeeklyPrayerRuntime(options = {}) {
     if (selectorFocusoutHandler && rootElement?.removeEventListener) {
       rootElement.removeEventListener("focusout", selectorFocusoutHandler);
       selectorFocusoutHandler = null;
+    }
+    if (selectorPositionFrame !== null) {
+      const { ownerWindow } = getSelectorViewport();
+      ownerWindow?.cancelAnimationFrame?.(selectorPositionFrame);
+      selectorPositionFrame = null;
     }
     if (documentClickBound && rootElement.ownerDocument?.removeEventListener) {
       rootElement.ownerDocument.removeEventListener("click", closeSelectorIfOutside);
