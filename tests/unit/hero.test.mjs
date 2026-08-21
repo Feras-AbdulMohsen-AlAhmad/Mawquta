@@ -16,7 +16,10 @@ const countdownUrl = pathToFileURL(
   new URL("../../src/js", import.meta.url).pathname.replace(/^\/+([A-Za-z]):/, "$1:").replaceAll("\\", "/") + "/ui/sections/hero/components/hero-countdown.component.js",
 ).href;
 
-const { updateHeroSectionLiveState } = await import(heroUrl);
+const {
+  resolveHeroNextPrayerBackground,
+  updateHeroSectionLiveState,
+} = await import(heroUrl);
 const { renderHeroNextPrayerCard } = await import(cardUrl);
 const { renderHeroCountdown } = await import(countdownUrl);
 
@@ -39,6 +42,13 @@ class FakeElement {
     this.textContent = "";
     this.innerHTML = "";
     this.children = new Map();
+    this.dataset = {};
+    this.style = {
+      properties: new Map(),
+      setProperty: (name, value) => this.style.properties.set(name, value),
+      removeProperty: (name) => this.style.properties.delete(name),
+      getPropertyValue: (name) => this.style.properties.get(name) ?? "",
+    };
   }
   querySelector(selector) {
     if (!this.children.has(selector)) {
@@ -144,6 +154,97 @@ await checkAsync("HC-06", async () => {
     !root.querySelector("[data-hero-next-prayer-time]").textContent.includes("PM"),
     "live time no longer carries the PM fixture",
   );
+});
+
+await checkAsync("HC-07", async () => {
+  const expectedAssets = {
+    fajr: "fajr-background.png",
+    dhuhr: "dhuhr-background.png",
+    asr: "asr-background.png",
+    maghrib: "maghrib-background.png",
+    isha: "isha-background.png",
+  };
+  const root = new FakeElement();
+  const card = root.querySelector("[data-hero-next-prayer-card]");
+
+  for (const [key, filename] of Object.entries(expectedAssets)) {
+    const resolved = resolveHeroNextPrayerBackground(key);
+    assert.equal(resolved.key, key);
+    assert.ok(resolved.asset.endsWith(`/next-prayer/${filename}`));
+
+    updateHeroSectionLiveState(root, { nextPrayerKey: key });
+    assert.equal(card.dataset.nextPrayer, key);
+    assert.ok(
+      card.style
+        .getPropertyValue("--hero-next-prayer-background-image")
+        .includes(`/next-prayer/${filename}`),
+    );
+  }
+});
+
+await checkAsync("HC-08", async () => {
+  // The same live update atomically transitions Isha to next-day Fajr.
+  const root = new FakeElement();
+  const card = root.querySelector("[data-hero-next-prayer-card]");
+
+  updateHeroSectionLiveState(root, {
+    nextPrayerKey: "isha",
+    nextPrayerLabel: "العشاء",
+  });
+  updateHeroSectionLiveState(root, {
+    nextPrayerKey: "fajr",
+    nextPrayerLabel: "الفجر",
+  });
+
+  assert.equal(card.dataset.nextPrayer, "fajr");
+  assert.ok(
+    card.style
+      .getPropertyValue("--hero-next-prayer-background-image")
+      .includes("/next-prayer/fajr-background.png"),
+  );
+  assert.equal(
+    root.querySelector("[data-hero-next-prayer-label]").textContent,
+    "الفجر",
+  );
+});
+
+await checkAsync("HC-09", async () => {
+  // Loading/location refresh clears stale artwork before applying fresh data.
+  const root = new FakeElement();
+  const card = root.querySelector("[data-hero-next-prayer-card]");
+
+  updateHeroSectionLiveState(root, { nextPrayerKey: "asr" });
+  updateHeroSectionLiveState(root, { nextPrayerKey: "" });
+  assert.equal(card.dataset.nextPrayer, "");
+  assert.equal(
+    card.style.getPropertyValue("--hero-next-prayer-background-image"),
+    "",
+  );
+
+  updateHeroSectionLiveState(root, { nextPrayerKey: "maghrib" });
+  assert.equal(card.dataset.nextPrayer, "maghrib");
+  assert.ok(
+    card.style
+      .getPropertyValue("--hero-next-prayer-background-image")
+      .includes("/next-prayer/maghrib-background.png"),
+  );
+});
+
+await checkAsync("HC-10", async () => {
+  // Unknown and non-string keys safely use the neutral card state.
+  const root = new FakeElement();
+  const card = root.querySelector("[data-hero-next-prayer-card]");
+
+  updateHeroSectionLiveState(root, { nextPrayerKey: "dhuhr" });
+  for (const invalidKey of ["sunrise", "", null, 7]) {
+    assert.equal(resolveHeroNextPrayerBackground(invalidKey), null);
+    updateHeroSectionLiveState(root, { nextPrayerKey: invalidKey });
+    assert.equal(card.dataset.nextPrayer, "");
+    assert.equal(
+      card.style.getPropertyValue("--hero-next-prayer-background-image"),
+      "",
+    );
+  }
 });
 
 const passed = results.filter((r) => r.pass).length;

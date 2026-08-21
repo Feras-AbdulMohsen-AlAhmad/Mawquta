@@ -3,6 +3,7 @@ import { chromium } from "playwright-core";
 
 import { runBrowserCoverage } from "./smoke-accessibility.test.mjs";
 import { runRamadanReadinessCoverage } from "./ramadan-readiness.test.mjs";
+import { runHeroNextPrayerBackgroundCoverage } from "./hero-next-prayer-backgrounds.test.mjs";
 
 const port = 3197;
 const server = spawn(process.execPath, ["tests/browser/static-server.mjs", "src", String(port)], {
@@ -38,6 +39,7 @@ try {
 
   await runBrowserCoverage(browser, baseUrl);
   await runRamadanReadinessCoverage(browser, baseUrl);
+  await runHeroNextPrayerBackgroundCoverage(browser, baseUrl);
 } finally {
   if (browser) await browser.close();
   server.kill();

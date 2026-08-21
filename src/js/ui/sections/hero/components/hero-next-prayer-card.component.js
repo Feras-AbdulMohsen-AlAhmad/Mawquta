@@ -2,7 +2,7 @@ import { renderHeroCountdown } from "./hero-countdown.component.js";
 
 export function renderHeroNextPrayerCard() {
   return `
-    <article class="hero-prayer-card" aria-label="الصلاة القادمة">
+    <article class="hero-prayer-card" data-hero-next-prayer-card data-next-prayer="" aria-label="الصلاة القادمة">
       <div class="hero-prayer-card__gloss" aria-hidden="true"></div>
 
       <div class="hero-prayer-card__header">

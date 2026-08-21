@@ -2,7 +2,8 @@
 .hero-countdown {
   position: relative;
   z-index: 1;
-  align-self: flex-start;
+  align-self: center;
+  transform: translateY(-48px);
   width: min(100%, 380px);
   min-height: clamp(148px, 20.55vh, 180px);
   display: flex;

@@ -1,4 +1,4 @@
-/* Current prayer card */
+/* Next prayer card */
 .hero-prayer-card {
   position: relative;
   width: min(100%, 616px);
@@ -6,8 +6,11 @@
   min-height: var(--hero-card-height);
   border-radius: 24px;
   overflow: hidden;
-  background: url("../../../../assets/icons/sections/hero/current-prayer-isha.svg")
-    center/cover no-repeat;
+  background-color: var(--Decor-Isha-End);
+  background-image: var(--hero-next-prayer-background-image, none);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   color: var(--white);
   display: flex;
   flex-direction: column;
@@ -16,6 +19,26 @@
   padding-block: clamp(24px, 5.48vh, 48px);
   padding-inline: clamp(20px, 1.67vw, 32px);
   box-shadow: 0 4px 8px -4px rgba(18, 66, 53, 0.16);
+}
+
+.hero-prayer-card[data-next-prayer="fajr"] {
+  background-color: var(--Decor-Fajr-End);
+}
+
+.hero-prayer-card[data-next-prayer="dhuhr"] {
+  background-color: var(--Decor-Dhuhr-End);
+}
+
+.hero-prayer-card[data-next-prayer="asr"] {
+  background-color: var(--Decor-Asr-End);
+}
+
+.hero-prayer-card[data-next-prayer="maghrib"] {
+  background-color: var(--Decor-Maghrib-End);
+}
+
+.hero-prayer-card[data-next-prayer="isha"] {
+  background-color: var(--Decor-Isha-End);
 }
 
 .hero-prayer-card__gloss {
@@ -44,6 +67,7 @@
   font-size: clamp(30px, 2.1vw, 40px);
   font-weight: 700;
   line-height: 40px;
+  text-shadow: 0 2px 8px rgba(2, 8, 37, 0.28);
   direction: ltr;
   margin: 0;
 }
@@ -84,6 +108,7 @@
   font-size: clamp(36px, 2.5vw, 48px);
   font-weight: 700;
   line-height: 48px;
+  text-shadow: 0 2px 8px rgba(2, 8, 37, 0.28);
   margin: 0;
 }
 

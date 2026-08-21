@@ -138,6 +138,7 @@ export function createDailyPrayerRuntime(options = {}) {
 
   function renderHeroPlaceholder() {
     updateHeroSectionLiveState(heroRootElement, {
+      nextPrayerKey: "",
       nextPrayerLabel: "—",
       nextPrayerTime: "--:--",
       hours: "--",
@@ -173,6 +174,7 @@ export function createDailyPrayerRuntime(options = {}) {
     const dateInfo = state.contract.dateInfo || null;
 
     updateHeroSectionLiveState(heroRootElement, {
+      nextPrayerKey: state.contract.nextPrayer?.key ?? "",
       nextPrayerLabel: state.contract.nextPrayer?.label ?? "—",
       nextPrayerTime: state.contract.nextPrayer?.time ?? "--:--",
       hours: parts.hours,
