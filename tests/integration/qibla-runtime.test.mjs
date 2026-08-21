@@ -10,14 +10,24 @@ const IPHONE = { userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS
 const IPAD = { userAgent: "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X)", platform: "iPad", maxTouchPoints: 5 };
 const IPADOS_DESKTOP_MODE = { userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)", platform: "MacIntel", maxTouchPoints: 5 };
 const WINDOWS_TOUCH_LAPTOP = { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", platform: "Win32", maxTouchPoints: 10 };
+const MACBOOK = { userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", platform: "MacIntel", maxTouchPoints: 0 };
+const CHROMEBOOK = { userAgent: "Mozilla/5.0 (X11; CrOS x86_64 16093.61.0)", platform: "Linux x86_64", maxTouchPoints: 1 };
+const LINUX_DESKTOP = { userAgent: "Mozilla/5.0 (X11; Linux x86_64)", platform: "Linux x86_64", maxTouchPoints: 0 };
 
 assert.equal(isPortableQiblaDevice(ANDROID_PHONE), true);
 assert.equal(isPortableQiblaDevice(ANDROID_TABLET), true);
+assert.equal(isPortableQiblaDevice({ ...ANDROID_TABLET, userAgentData: { mobile: false, platform: "Android" } }), true);
 assert.equal(isPortableQiblaDevice(IPHONE), true);
 assert.equal(isPortableQiblaDevice(IPAD), true);
 assert.equal(isPortableQiblaDevice(IPADOS_DESKTOP_MODE), true);
 assert.equal(isPortableQiblaDevice(WINDOWS_TOUCH_LAPTOP), false);
 assert.equal(isPortableQiblaDevice({ ...WINDOWS_TOUCH_LAPTOP, innerWidth: 360 }), false);
+assert.equal(isPortableQiblaDevice({ ...WINDOWS_TOUCH_LAPTOP, userAgentData: { mobile: true, platform: "Windows" } }), false);
+assert.equal(isPortableQiblaDevice({ ...MACBOOK, innerWidth: 390 }), false);
+assert.equal(isPortableQiblaDevice({ ...MACBOOK, maxTouchPoints: 1 }), false);
+assert.equal(isPortableQiblaDevice(CHROMEBOOK), false);
+assert.equal(isPortableQiblaDevice(LINUX_DESKTOP), false);
+assert.equal(isPortableQiblaDevice({ userAgent: "Mozilla/5.0", platform: "", maxTouchPoints: 5, userAgentData: { mobile: true } }), false);
 
 const root = new FakeElement();
 const location = createFakeLocationService(DAMASCUS);
@@ -41,8 +51,11 @@ assert.equal(root.querySelector("[data-qibla-guidance]").textContent, "اتجا�
 root.listeners.get("click")({ target: { closest: (selector) => selector === "[data-qibla-heading-enable]" } });
 await tick();
 assert.equal(heading.state, "live");
-assert.equal(root.querySelector("[data-qibla-heading-status]").textContent, "بوصلة الجهاز مفعلة — وجّه أعلى الهاتف نحو السهم");
+assert.equal(root.querySelector("[data-qibla-heading-status]").textContent, "جارٍ التحقق من مستشعر الاتجاه…");
+headingListener({ heading: null, accuracy: 10, isReliable: true });
+assert.equal(root.querySelector("[data-qibla-heading-status]").textContent, "جارٍ التحقق من مستشعر الاتجاه…");
 headingListener({ heading: 120, accuracy: 10, isReliable: true });
+assert.equal(root.querySelector("[data-qibla-heading-status]").textContent, "بوصلة الجهاز مفعلة — وجّه أعلى الهاتف نحو السهم");
 assert.equal(root.querySelector("[data-qibla-guidance]").textContent, "القبلة إلى يمين اتجاه الهاتف — وجّه أعلى الهاتف نحو السهم");
 for (let index = 0; index < 18; index += 1) headingListener({ heading: 164, accuracy: 10, isReliable: true });
 assert.equal(root.querySelector("[data-qibla-guidance]").textContent, "✓ أنت الآن باتجاه القبلة");
@@ -88,7 +101,7 @@ assert.equal(desktopPermissionRequests, 0);
 assert.equal(desktopStarts, 0);
 assert.deepEqual(toastMessages, [{
   type: "info",
-  message: "البوصلة غير مدعومة على هذا الجهاز. استخدم هاتفًا أو جهازًا لوحيًا يدعم مستشعرات الاتجاه لتفعيلها.",
+  message: "البوصلة لا تعمل على أجهزة الكمبيوتر. استخدم هاتفًا أو جهازًا لوحيًا يدعم مستشعرات الاتجاه.",
 }]);
 desktopRuntime.destroy();
 
@@ -105,7 +118,7 @@ assert.equal(unavailableRoot.querySelector("[data-qibla-unsupported]").hidden, t
 assert.equal(unavailableRoot.querySelector("[data-qibla-heading-enable]").hidden, true);
 assert.equal(unavailableRoot.querySelector("[data-qibla-guidance]").hidden, false);
 assert.equal(unavailableRoot.querySelector("[data-qibla-phone-guide]").hidden, false);
-assert.equal(unavailableRoot.querySelector("[data-qibla-heading-status]").textContent, "البوصلة الحية غير متاحة على هذا الجهاز");
+assert.equal(unavailableRoot.querySelector("[data-qibla-heading-status]").textContent, "واجهة مستشعر الاتجاه غير متاحة على هذا الجهاز");
 unavailableRuntime.destroy();
 
 const deniedRoot = new FakeElement();
@@ -129,9 +142,42 @@ assert.equal(deniedRoot.querySelector("[data-qibla-heading-status]").textContent
 assert.equal(deniedRoot.querySelector("[data-qibla-guidance]").textContent, "اتجاه القبلة 165° من الشمال");
 deniedRuntime.destroy();
 
+const sensorFailureRoot = new FakeElement();
+let failSensorHandshake;
+let failureListener = null;
+const sensorFailureHeading = {
+  state: "available",
+  getSupport() { return { state: this.state }; },
+  async requestAccess() { return { state: this.state }; },
+  start(listener, onUnavailable) {
+    this.state = "verifying";
+    failureListener = onUnavailable;
+    return true;
+  },
+  destroy() { failureListener = null; },
+};
+const sensorFailureRuntime = createQiblaRuntime({
+  rootElement: sensorFailureRoot,
+  locationService: createFakeLocationService(DAMASCUS),
+  qiblaService,
+  headingService: sensorFailureHeading,
+  navigatorObject: ANDROID_PHONE,
+});
+await tick();
+sensorFailureRoot.listeners.get("click")({ target: { closest: (selector) => selector === "[data-qibla-heading-enable]" } });
+await tick();
+assert.equal(sensorFailureRoot.querySelector("[data-qibla-heading-status]").textContent, "جارٍ التحقق من مستشعر الاتجاه…");
+sensorFailureHeading.state = "unavailable";
+failSensorHandshake = failureListener;
+failSensorHandshake({ state: "unavailable" });
+assert.equal(sensorFailureRoot.querySelector("[data-qibla-heading-status]").textContent, "لم تصل بيانات صالحة من مستشعر الاتجاه");
+assert.notEqual(sensorFailureRoot.querySelector("[data-qibla-heading-status]").textContent, "بوصلة الجهاز مفعلة — وجّه أعلى الهاتف نحو السهم");
+sensorFailureRuntime.destroy();
+assert.equal(failureListener, null);
+
 const visualMarkup = renderQiblaVisual();
 assert.match(visualMarkup, /البوصلة غير متاحة على هذا الجهاز/);
-assert.match(visualMarkup, /ميزة البوصلة تعمل على الهواتف والأجهزة اللوحية/);
+assert.match(visualMarkup, /ميزة البوصلة التفاعلية متاحة على الهواتف والأجهزة اللوحية المدعومة فقط/);
 assert.match(visualMarkup, /اتجاه أعلى الهاتف/);
 assert.match(visualMarkup, /اجعل أعلى هاتفك نحو هذا المؤشر/);
 assert.doesNotMatch(visualMarkup, /qibla-compass__forward-marker/);

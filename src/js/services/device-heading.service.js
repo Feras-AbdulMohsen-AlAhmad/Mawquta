@@ -57,6 +57,10 @@ export function extractDeviceHeading(event, { screenAngle = 0 } = {}) {
 export function createDeviceHeadingService(options = {}) {
   const windowObject = options.windowObject ?? (typeof window !== "undefined" ? window : null);
   const screenObject = options.screenObject ?? windowObject?.screen ?? null;
+  const verificationSampleCount = Math.max(1, Number(options.verificationSampleCount) || 2);
+  const verificationTimeoutMs = Math.max(1, Number(options.verificationTimeoutMs) || 1500);
+  const setTimer = options.setTimeoutFn ?? globalThis.setTimeout;
+  const clearTimer = options.clearTimeoutFn ?? globalThis.clearTimeout;
   const orientationEvent = windowObject?.DeviceOrientationEvent;
   const secureContext = windowObject?.isSecureContext !== false;
   const hasAbsoluteEvent = Boolean(
@@ -66,6 +70,7 @@ export function createDeviceHeadingService(options = {}) {
   const permissionCallable = typeof orientationEvent?.requestPermission === "function";
   let listeners = [];
   let callback = null;
+  let verificationTimer = null;
   let state = !canOrient ? "unsupported" : permissionCallable ? "permission-required" : "available";
   let requested = false;
 
@@ -106,20 +111,32 @@ export function createDeviceHeadingService(options = {}) {
   }
 
   function stop() {
+    if (verificationTimer !== null) {
+      clearTimer(verificationTimer);
+      verificationTimer = null;
+    }
     for (const { type, handler } of listeners) windowObject?.removeEventListener?.(type, handler);
     listeners = [];
     callback = null;
   }
 
-  function start(listener) {
+  function start(listener, onUnavailable) {
     stop();
     if (!canOrient || !["available", "live"].includes(state) || typeof listener !== "function") return false;
     callback = listener;
+    let validSamples = 0;
+    state = "verifying";
     const handler = (event) => {
       const data = extractDeviceHeading(event, {
         screenAngle: screenObject?.orientation?.angle ?? windowObject?.orientation ?? 0,
       });
       if (data) {
+        validSamples += 1;
+        if (validSamples < verificationSampleCount) return;
+        if (verificationTimer !== null) {
+          clearTimer(verificationTimer);
+          verificationTimer = null;
+        }
         state = "live";
         callback?.(data);
       }
@@ -129,6 +146,12 @@ export function createDeviceHeadingService(options = {}) {
       windowObject.addEventListener(type, handler, { passive: true });
       listeners.push({ type, handler });
     }
+    verificationTimer = setTimer(() => {
+      verificationTimer = null;
+      state = "unavailable";
+      stop();
+      onUnavailable?.(getSupport());
+    }, verificationTimeoutMs);
     return true;
   }
 

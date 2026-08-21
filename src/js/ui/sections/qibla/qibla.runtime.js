@@ -6,7 +6,7 @@ import { createToastController, renderFeedbackState } from "../../shared/feedbac
 const ALIGNMENT_TOLERANCE = 3;
 const NEAR_TOLERANCE = 10;
 const SMOOTHING_FACTOR = 0.24;
-const UNSUPPORTED_DEVICE_MESSAGE = "البوصلة غير مدعومة على هذا الجهاز. استخدم هاتفًا أو جهازًا لوحيًا يدعم مستشعرات الاتجاه لتفعيلها.";
+const UNSUPPORTED_DEVICE_MESSAGE = "البوصلة لا تعمل على أجهزة الكمبيوتر. استخدم هاتفًا أو جهازًا لوحيًا يدعم مستشعرات الاتجاه.";
 
 const renderQiblaLoadingState = () => renderFeedbackState({ type: "loading", className: "qibla-loading", message: "جارٍ حساب اتجاه القبلة…", ariaLabel: "جارٍ حساب اتجاه القبلة" });
 const renderQiblaEmptyState = () => renderFeedbackState({ type: "empty", className: "qibla-empty", message: "لا تتوفر بيانات لحساب اتجاه القبلة حالياً." });
@@ -28,11 +28,33 @@ function accuracyLabel(accuracy) {
 export function isPortableQiblaDevice(navigatorObject = globalThis.navigator) {
   const userAgent = String(navigatorObject?.userAgent ?? "");
   const platform = String(navigatorObject?.platform ?? "");
+  const clientPlatform = String(navigatorObject?.userAgentData?.platform ?? "");
   const maxTouchPoints = Number(navigatorObject?.maxTouchPoints ?? 0);
-  const reportsMobile = navigatorObject?.userAgentData?.mobile === true;
-  const portableUserAgent = /Android|iPhone|iPad|iPod/i.test(userAgent);
-  const iPadOSDesktopMode = platform === "MacIntel" && maxTouchPoints > 1;
-  return reportsMobile || portableUserAgent || iPadOSDesktopMode;
+  const platformSignals = `${platform} ${clientPlatform}`;
+  const windowsDesktop = /Windows NT/i.test(userAgent) || /Windows|Win32|Win64/i.test(platformSignals);
+  const chromeOsDesktop = /CrOS/i.test(userAgent) || /Chrome\s?OS/i.test(clientPlatform);
+  if (windowsDesktop || chromeOsDesktop) return false;
+
+  const iPadOSDesktopMode = /^MacIntel$/i.test(platform)
+    && maxTouchPoints > 1
+    && /Macintosh|Mac OS X/i.test(userAgent)
+    && !/Windows|CrOS|Linux/i.test(userAgent);
+  if (iPadOSDesktopMode) return true;
+
+  const applePortable = /iPhone|iPad|iPod/i.test(userAgent)
+    && (!platform || /iPhone|iPad|iPod/i.test(platform));
+  if (applePortable) return true;
+
+  const androidPortable = /Android/i.test(userAgent)
+    && (!clientPlatform || /Android|Linux/i.test(clientPlatform))
+    && (!platform || /Android|Linux|arm/i.test(platform));
+  if (androidPortable) return true;
+
+  const desktopMac = /Macintosh|Mac OS X/i.test(userAgent) || /MacIntel|MacPPC|macOS/i.test(platformSignals);
+  const desktopLinux = /Linux|X11/i.test(userAgent) || /Linux|X11/i.test(platformSignals);
+  if (desktopMac || desktopLinux) return false;
+
+  return false;
 }
 
 export function createQiblaRuntime(options = {}) {
@@ -83,14 +105,14 @@ export function createQiblaRuntime(options = {}) {
     if (elements.guidance) elements.guidance.hidden = false;
     if (elements.sensorStatus) elements.sensorStatus.hidden = false;
     const support = headingService.getSupport?.() ?? { state: headingState };
-    headingState = support.state;
+    if (!["requesting", "verifying"].includes(headingState)) headingState = support.state;
     const unavailable = ["unsupported", "unavailable", "unreliable", "error"].includes(headingState);
     if (elements.enable) {
       elements.enable.hidden = unavailable;
       elements.enable.disabled = requesting;
       elements.enable.setAttribute("aria-busy", requesting ? "true" : "false");
     }
-    const labels = { "permission-required": "فعّل البوصلة لتوجيه حي", "permission-denied": "لم يُسمح باستخدام البوصلة", requesting: "جارٍ تفعيل البوصلة…", live: "بوصلة الجهاز مفعلة", available: "البوصلة جاهزة للتفعيل", unsupported: "البوصلة الحية غير متاحة على هذا الجهاز", error: "تعذر تشغيل البوصلة" };
+    const labels = { "permission-required": "فعّل البوصلة لتوجيه حي", "permission-denied": "لم يُسمح باستخدام البوصلة", requesting: "جارٍ طلب إذن البوصلة…", verifying: "جارٍ التحقق من مستشعر الاتجاه…", live: "بوصلة الجهاز مفعلة — وجّه أعلى الهاتف نحو السهم", available: "البوصلة جاهزة للتفعيل", unsupported: "واجهة مستشعر الاتجاه غير متاحة على هذا الجهاز", unavailable: "لم تصل بيانات صالحة من مستشعر الاتجاه", unreliable: "بيانات مستشعر الاتجاه غير قابلة للاستخدام", error: "تعذر تشغيل البوصلة" };
     setText(elements.sensorStatus, labels[headingState] ?? "البوصلة الثابتة متاحة");
   }
   function staticVisual(contract) {
@@ -121,7 +143,21 @@ export function createQiblaRuntime(options = {}) {
     if (guidance !== lastGuidance) { setText(elements.guidance, guidance); lastGuidance = guidance; announce(`اتجاه القبلة ${state.contract.displayDegrees}. ${guidance}`); }
   }
   function startHeading() {
-    if (!headingService.start((data) => renderHeading(data))) { headingState = "unavailable"; updateSensorUI(); staticVisual(state.contract); }
+    headingState = "verifying";
+    updateSensorUI();
+    const started = headingService.start((data) => {
+      if (destroyed || !Number.isFinite(data?.heading) || !data?.isReliable) return;
+      headingState = "live";
+      updateSensorUI();
+      renderHeading(data);
+    }, () => {
+      if (destroyed) return;
+      headingState = headingService.getSupport?.().state ?? "unavailable";
+      if (headingState === "live" || headingState === "verifying") headingState = "unavailable";
+      updateSensorUI();
+      staticVisual(state.contract);
+    });
+    if (!started) { headingState = "unavailable"; updateSensorUI(); staticVisual(state.contract); }
   }
   async function enableHeading() {
     if (requesting || destroyed) return;
@@ -131,8 +167,9 @@ export function createQiblaRuntime(options = {}) {
     }
     requesting = true; headingState = "requesting"; updateSensorUI();
     const result = await headingService.requestAccess();
+    if (destroyed) return;
     requesting = false; headingState = result?.state ?? headingService.getSupport?.().state ?? "error"; updateSensorUI();
-    if (headingState === "available") { startHeading(); setText(elements.sensorStatus, "بوصلة الجهاز مفعلة — وجّه أعلى الهاتف نحو السهم"); }
+    if (headingState === "available") startHeading();
     else if (headingState === "permission-denied") { setText(elements.sensorStatus, "تعذر تفعيل البوصلة. يمكنك استخدام الاتجاه الثابت."); staticVisual(state.contract); }
   }
   function applyState() {

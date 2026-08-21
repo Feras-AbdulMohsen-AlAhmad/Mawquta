@@ -73,7 +73,7 @@ export function renderQiblaVisual() {
           <span class="qibla-compass__unsupported-icon" aria-hidden="true">i</span>
           <div>
             <h3 class="qibla-compass__unsupported-title">البوصلة غير متاحة على هذا الجهاز</h3>
-            <p class="qibla-compass__unsupported-description">ميزة البوصلة تعمل على الهواتف والأجهزة اللوحية التي تدعم مستشعرات الاتجاه. افتح موقع موقوتًا من جهاز محمول لاستخدامها.</p>
+            <p class="qibla-compass__unsupported-description">ميزة البوصلة التفاعلية متاحة على الهواتف والأجهزة اللوحية المدعومة فقط. افتح موقوتًا من هاتف أو جهاز لوحي لاستخدام اتجاه القبلة بالبوصلة.</p>
           </div>
         </div>
         <p class="qibla-compass__sensor-status" data-qibla-heading-status>البوصلة الثابتة متاحة</p>

@@ -24,6 +24,8 @@ assert.equal(extractAbsoluteHeading({ alpha: 0, beta: 0, gamma: 0, absolute: tru
 assert.equal(extractAbsoluteHeading({ alpha: 90, beta: 0, gamma: 0, absolute: true }), 90);
 
 const events = new Map();
+const timers = new Map();
+let nextTimerId = 1;
 const fakeWindow = {
   isSecureContext: true,
   DeviceOrientationEvent: class DeviceOrientationEvent {},
@@ -31,14 +33,43 @@ const fakeWindow = {
   removeEventListener(type) { events.delete(type); },
   screen: { orientation: { angle: 0 } },
 };
-const service = createDeviceHeadingService({ windowObject: fakeWindow });
+const service = createDeviceHeadingService({
+  windowObject: fakeWindow,
+  verificationSampleCount: 2,
+  verificationTimeoutMs: 100,
+  setTimeoutFn(handler) { const id = nextTimerId++; timers.set(id, handler); return id; },
+  clearTimeoutFn(id) { timers.delete(id); },
+});
 assert.equal(service.getSupport().state, "available");
 let received = null;
 assert.equal(service.start((value) => { received = value; }), true);
 assert.equal(events.size, 1);
+assert.equal(timers.size, 1);
+assert.equal(service.getSupport().state, "verifying");
+events.get("deviceorientation")({ webkitCompassHeading: null, alpha: null, beta: null, gamma: null });
+assert.equal(received, null);
 events.get("deviceorientation")({ webkitCompassHeading: 120 });
-assert.equal(received.heading, 120);
+assert.equal(received, null);
+assert.equal(service.getSupport().state, "verifying");
+events.get("deviceorientation")({ webkitCompassHeading: 121 });
+assert.equal(received.heading, 121);
+assert.equal(service.getSupport().state, "live");
+assert.equal(timers.size, 0);
+
+let unavailableState = null;
+assert.equal(service.start(() => {}, (support) => { unavailableState = support.state; }), true);
+assert.equal(events.size, 1);
+assert.equal(timers.size, 1);
+const [timeoutId, timeoutHandler] = timers.entries().next().value;
+timers.delete(timeoutId);
+timeoutHandler();
+assert.equal(unavailableState, "unavailable");
+assert.equal(service.getSupport().state, "unavailable");
+assert.equal(events.size, 0);
+assert.equal(timers.size, 0);
+assert.equal(service.start(() => {}), false);
 service.destroy();
 assert.equal(events.size, 0);
+assert.equal(timers.size, 0);
 
 console.log("QIBLA_HEADING_SUMMARY pass=1 fail=0");
