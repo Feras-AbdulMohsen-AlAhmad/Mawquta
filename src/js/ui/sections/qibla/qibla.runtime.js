@@ -108,7 +108,7 @@ export function createQiblaRuntime(options = {}) {
     smoothedHeading = heading;
     const delta = shortestSignedAngle(state.contract.qiblaBearing - heading);
     const accuracyLow = Number.isFinite(data.accuracy) && data.accuracy > 30;
-    elements.compass?.setAttribute("aria-label", `اتجاه القبلة ${state.contract.displayDegrees}. ${delta > 0 ? "القبلة على يمين اتجاه الهاتف" : "القبلة على يسار اتجاه الهاتف"} بـ ${Math.round(Math.abs(delta))} درجة.`);
+    elements.compass?.setAttribute("aria-label", `اتجاه القبلة. ${delta > 0 ? "القبلة إلى يمين اتجاه الهاتف" : "القبلة إلى يسار اتجاه الهاتف"}. وجّه أعلى الهاتف نحو السهم.`);
     elements.dial && (elements.dial.style.transform = `rotate(${-heading}deg)`);
     elements.arrow && (elements.arrow.style.transform = `rotate(${delta}deg)`);
     elements.compass?.setAttribute("data-qibla-aligned", Math.abs(delta) <= ALIGNMENT_TOLERANCE && !accuracyLow ? "true" : "false");
@@ -116,8 +116,8 @@ export function createQiblaRuntime(options = {}) {
     let guidance;
     if (accuracyLow && Math.abs(delta) <= ALIGNMENT_TOLERANCE) guidance = "الاتجاه قريب من القبلة — دقة البوصلة منخفضة";
     else if (Math.abs(delta) <= ALIGNMENT_TOLERANCE) guidance = "✓ أنت الآن باتجاه القبلة";
-    else if (Math.abs(delta) <= NEAR_TOLERANCE) guidance = `اقتربت من اتجاه القبلة — تبقى ${Math.round(Math.abs(delta))}°`;
-    else guidance = `لف الهاتف ${Math.round(Math.abs(delta))}° إلى ${delta > 0 ? "اليمين" : "اليسار"}`;
+    else if (Math.abs(delta) <= NEAR_TOLERANCE) guidance = "اقتربت من اتجاه القبلة — وجّه أعلى الهاتف نحو السهم";
+    else guidance = `القبلة إلى ${delta > 0 ? "يمين" : "يسار"} اتجاه الهاتف — وجّه أعلى الهاتف نحو السهم`;
     if (guidance !== lastGuidance) { setText(elements.guidance, guidance); lastGuidance = guidance; announce(`اتجاه القبلة ${state.contract.displayDegrees}. ${guidance}`); }
   }
   function startHeading() {
@@ -132,7 +132,7 @@ export function createQiblaRuntime(options = {}) {
     requesting = true; headingState = "requesting"; updateSensorUI();
     const result = await headingService.requestAccess();
     requesting = false; headingState = result?.state ?? headingService.getSupport?.().state ?? "error"; updateSensorUI();
-    if (headingState === "available") { startHeading(); setText(elements.sensorStatus, "بوصلة الجهاز مفعلة — حرّك الهاتف للتوجيه"); }
+    if (headingState === "available") { startHeading(); setText(elements.sensorStatus, "بوصلة الجهاز مفعلة — وجّه أعلى الهاتف نحو السهم"); }
     else if (headingState === "permission-denied") { setText(elements.sensorStatus, "تعذر تفعيل البوصلة. يمكنك استخدام الاتجاه الثابت."); staticVisual(state.contract); }
   }
   function applyState() {

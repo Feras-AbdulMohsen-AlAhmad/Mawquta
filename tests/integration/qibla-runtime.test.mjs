@@ -41,8 +41,9 @@ assert.equal(root.querySelector("[data-qibla-guidance]").textContent, "اتجا�
 root.listeners.get("click")({ target: { closest: (selector) => selector === "[data-qibla-heading-enable]" } });
 await tick();
 assert.equal(heading.state, "live");
+assert.equal(root.querySelector("[data-qibla-heading-status]").textContent, "بوصلة الجهاز مفعلة — وجّه أعلى الهاتف نحو السهم");
 headingListener({ heading: 120, accuracy: 10, isReliable: true });
-assert.match(root.querySelector("[data-qibla-guidance]").textContent, /45° إلى اليمين/);
+assert.equal(root.querySelector("[data-qibla-guidance]").textContent, "القبلة إلى يمين اتجاه الهاتف — وجّه أعلى الهاتف نحو السهم");
 for (let index = 0; index < 18; index += 1) headingListener({ heading: 164, accuracy: 10, isReliable: true });
 assert.equal(root.querySelector("[data-qibla-guidance]").textContent, "✓ أنت الآن باتجاه القبلة");
 
@@ -50,7 +51,7 @@ location.setLocation(ALEPPO);
 await tick();
 await tick();
 for (let index = 0; index < 18; index += 1) headingListener({ heading: 150, accuracy: 10, isReliable: true });
-assert.match(root.querySelector("[data-qibla-guidance]").textContent, /30° إلى اليسار/);
+assert.equal(root.querySelector("[data-qibla-guidance]").textContent, "القبلة إلى يسار اتجاه الهاتف — وجّه أعلى الهاتف نحو السهم");
 runtime.destroy();
 assert.equal(headingListener, null);
 assert.equal(location.listenerCount, 0);
