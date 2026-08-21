@@ -8,6 +8,7 @@ const VIEWPORTS = [
   { width: 360, height: 800 },
   { width: 390, height: 844 },
   { width: 412, height: 915 },
+  { width: 430, height: 932 },
   { width: 768, height: 1024 },
   { width: 1024, height: 768 },
   { width: 1366, height: 768 },
@@ -83,8 +84,9 @@ export async function runHeroNextPrayerBackgroundCoverage(browser, baseUrl) {
         });
       }, prayer);
 
-      const state = await page.evaluate(({ key, asset }) => {
+      const state = await page.evaluate(({ key, asset, viewportWidth }) => {
         const card = document.querySelector("[data-hero-next-prayer-card]");
+        const hero = document.querySelector(".hero");
         const countdown = card.querySelector(".hero-countdown");
         const bounded = [
           card.querySelector(".hero-prayer-card__header"),
@@ -124,13 +126,18 @@ export async function runHeroNextPrayerBackgroundCoverage(browser, baseUrl) {
           noPageOverflow:
             document.documentElement.scrollWidth <=
             document.documentElement.clientWidth,
+          heroAboveFold:
+            viewportWidth > 575 || hero.getBoundingClientRect().bottom <= innerHeight + 1,
           contentContained: bounded.every(insideCard),
           countdownCentered:
             Math.abs(
               (countdownRect.left - cardRect.left) -
                 (cardRect.right - countdownRect.right),
             ) <= 1,
-          countdownLifted: Math.abs(countdownTransform.m42 + 24) <= 0.1,
+          countdownLifted:
+            viewportWidth <= 575
+              ? countdownTransform.m42 <= -15.9 && countdownTransform.m42 >= -24.1
+              : Math.abs(countdownTransform.m42 + 48) <= 0.1,
           countdownReadable:
             Number.parseFloat(countdownStyle.opacity) === 1 &&
             countdownStyle.visibility === "visible" &&
@@ -139,7 +146,7 @@ export async function runHeroNextPrayerBackgroundCoverage(browser, baseUrl) {
             Number.parseFloat(countdownValueStyle.fontSize) >= 24,
           size: { width: cardRect.width, height: cardRect.height },
         };
-      }, prayer);
+      }, { ...prayer, viewportWidth: viewport.width });
 
       expectedCardSize ??= state.size;
       const stable =

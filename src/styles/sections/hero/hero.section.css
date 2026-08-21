@@ -462,7 +462,7 @@
 @media (max-width: 575.98px) {
   .hero {
     height: auto;
-    padding-block: 12px 10px;
+    padding-block: clamp(9px, 1.5svh, 13px) clamp(8px, 1.2svh, 11px);
   }
 
   .hero__corner {
@@ -481,7 +481,7 @@
 
   .hero__layout {
     height: auto;
-    gap: 10px;
+    gap: clamp(8px, 1.35svh, 12px);
   }
 
   .hero__pane--card,
@@ -490,7 +490,7 @@
   }
 
   .hero-right {
-    gap: 8px;
+    gap: clamp(6px, 1svh, 9px);
   }
 
   .hero-location-chip {
@@ -529,8 +529,9 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: center;
-    gap: 6px 12px;
-    padding: 10px 12px;
+    gap: clamp(5px, 0.8svh, 7px) 12px;
+    min-height: 66px;
+    padding: clamp(9px, 1.25svh, 11px) 12px;
   }
 
   .date-card__head {
@@ -569,25 +570,27 @@
 
   .hero-cta {
     font-size: var(--ui-btn-font-size-sm);
-    min-height: var(--ui-btn-min-h-sm);
+    min-height: max(44px, var(--ui-btn-min-h-sm));
     padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
   }
 
   .hero-prayer-card {
     border-radius: 14px;
-    min-height: clamp(310px, 84vw, 360px);
+    min-height: clamp(304px, 43svh, 400px);
     height: auto;
-    gap: 10px;
-    padding: 12px;
+    gap: clamp(10px, 1.5svh, 14px);
+    padding: clamp(12px, 1.7svh, 16px);
     background-position: center bottom;
   }
 
   .hero-prayer-card__header {
-    gap: 6px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .hero-prayer-card__meta {
-    gap: 6px;
+    gap: clamp(6px, 1svh, 10px);
   }
 
   .hero-prayer-card__time {
@@ -615,9 +618,9 @@
   }
 
   .hero-countdown {
-    transform: translateY(-24px);
-    padding: 8px 10px;
-    gap: 6px;
+    transform: translateY(clamp(-24px, -2.8svh, -16px));
+    padding: clamp(8px, 1.2svh, 11px) 10px;
+    gap: clamp(6px, 0.9svh, 8px);
   }
 
   .hero-countdown__label {
@@ -680,13 +683,13 @@
   }
 
   .hero-cta {
-    min-height: var(--ui-btn-min-h-sm);
+    min-height: max(44px, var(--ui-btn-min-h-sm));
     font-size: var(--ui-btn-font-size-sm);
     padding: var(--ui-btn-pad-y) var(--ui-btn-pad-x-sm);
   }
 
   .hero-prayer-card {
-    min-height: clamp(300px, 84vw, 328px);
+    min-height: clamp(300px, 43svh, 360px);
     padding: 12px 10px;
   }
 
