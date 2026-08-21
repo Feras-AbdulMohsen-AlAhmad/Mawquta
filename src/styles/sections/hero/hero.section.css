@@ -462,7 +462,7 @@
 @media (max-width: 575.98px) {
   .hero {
     height: auto;
-    padding-block: 20px 16px;
+    padding-block: 12px 10px;
   }
 
   .hero__corner {
@@ -481,12 +481,28 @@
 
   .hero__layout {
     height: auto;
-    gap: 16px;
+    gap: 10px;
   }
 
   .hero__pane--card,
   .hero__pane--content {
-    padding-inline: 10px;
+    padding-inline: 8px;
+  }
+
+  .hero-right {
+    gap: 8px;
+  }
+
+  .hero-location-chip {
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+  }
+
+  .hero-location-chip__icon {
+    width: 20px;
+    height: 20px;
+    flex-basis: 20px;
   }
 
   .hero-verse-wrap {
@@ -499,8 +515,8 @@
   }
 
   .hero-verse {
-    font-size: clamp(18px, 6vw, 24px);
-    line-height: 1.4;
+    font-size: clamp(17px, 4.8vw, 21px);
+    line-height: 1.35;
   }
 
   .date-card,
@@ -509,17 +525,46 @@
     max-width: 100%;
   }
 
+  .date-card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 6px 12px;
+    padding: 10px 12px;
+  }
+
+  .date-card__head {
+    gap: 8px;
+  }
+
+  .date-card__cal {
+    width: 26px;
+    height: 26px;
+  }
+
   .date-card__head-label {
-    font-size: 20px;
+    font-size: 18px;
+    line-height: 1.2;
   }
 
   .date-card__day {
-    font-size: 18px;
+    font-size: 16px;
+    line-height: 1.25;
+    text-align: end;
   }
 
   .date-card__row,
   .date-card__row-yr {
-    font-size: 14px;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .date-card__row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 4px;
   }
 
   .hero-cta {
@@ -530,37 +575,58 @@
 
   .hero-prayer-card {
     border-radius: 14px;
-    min-height: auto;
+    min-height: clamp(310px, 84vw, 360px);
     height: auto;
-    padding: 16px 12px 14px;
+    gap: 10px;
+    padding: 12px;
+    background-position: center bottom;
+  }
+
+  .hero-prayer-card__header {
+    gap: 6px;
+  }
+
+  .hero-prayer-card__meta {
+    gap: 6px;
   }
 
   .hero-prayer-card__time {
-    font-size: 26px;
+    font-size: 24px;
+    line-height: 1.1;
   }
 
   .hero-prayer-card__pill {
-    padding: 6px 10px 10px;
+    gap: 6px;
+    padding: 5px 10px 7px;
+  }
+
+  .hero-prayer-card__pill-dot {
+    width: 8px;
+    height: 8px;
   }
 
   .hero-prayer-card__pill-text {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .hero-prayer-card__name {
-    font-size: clamp(28px, 8vw, 34px);
+    font-size: clamp(25px, 7vw, 30px);
+    line-height: 1.2;
   }
 
   .hero-countdown {
-    padding: 12px;
+    transform: translateY(-24px);
+    padding: 8px 10px;
+    gap: 6px;
   }
 
   .hero-countdown__label {
-    font-size: 16px;
+    font-size: 13px;
+    line-height: 1.25;
   }
 
   .hero-countdown__value {
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .hero-countdown__unit {
@@ -568,17 +634,22 @@
   }
 
   .hero-countdown__separator {
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .hero-countdown__grid {
     gap: 8px;
+    min-height: 52px;
+  }
+
+  .hero-countdown__item {
+    gap: 4px;
   }
 }
 
 @media (max-width: 399.98px) {
   .hero {
-    padding-block: 16px 12px;
+    padding-block: 10px 8px;
   }
 
   .hero__pane--card,
@@ -591,11 +662,12 @@
   }
 
   .date-card {
-    padding: 12px 14px;
+    gap: 5px 10px;
+    padding: 8px 10px;
   }
 
   .date-card__head-label {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .date-card__day {
@@ -614,7 +686,7 @@
   }
 
   .hero-prayer-card {
-    min-height: clamp(390px, 112vw, 430px);
+    min-height: clamp(300px, 84vw, 328px);
     padding: 12px 10px;
   }
 

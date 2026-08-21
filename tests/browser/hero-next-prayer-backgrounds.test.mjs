@@ -120,7 +120,7 @@ export async function runHeroNextPrayerBackgroundCoverage(browser, baseUrl) {
           imageFit:
             cardStyle.backgroundSize === "cover" &&
             cardStyle.backgroundRepeat === "no-repeat" &&
-            cardStyle.backgroundPosition === "50% 50%",
+            cardStyle.backgroundPosition === "50% 100%",
           noPageOverflow:
             document.documentElement.scrollWidth <=
             document.documentElement.clientWidth,

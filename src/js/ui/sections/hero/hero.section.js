@@ -37,6 +37,30 @@ export function resolveHeroNextPrayerBackground(prayerKey) {
   return asset ? { key: normalizedKey, asset } : null;
 }
 
+function updateHeroDateRow(rowElement, label) {
+  if (!rowElement || label == null) return;
+
+  const normalizedLabel = String(label).trim() || "—";
+  const parts = normalizedLabel.split(/\s+/);
+  const dayElement = rowElement.querySelector('[data-date-part="day"]');
+  const monthElement = rowElement.querySelector('[data-date-part="month"]');
+  const yearElement = rowElement.querySelector('[data-date-part="year"]');
+
+  if (!dayElement || !monthElement || !yearElement) {
+    rowElement.textContent = normalizedLabel;
+    return;
+  }
+
+  const hasCompleteDate = parts.length >= 3 && normalizedLabel !== "—";
+  dayElement.textContent = hasCompleteDate ? parts[0] : normalizedLabel;
+  monthElement.textContent = hasCompleteDate ? parts.slice(1, -1).join(" ") : "";
+  yearElement.textContent = hasCompleteDate ? parts.at(-1) : "";
+
+  if (typeof rowElement.setAttribute === "function") {
+    rowElement.setAttribute("aria-label", normalizedLabel);
+  }
+}
+
 export function renderHeroSection(rootElement, sectionData = {}) {
   void sectionData;
 
@@ -129,8 +153,8 @@ export function updateHeroSectionLiveState(rootElement, updates = {}) {
   if (minutesEl && minutes != null) minutesEl.textContent = minutes;
   if (secondsEl && seconds != null) secondsEl.textContent = seconds;
   if (dayLabelEl && dayLabel != null) dayLabelEl.textContent = dayLabel;
-  if (hijriDateEl && hijriDate != null) hijriDateEl.textContent = hijriDate;
-  if (gregorianDateEl && gregorianDate != null) gregorianDateEl.textContent = gregorianDate;
+  updateHeroDateRow(hijriDateEl, hijriDate);
+  updateHeroDateRow(gregorianDateEl, gregorianDate);
 
   // Announce only meaningful next-prayer transitions through the visually
   // hidden polite live region. Placeholder ("—") and repeat labels are never

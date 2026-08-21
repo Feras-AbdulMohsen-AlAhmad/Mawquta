@@ -39,8 +39,16 @@ function renderHeroDateCard() {
       </div>
 
       <p class="date-card__day" data-hero-day-label>—</p>
-      <div class="date-card__row" data-hero-hijri-date>—</div>
-      <div class="date-card__row" data-hero-gregorian-date>—</div>
+      <div class="date-card__row" data-hero-hijri-date>
+        <span class="date-card__row-day" data-date-part="day">—</span>
+        <span class="date-card__row-month" data-date-part="month"></span>
+        <span class="date-card__row-year" data-date-part="year"></span>
+      </div>
+      <div class="date-card__row" data-hero-gregorian-date>
+        <span class="date-card__row-day" data-date-part="day">—</span>
+        <span class="date-card__row-month" data-date-part="month"></span>
+        <span class="date-card__row-year" data-date-part="year"></span>
+      </div>
     </article>
   `;
 }

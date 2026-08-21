@@ -8,7 +8,7 @@
   overflow: hidden;
   background-color: var(--Decor-Isha-End);
   background-image: var(--hero-next-prayer-background-image, none);
-  background-position: center;
+  background-position: center bottom;
   background-size: cover;
   background-repeat: no-repeat;
   color: var(--white);

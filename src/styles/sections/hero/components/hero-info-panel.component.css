@@ -109,11 +109,26 @@
   font-size: 16px;
   font-weight: 700;
   color: var(--Text-900);
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 44px;
   align-items: center;
   line-height: 22px;
   gap: 8px;
+  direction: rtl;
+  text-align: center;
+}
+
+.date-card__row-day,
+.date-card__row-month,
+.date-card__row-year {
+  min-width: 0;
+}
+
+.date-card__row-day,
+.date-card__row-year {
+  font-weight: 800;
 }
 
 .date-card__row-r {
@@ -130,6 +145,40 @@
   color: var(--Text-900);
   font-size: 16px;
   font-weight: 700;
+}
+
+@media (min-width: 992px) {
+  .date-card {
+    min-height: 184px;
+    padding: 20px 24px 18px;
+    gap: 8px;
+  }
+
+  .date-card::before {
+    left: -48px;
+    top: 58px;
+  }
+
+  .date-card__cal {
+    width: 28px;
+    height: 28px;
+    background: var(--Primary-900);
+    -webkit-mask: url("../../../../assets/icons/shared/calendar.svg") center / contain no-repeat;
+    mask: url("../../../../assets/icons/shared/calendar.svg") center / contain no-repeat;
+  }
+
+  .date-card__head {
+    flex-direction: row-reverse;
+  }
+
+  .date-card__day {
+    margin-block-start: 11px;
+    text-align: right;
+  }
+
+  .date-card__row[data-hero-hijri-date] {
+    margin-block-start: 11px;
+  }
 }
 
 .hero-cta {
