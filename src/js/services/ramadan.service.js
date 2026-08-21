@@ -99,6 +99,11 @@ function dateObjFromDateKey(dateKey) {
   return new Date(year, month - 1, day);
 }
 
+function adjacentMonthDateObj(dateKey, monthOffset) {
+  const [year, month] = dateKey.split("-").map(Number);
+  return new Date(year, month - 1 + monthOffset, 1);
+}
+
 function getDayIndex(monthDays, dateKey) {
   const [year, month, day] = dateKey.split("-").map(Number);
   const target = `${String(day).padStart(2, "0")}-${String(month).padStart(2, "0")}-${year}`;
@@ -107,12 +112,13 @@ function getDayIndex(monthDays, dateKey) {
   );
 }
 
-function getDayFromMonthDays(monthDays, dateKey) {
+function findDayForDateKey(monthDays, dateKey) {
   const index = getDayIndex(monthDays, dateKey);
-  if (index < 0 || !monthDays?.[index]) {
-    throw new Error(`ramadan service: no calendar day found for ${dateKey}`);
-  }
-  return monthDays[index];
+  return index < 0 ? null : (monthDays?.[index] ?? null);
+}
+
+function isRamadanDayObject(dayObject) {
+  return Number(dayObject?.date?.hijri?.month?.number) === HIJRI_RAMADAN_MONTH;
 }
 
 function getWeekdayName(dateKey) {
@@ -121,9 +127,20 @@ function getWeekdayName(dateKey) {
   return AR_WEEKDAYS[dow];
 }
 
-function getMonthRangeLabel(dateKey) {
-  const [year, month] = dateKey.split("-").map(Number);
-  return `${AR_MONTHS[month - 1]} ${year}`;
+function getMonthRangeLabel(dateKey, rows = []) {
+  const rangeKeys = rows.length
+    ? [rows[0].dateKey, rows[rows.length - 1].dateKey]
+    : [dateKey, dateKey];
+  const [startYear, startMonth] = rangeKeys[0].split("-").map(Number);
+  const [endYear, endMonth] = rangeKeys[1].split("-").map(Number);
+
+  if (startYear === endYear && startMonth === endMonth) {
+    return `${AR_MONTHS[startMonth - 1]} ${startYear}`;
+  }
+  if (startYear === endYear) {
+    return `${AR_MONTHS[startMonth - 1]} – ${AR_MONTHS[endMonth - 1]} ${startYear}`;
+  }
+  return `${AR_MONTHS[startMonth - 1]} ${startYear} – ${AR_MONTHS[endMonth - 1]} ${endYear}`;
 }
 
 function formatTableDate(dateKey) {
@@ -132,10 +149,39 @@ function formatTableDate(dateKey) {
 }
 
 function findImsakForDateKey(monthDays, dateKey) {
-  const index = getDayIndex(monthDays, dateKey);
-  if (index < 0) return null;
-  const normalized = normalizeTime(monthDays?.[index]?.timings?.Imsak);
+  const dayObject = findDayForDateKey(monthDays, dateKey);
+  if (!isRamadanDayObject(dayObject)) return null;
+  const normalized = normalizeTime(dayObject?.timings?.Imsak);
   return TIME_PATTERN.test(normalized) ? normalized : null;
+}
+
+function mergeCalendarMonths(monthGroups) {
+  const byDate = new Map();
+  for (const dayObject of monthGroups.flat()) {
+    const date = dayObject?.date?.gregorian?.date;
+    if (date) byDate.set(date, dayObject);
+  }
+  return [...byDate.values()].sort((a, b) => {
+    const aKey = gregorianToDateKey(a?.date?.gregorian?.date) ?? "";
+    const bKey = gregorianToDateKey(b?.date?.gregorian?.date) ?? "";
+    return aKey.localeCompare(bKey);
+  });
+}
+
+function getAdjacentRamadanMonthsNeeded(monthDays) {
+  if (!Array.isArray(monthDays) || monthDays.length === 0) {
+    return { previous: false, next: false };
+  }
+
+  const firstDay = monthDays[0];
+  const lastDay = monthDays[monthDays.length - 1];
+  const firstRamadanDay = Number(firstDay?.date?.hijri?.day);
+  const lastRamadanDay = Number(lastDay?.date?.hijri?.day);
+
+  return {
+    previous: isRamadanDayObject(firstDay) && firstRamadanDay > 1,
+    next: isRamadanDayObject(lastDay) && lastRamadanDay < 30,
+  };
 }
 
 /* =========================================================
@@ -187,6 +233,10 @@ function buildMonthRows({ monthDays, dateKey, timeZone, now }) {
 
     const rowDateKey = gregorianToDateKey(dayObject.date.gregorian?.date);
     if (!rowDateKey) continue;
+    const ramadanDay = Number(dayObject.date.hijri.day);
+    if (!Number.isInteger(ramadanDay) || ramadanDay < 1 || ramadanDay > 30) {
+      continue;
+    }
 
     const times = {};
     let hasValidTimes = true;
@@ -208,7 +258,7 @@ function buildMonthRows({ monthDays, dateKey, timeZone, now }) {
       dateKey: rowDateKey,
       gregorianDate: formatTableDate(rowDateKey),
       weekday: getWeekdayName(rowDateKey),
-      ramadanDay: Number(dayObject.date.hijri.day),
+      ramadanDay,
       fajr: times.fajr,
       dhuhr: times.dhuhr,
       asr: times.asr,
@@ -219,7 +269,7 @@ function buildMonthRows({ monthDays, dateKey, timeZone, now }) {
     });
   }
 
-  return rows;
+  return rows.sort((a, b) => a.dateKey.localeCompare(b.dateKey));
 }
 
 /* =========================================================
@@ -251,6 +301,7 @@ function buildNextEvent({
   timeZone,
   now,
   nextDayImsak = null,
+  hasNextRamadanDay = true,
 }) {
   const imsakOccursAt = buildOccursAt({ dateKey, time: imsak, timeZone });
 
@@ -262,6 +313,8 @@ function buildNextEvent({
   if (now.getTime() < maghribOccursAt.getTime()) {
     return buildEvent("maghrib", "الإفطار", maghrib, dateKey, timeZone, now);
   }
+
+  if (!hasNextRamadanDay) return null;
 
   const tomorrowKey = addDaysToDateKey(dateKey, 1);
   const tomorrowImsak = nextDayImsak ?? imsak;
@@ -322,6 +375,12 @@ export function buildRamadanContract({
 
   const hijriDay = Number(dayObject.date.hijri.day);
   const hijriYear = Number(dayObject.date.hijri.year);
+  if (!Number.isInteger(hijriDay) || hijriDay < 1 || hijriDay > 30) {
+    throw new Error("ramadan service: invalid hijri day");
+  }
+  if (!Number.isInteger(hijriYear) || hijriYear < 1) {
+    throw new Error("ramadan service: invalid hijri year");
+  }
   const monthName = normalizeHijriMonthName(dayObject.date.hijri.month.ar);
 
   const imsak = normalizeRamadanTime(dayObject.timings.Imsak, "Imsak", dateKey);
@@ -334,12 +393,18 @@ export function buildRamadanContract({
   const isha = normalizeRamadanTime(dayObject.timings.Isha, "Isha", dateKey);
 
   const monthRows = buildMonthRows({ monthDays, dateKey, timeZone, now });
-  const monthRangeLabel = getMonthRangeLabel(dateKey);
+  const monthRangeLabel = getMonthRangeLabel(dateKey, monthRows);
 
   // Same-month next-day Imsak for the after-Maghrib countdown window. Real
   // value when the next Gregorian day shares this month (cache-safe, no extra
   // request), null otherwise (midnight reload brings the fresh month).
   const tomorrowKey = addDaysToDateKey(dateKey, 1);
+  const tomorrowDayObject = findDayForDateKey(monthDays, tomorrowKey);
+  const isFinalRamadanDay = isRamadan && (
+    hijriDay === 30 ||
+    (tomorrowDayObject !== null && !isRamadanDayObject(tomorrowDayObject))
+  );
+  const hasNextRamadanDay = isRamadan && !isFinalRamadanDay;
   const nextDayImsak = findImsakForDateKey(monthDays, tomorrowKey);
 
   const nextEvent = isRamadan
@@ -350,6 +415,7 @@ export function buildRamadanContract({
         timeZone,
         now,
         nextDayImsak,
+        hasNextRamadanDay,
       })
     : null;
 
@@ -370,6 +436,7 @@ export function buildRamadanContract({
     maghrib: isRamadan ? maghrib : null,
     isha: isRamadan ? isha : null,
     nextEvent,
+    isFinalRamadanDay,
     // Helper field: the same-month next-day Imsak ("HH:MM" | null) used by
     // recomputeRamadanNextEvent to keep the offline after-Maghrib transition
     // stable without any network request.
@@ -397,6 +464,7 @@ export function recomputeRamadanNextEvent(contract, nowDate = new Date()) {
     timeZone: contract.timezone,
     now: nowDate,
     nextDayImsak: contract.nextDayImsak ?? null,
+    hasNextRamadanDay: !contract.isFinalRamadanDay,
   });
 
   return { ...contract, nextEvent };
@@ -477,7 +545,29 @@ export function createRamadanService(options = {}) {
     const todayDateObj = dateObjFromDateKey(dateKey);
 
     const dayObject = await fetchTodayFromCalendar(location, todayDateObj);
-    const monthDays = await fetchMonthFromCalendar(location, todayDateObj);
+    const currentMonthDays = await fetchMonthFromCalendar(location, todayDateObj);
+    let monthDays = currentMonthDays;
+
+    if (isRamadanDayObject(dayObject)) {
+      const needed = getAdjacentRamadanMonthsNeeded(currentMonthDays);
+      const adjacentRequests = [];
+      if (needed.previous) {
+        adjacentRequests.push(
+          fetchMonthFromCalendar(location, adjacentMonthDateObj(dateKey, -1)),
+        );
+      }
+      if (needed.next) {
+        adjacentRequests.push(
+          fetchMonthFromCalendar(location, adjacentMonthDateObj(dateKey, 1)),
+        );
+      }
+      if (adjacentRequests.length) {
+        monthDays = mergeCalendarMonths([
+          currentMonthDays,
+          ...(await Promise.all(adjacentRequests)),
+        ]);
+      }
+    }
 
     return buildRamadanContract({
       dayObject,

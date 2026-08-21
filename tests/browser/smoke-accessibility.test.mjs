@@ -33,7 +33,7 @@ export async function runBrowserCoverage(browser, baseUrl) {
       const payload = makeMonthCalendar({
         year: Number(url.searchParams.get("year")),
         month: Number(url.searchParams.get("month")),
-        hijriDayOffset: 11,
+        hijriDayOffset: 0,
         timesFor: () => CANONICAL_TIMINGS,
       });
       await route.fulfill({

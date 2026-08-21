@@ -25,6 +25,7 @@ import {
   renderRamadanTimetableLoading,
   renderRamadanTimetableNoLocation,
   renderRamadanTimetableNoData,
+  renderRamadanTimetableMissingData,
   renderRamadanTimetableError,
 } from "./components/ramadan-month-table-grid.component.js";
 import {
@@ -95,6 +96,7 @@ function getProgressPercent(contract, nowDate) {
 const renderRamadanLoadingState = () => renderFeedbackState({ type: "loading", className: "ramadan-prayer-loading", message: "جارٍ تحميل بيانات رمضان…", ariaLabel: "جارٍ تحميل بيانات رمضان" });
 const renderRamadanRevalidatingState = () => renderFeedbackState({ type: "loading", className: "ramadan-prayer-stale", message: "جارٍ التحديث…" });
 const renderRamadanEmptyDataState = () => renderFeedbackState({ type: "empty", className: "ramadan-prayer-empty", message: "لا تتوفر بيانات رمضان حالياً." });
+const INITIAL_TIMETABLE_ROW_COUNT = 7;
 
 const renderRamadanOffSeasonState = ({ nextRamadanGregorianYear } = {}) => {
   const year = Number.isInteger(Number(nextRamadanGregorianYear))
@@ -130,6 +132,7 @@ export function createRamadanRuntime(options = {}) {
     status: "idle",
     contract: null,
     location: null,
+    expandedRows: false,
   };
 
   function getElements() {
@@ -161,15 +164,30 @@ export function createRamadanRuntime(options = {}) {
     };
   }
 
-  function setTimetableState(elements, html, { hasData = false, showMore = false } = {}) {
+  function setTimetableState(elements, html, { showMore = false } = {}) {
     if (elements.tableGrid) elements.tableGrid.innerHTML = html;
+    // Download/share are intentionally unimplemented placeholders. Keep them
+    // unavailable even when timetable data exists so they never imply that an
+    // empty or stale export can be produced.
     elements.tableActions?.forEach((button) => {
-      if (button) button.disabled = !hasData;
+      if (button) button.disabled = true;
       if (typeof button?.setAttribute === "function") {
-        button.setAttribute("aria-disabled", String(!hasData));
+        button.setAttribute("aria-disabled", "true");
       }
     });
     if (elements.tableMore) elements.tableMore.hidden = !showMore;
+  }
+
+  function getVisibleMonthRows(rows) {
+    if (!Array.isArray(rows) || state.expandedRows || rows.length <= INITIAL_TIMETABLE_ROW_COUNT) {
+      return Array.isArray(rows) ? rows : [];
+    }
+
+    const todayIndex = rows.findIndex((row) => row?.isToday);
+    const preferredStart = todayIndex < 0 ? 0 : todayIndex - 3;
+    const maxStart = rows.length - INITIAL_TIMETABLE_ROW_COUNT;
+    const start = Math.max(0, Math.min(preferredStart, maxStart));
+    return rows.slice(start, start + INITIAL_TIMETABLE_ROW_COUNT);
   }
 
   function renderStatus(elements, html) {
@@ -200,10 +218,22 @@ export function createRamadanRuntime(options = {}) {
   function renderCountdown(elements) {
     const contract = state.contract;
     if (!contract?.nextEvent) {
-      if (elements.title) elements.title.textContent = "—";
-      if (elements.hours) elements.hours.textContent = "--";
-      if (elements.minutes) elements.minutes.textContent = "--";
-      if (elements.seconds) elements.seconds.textContent = "--";
+      const isCompletedFinalDay = contract?.isFinalRamadanDay;
+      if (elements.title) {
+        elements.title.textContent = isCompletedFinalDay
+          ? "اكتمل صيام آخر أيام رمضان"
+          : "—";
+      }
+      if (elements.hours) elements.hours.textContent = isCompletedFinalDay ? "00" : "--";
+      if (elements.minutes) elements.minutes.textContent = isCompletedFinalDay ? "00" : "--";
+      if (elements.seconds) elements.seconds.textContent = isCompletedFinalDay ? "00" : "--";
+      if (isCompletedFinalDay) {
+        if (elements.progressLabel) elements.progressLabel.textContent = "100%";
+        if (elements.progressFill?.style) elements.progressFill.style.inlineSize = "100%";
+        if (typeof elements.progressTrack?.setAttribute === "function") {
+          elements.progressTrack.setAttribute("aria-valuenow", "100");
+        }
+      }
       return;
     }
 
@@ -213,6 +243,10 @@ export function createRamadanRuntime(options = {}) {
     }
 
     const nextEvent = state.contract.nextEvent;
+    if (!nextEvent) {
+      renderCountdown(elements);
+      return;
+    }
     if (elements.title) elements.title.textContent = getCountdownTitle(nextEvent);
 
     const remainingSeconds = computeRemainingSeconds(nextEvent.occursAt, now());
@@ -251,16 +285,24 @@ export function createRamadanRuntime(options = {}) {
 
       renderCountdown(elements);
 
-      if (elements.tableGrid) {
+      const allRows = Array.isArray(contract.monthRows)
+        ? contract.monthRows
+        : [];
+      const visibleRows = getVisibleMonthRows(allRows);
+      if (allRows.length > 0) {
         setTimetableState(elements, renderRamadanMonthTableGrid({
           columns: RAMADAN_MONTH_TABLE_COLUMNS,
-          rows: contract.monthRows,
+          rows: visibleRows,
           iconPaths: MONTH_TABLE_ICON_PATHS,
           locationLabel: state.location
             ? formatLocation(state.location)
             : "—",
           rangeLabel: contract.monthRangeLabel,
-        }), { hasData: true, showMore: true });
+        }), {
+          showMore: !state.expandedRows && visibleRows.length < allRows.length,
+        });
+      } else {
+        setTimetableState(elements, renderRamadanTimetableMissingData());
       }
 
       if (elements.headHijri) {
@@ -270,7 +312,7 @@ export function createRamadanRuntime(options = {}) {
         elements.headGregorian.textContent = contract.monthRangeLabel;
       }
 
-      return "";
+      return allRows.length > 0 ? "" : renderRamadanEmptyDataState();
     }
 
     clearDynamicValues(elements);
@@ -317,6 +359,8 @@ export function createRamadanRuntime(options = {}) {
       return;
     }
 
+    clearDynamicValues(elements);
+
     if (!state.location) {
       setTimetableState(elements, renderRamadanTimetableNoLocation());
     } else if (state.status === "loading" || state.status === "stale") {
@@ -326,8 +370,6 @@ export function createRamadanRuntime(options = {}) {
     } else {
       setTimetableState(elements, renderRamadanTimetableNoData());
     }
-
-    clearDynamicValues(elements);
 
     if (state.status === "empty") {
       renderStatus(elements, renderRamadanEmptyDataState());
@@ -341,7 +383,7 @@ export function createRamadanRuntime(options = {}) {
   function buildLoadKey(location) {
     const locationKey = buildLocationKey(location);
     const todayKey = getDateKeyInTimeZone(location.timezone, now());
-    return `${locationKey}:${todayKey}`;
+    return `${locationKey}:${location.timezone}:${todayKey}`;
   }
 
   async function load(location, { force = false } = {}) {
@@ -372,7 +414,8 @@ export function createRamadanRuntime(options = {}) {
 
       if (!contract || typeof contract.dateKey !== "string") {
         state.status = "empty";
-        if (!state.contract) loadKey = null;
+        state.contract = null;
+        loadKey = null;
         applyState();
         return;
       }
@@ -382,12 +425,15 @@ export function createRamadanRuntime(options = {}) {
       state.status = "success";
       state.contract = contract;
       state.location = location;
+      state.expandedRows = false;
       loadKey = key;
       applyState();
     } catch (error) {
       if (token !== sequence) return;
 
       state.status = "error";
+      state.contract = null;
+      loadKey = null;
       applyState();
     } finally {
       if (token === sequence) pendingKey = null;
@@ -406,6 +452,7 @@ export function createRamadanRuntime(options = {}) {
     // and reload automatically, without waiting for a manual refresh.
     if (todayKey !== state.contract.dateKey) {
       state.contract = null;
+      state.expandedRows = false;
       loadKey = null;
       void load(state.location, { force: true });
       return;
@@ -438,12 +485,17 @@ export function createRamadanRuntime(options = {}) {
     const previousLocationKey = state.location
       ? buildLocationKey(state.location)
       : null;
+    const previousTimezone = state.location?.timezone ?? null;
 
     state.location = location;
 
     // Never keep previous-location data when the location key changes.
-    if (previousLocationKey !== null && previousLocationKey !== nextLocationKey) {
+    if (
+      previousLocationKey !== null &&
+      (previousLocationKey !== nextLocationKey || previousTimezone !== location.timezone)
+    ) {
       state.contract = null;
+      state.expandedRows = false;
       loadKey = null;
     }
 
@@ -455,8 +507,14 @@ export function createRamadanRuntime(options = {}) {
     retryBound = true;
 
     rootElement.addEventListener("click", (event) => {
-      if (!event.target?.closest?.("[data-ramadan-retry]")) return;
-      if (state.location) void load(state.location, { force: true });
+      if (event.target?.closest?.("[data-ramadan-retry]")) {
+        if (state.location) void load(state.location, { force: true });
+        return;
+      }
+      if (event.target?.closest?.("[data-rt-load-more]") && state.contract) {
+        state.expandedRows = true;
+        applyState();
+      }
     });
   }
 

@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { chromium } from "playwright-core";
 
 import { runBrowserCoverage } from "./smoke-accessibility.test.mjs";
+import { runRamadanReadinessCoverage } from "./ramadan-readiness.test.mjs";
 
 const port = 3197;
 const server = spawn(process.execPath, ["tests/browser/static-server.mjs", "src", String(port)], {
@@ -36,6 +37,7 @@ try {
   }
 
   await runBrowserCoverage(browser, baseUrl);
+  await runRamadanReadinessCoverage(browser, baseUrl);
 } finally {
   if (browser) await browser.close();
   server.kill();

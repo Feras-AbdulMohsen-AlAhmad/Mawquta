@@ -199,6 +199,11 @@
   background-size: 30px 30px;
 }
 
+.ramadan-timetable-state--empty.missing-data .ramadan-timetable-state__icon {
+  background-image: url("../../../../assets/icons/shared/hourglass.svg");
+  background-size: 30px 30px;
+}
+
 .ramadan-timetable-state--empty.no-data .ramadan-timetable-state__icon {
   background-image: url("../../../../assets/icons/ramadan/ramadan-crescent-star.svg");
   background-size: 36px 36px;
@@ -242,6 +247,7 @@
 .ramadan-timetable-skeleton {
   align-items: stretch;
   gap: 10px;
+  padding: clamp(20px, 3vw, 32px);
 }
 
 .ramadan-timetable-skeleton__label {

@@ -1,7 +1,7 @@
 import {
   isSchedulePrayerColumn,
   renderScheduleTableHeader,
-  renderScheduleTableMobileList,
+  renderScheduleTableMobileCard,
 } from "../../../shared/primitives/schedule-table.primitives.js";
 
 const RAMADAN_MOBILE_PRAYERS = [
@@ -80,6 +80,16 @@ export function renderRamadanTimetableNoData({ nextRamadanGregorianYear } = {}) 
   });
 }
 
+export function renderRamadanTimetableMissingData() {
+  return renderTimetableState({
+    type: "empty missing-data",
+    title: "لا تتوفر بيانات الإمساكية لهذا الشهر",
+    message: "أعد المحاولة لتحميل مواقيت رمضان الحالية.",
+    actionLabel: "إعادة المحاولة",
+    actionAttribute: "data-ramadan-retry",
+  });
+}
+
 export function renderRamadanTimetableError() {
   return renderTimetableState({
     type: "error",
@@ -136,13 +146,16 @@ function renderRamadanTableRow(row, columns) {
 }
 
 function renderRamadanMobileList(rows, iconPaths) {
-  return renderScheduleTableMobileList({
-    ariaLabel: "مواقيت رمضان - عرض الموبايل",
-    cards: rows.map((row) => ({
-      ariaLabel: `مواقيت ${row.weekday}`,
+  const cards = rows.map((row) => {
+    const card = renderScheduleTableMobileCard({
+      ariaLabel: row.isToday
+        ? `مواقيت اليوم ${row.weekday}`
+        : `مواقيت ${row.weekday}`,
       title: row.weekday,
       date: row.gregorianDate,
-      pillText: `رمضان ${row.ramadanDay}`,
+      pillText: row.isToday
+        ? `اليوم · رمضان ${row.ramadanDay}`
+        : `رمضان ${row.ramadanDay}`,
       titleIconPath: iconPaths.day,
       dateIconPath: iconPaths.date,
       prayers: RAMADAN_MOBILE_PRAYERS.map((prayerConfig) => ({
@@ -153,8 +166,21 @@ function renderRamadanMobileList(rows, iconPaths) {
           Array.isArray(row.activePrayerKeys) &&
           row.activePrayerKeys.includes(prayerConfig.key),
       })),
-    })),
+    });
+
+    return row.isToday
+      ? card.replace(
+          '<article class="weekly-table-mobile-card"',
+          '<article class="weekly-table-mobile-card ramadan-mobile-card--today" aria-current="date"',
+        )
+      : card;
   });
+
+  return `
+    <div class="weekly-table-mobile-list" aria-label="مواقيت رمضان - عرض الموبايل">
+      ${cards.join("\n")}
+    </div>
+  `;
 }
 
 export function renderRamadanMonthTableGrid({

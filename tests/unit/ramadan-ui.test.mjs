@@ -33,6 +33,7 @@ const {
   renderRamadanTimetableLoading,
   renderRamadanTimetableNoLocation,
   renderRamadanTimetableNoData,
+  renderRamadanTimetableMissingData,
   renderRamadanTimetableError,
 } = await import(gridUrl);
 const { MONTH_TABLE_ICON_PATHS, RAMADAN_MONTH_TABLE_COLUMNS } =
@@ -170,6 +171,8 @@ await checkAsync("UI-04", async () => {
   assert.equal(mobileCards, SAMPLE_ROWS.length, "mobile cards match source");
 
   assert.ok(html.includes("table-row--today"), "today row styled");
+  assert.ok(html.includes("ramadan-mobile-card--today"), "today mobile card styled");
+  assert.ok(html.includes('aria-current="date"'), "today mobile card semantics");
   assert.ok(html.includes("table-cell--active"), "active prayer cell present");
   assert.ok(html.includes("table-time-pill"), "active pill present");
 
@@ -204,6 +207,7 @@ await checkAsync("UI-06", async () => {
   assert.ok(renderRamadanTimetableLoading().includes("ramadan-timetable-skeleton"));
   assert.ok(renderRamadanTimetableNoLocation().includes("اختر مدينة لعرض إمساكية رمضان"));
   assert.ok(renderRamadanTimetableNoData().includes("لا توجد إمساكية رمضان متاحة حاليًا"));
+  assert.ok(renderRamadanTimetableMissingData().includes("لا تتوفر بيانات الإمساكية لهذا الشهر"));
   assert.ok(renderRamadanTimetableError().includes("data-ramadan-retry"));
   assert.ok(!renderRamadanTimetableLoading().includes("05:42"));
 });

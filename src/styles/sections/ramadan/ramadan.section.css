@@ -493,6 +493,12 @@
   display: none;
 }
 
+.ramadan-month-table-section .ramadan-mobile-card--today {
+  border-color: var(--Primary-700);
+  background: var(--Primary-50);
+  box-shadow: inset -3px 0 0 var(--Primary-700), var(--shadow-soft);
+}
+
 .ramadan-month-table-section .table-time-pill {
   display: inline-flex;
   align-items: center;

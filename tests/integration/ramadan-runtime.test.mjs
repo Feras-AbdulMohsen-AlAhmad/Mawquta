@@ -102,6 +102,20 @@ class FakeElement {
     }
     return this.children.get(selector);
   }
+  querySelectorAll(selector) {
+    if (selector !== "[data-ramadan-table-action]") return [];
+    if (!this.tableActions) {
+      this.tableActions = [new FakeElement(), new FakeElement()];
+      this.tableActions.forEach((button) => {
+        button.disabled = true;
+      });
+    }
+    return this.tableActions;
+  }
+  setAttribute(name, value) {
+    if (!this.attributes) this.attributes = new Map();
+    this.attributes.set(name, value);
+  }
   addEventListener(type, handler) {
     this.listeners.set(type, handler);
   }
@@ -230,7 +244,13 @@ await checkAsync("RR-01", async () => {
   assert.ok(tableHtml(root).includes("data-rt-city"), "table grid rendered");
   assert.ok(tableHtml(root).includes("دمشق، سوريا"), "table location label");
   assert.ok(tableHtml(root).includes("مارس 2026"), "table range label");
-  assert.equal(tableRowCount(root), 31, "31 ramadan rows in March");
+  assert.equal(tableRowCount(root), 7, "compact seven-day window rendered initially");
+  assert.ok(tableHtml(root).includes('class="table-row--today"'), "current day remains in the compact window");
+  root.listeners.get("click")({
+    target: { closest: (selector) => (selector === "[data-rt-load-more]" ? {} : null) },
+  });
+  assert.equal(tableRowCount(root), 19, "all usable fixture rows revealed on request");
+  assert.ok(root.tableActions.every((button) => button.disabled), "placeholder export actions remain disabled");
   assert.ok(tableHtml(root).includes("aria-label=\"جدول رمضان\""), "table aria label");
   assert.ok(tableHtml(root).includes("weekly-table-mobile-card"), "mobile list rendered");
   assert.equal(hook(root, "[data-rt-head-hijri]"), "1447", "head hijri year from contract");
@@ -285,7 +305,7 @@ await checkAsync("RR-03", async () => {
   await tick();
 
   assert.ok(dataHtml(root).includes("ramadan-prayer-loading"), "no previous-location data while loading");
-  assert.equal(tableHtml(root), "", "table cleared during new location load");
+  assert.ok(tableHtml(root).includes("ramadan-timetable-skeleton"), "loading state replaces previous-location table");
   assert.equal(hook(root, "[data-ramadan-imsak]"), "--:--");
 
   resolveSecond(makeContract(ALEPPO, { now: () => clock.current }));
@@ -421,7 +441,7 @@ await checkAsync("RR-07", async () => {
   assert.ok(dataHtml(root).includes("تعذر تحميل"), "error message rendered");
   assert.ok(dataHtml(root).includes("data-ramadan-retry"), "retry button rendered");
   assert.equal(hook(root, "[data-ramadan-imsak]"), "--:--", "no stale times on first error");
-  assert.equal(tableHtml(root), "", "no table on error");
+  assert.ok(tableHtml(root).includes("تعذر تحميل إمساكية رمضان"), "table error state shown");
 
   ramadan.setFail(false);
   root.listeners.get("click")({
@@ -613,6 +633,72 @@ await checkAsync("RR-15", async () => {
   const noop = createRamadanRuntime({});
   assert.equal(typeof noop.destroy, "function");
   noop.destroy();
+});
+
+await checkAsync("RR-16", async () => {
+  // Active Ramadan with no usable month rows is distinct from the upcoming
+  // state and never enables placeholder export actions.
+  const root = new FakeElement();
+  const location = createFakeLocationService(DAMASCUS);
+  const clock = { current: NOW_MIDDAY };
+  const ramadan = createFakeRamadanService(clock);
+  ramadan.setHandler((loc) => ({
+    ...makeContract(loc, { now: () => clock.current }),
+    monthRows: [],
+  }));
+
+  const runtime = createRuntime(root, location, ramadan, clock);
+  await tick();
+  await tick();
+
+  assert.ok(tableHtml(root).includes("لا تتوفر بيانات الإمساكية لهذا الشهر"));
+  assert.ok(!tableHtml(root).includes("رمضان القادم"), "not presented as upcoming Ramadan");
+  assert.ok(root.tableActions.every((button) => button.disabled));
+  runtime.destroy();
+});
+
+await checkAsync("RR-17", async () => {
+  // A failed same-day refresh must replace the previous contract rather than
+  // presenting stale times/table rows as current.
+  const root = new FakeElement();
+  const location = createFakeLocationService(DAMASCUS);
+  const clock = { current: NOW_MIDDAY };
+  const ramadan = createFakeRamadanService(clock);
+  const runtime = createRuntime(root, location, ramadan, clock);
+  await tick();
+  await tick();
+  assert.equal(hook(root, "[data-ramadan-imsak]"), "05:28");
+
+  ramadan.setFail(true);
+  root.listeners.get("click")({
+    target: { closest: (selector) => (selector === "[data-ramadan-retry]" ? {} : null) },
+  });
+  await tick();
+  await tick();
+
+  assert.equal(hook(root, "[data-ramadan-imsak]"), "--:--", "stale time cleared");
+  assert.ok(tableHtml(root).includes("تعذر تحميل إمساكية رمضان"), "error replaces stale table");
+  runtime.destroy();
+});
+
+await checkAsync("RR-18", async () => {
+  // Timezone metadata is part of the Ramadan freshness context even when the
+  // city and resulting local date key remain the same.
+  const root = new FakeElement();
+  const location = createFakeLocationService(DAMASCUS);
+  const clock = { current: NOW_MIDDAY };
+  const ramadan = createFakeRamadanService(clock);
+  const runtime = createRuntime(root, location, ramadan, clock);
+  await tick();
+  await tick();
+  assert.equal(ramadan.length, 1);
+
+  location.setLocation({ ...DAMASCUS, timezone: "Europe/London" });
+  await tick();
+  await tick();
+
+  assert.equal(ramadan.length, 2, "same city reloads after timezone change");
+  runtime.destroy();
 });
 
 const passed = results.filter((r) => r.pass).length;

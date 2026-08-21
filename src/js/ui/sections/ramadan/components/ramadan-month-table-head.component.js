@@ -35,7 +35,7 @@ function renderRamadanTableHeadActions(iconPaths) {
       ${actionButtons
         .map(
           (actionButton, actionIndex) =>
-            `<button type="button" class="ramadan-table-action" data-ramadan-tab data-ramadan-table-action aria-selected="${actionIndex === 0 ? "true" : "false"}" disabled><span>${actionButton.label}</span><img src="${actionButton.iconPath}" alt="" loading="lazy" decoding="async" /></button>`,
+            `<button type="button" class="ramadan-table-action" data-ramadan-tab data-ramadan-table-action aria-selected="${actionIndex === 0 ? "true" : "false"}" aria-disabled="true" aria-label="${actionButton.label} (غير متاح حاليًا)" title="غير متاح حاليًا" disabled><span>${actionButton.label}</span><img src="${actionButton.iconPath}" alt="" loading="lazy" decoding="async" /></button>`,
         )
         .join("\n")}
     </div>
